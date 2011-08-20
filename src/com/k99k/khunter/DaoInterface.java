@@ -67,14 +67,14 @@ public interface DaoInterface extends Cloneable{
 	 * @param fields
 	 * @return Map<String,Object>
 	 */
-	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String,Object> fields);
+	public HashMap<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String,Object> fields);
 	
 	/**
 	 * 查找Map形式对象,顺序号为4
 	 * @param id long
 	 * @return Map形式,未找到返回null
 	 */
-	public Map<String, Object> findOneMap(long id);
+	public HashMap<String, Object> findOneMap(long id);
 	
 	/**
 	 * 通用的查找过程,顺序号为5

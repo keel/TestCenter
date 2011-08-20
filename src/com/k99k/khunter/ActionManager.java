@@ -84,23 +84,32 @@ public final class ActionManager {
 					//读取必要的属性，如果少则报错并继续下一个
 					if (m.containsKey("_class")) {
 						String _class = (String) m.get("_class");
+						Action action  = null;
+						if (_class.startsWith("@")) {
+							action = findAction(_class.substring(1));
+							if (action == null) {
+								log.error("loadClassInstance error! _class:"+_class+" _name:"+actionName);
+								continue;
+							}
+						}else{
 						
-						/*
-						//type默认为normal //--直接在属性中加入
-						//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
-						*/
+							/*
+							//type默认为normal //--直接在属性中加入
+							//String _type = (m.containsKey("_type"))?"normal":(String) m.get("_type");
+							*/
+							
+							Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{actionName});
+							if (o == null) {
+								log.error("loadClassInstance error! _class:"+_class+" _name:"+actionName);
+								continue;
+							}
+							action = (Action)o;
+							HTManager.fetchProps(action, m);
 						
-						Object o = KIoc.loadClassInstance("file:/"+classPath, _class, new Object[]{actionName});
-						if (o == null) {
-							log.error("loadClassInstance error! _class:"+_class+" _name:"+actionName);
-							continue;
 						}
-						Action action = (Action)o;
-						
-						HTManager.fetchProps(action, m);
 						//加入Action,无论是否已存在
-						actionMap.put(action.getName(), action);
-						log.info("Action added: "+action.getName());
+						actionMap.put(actionName, action);
+						log.info("Action added: "+actionName);
 						try {
 							//Action初始化
 							action.init();

@@ -15,12 +15,12 @@ body{background-color: #e4e4e4;color:#000;}
 /* link */
 a { color:#6E747B; text-decoration:none; }
 	a:hover { color:#000;text-decoration:underline; }
-	a:focus, input:focus {outline-style:none; outline-width:medium; }
+	/* a:focus, input:focus {outline-style:none; outline-width:medium; } */
 table {border-spacing:1px;}
 th, td {padding:5px;}
 th { color:#fff;border-top:3px solid #00254A; background-color:#434B5D; }
 td { background:#fff; text-align:left;}
-ul{padding:0;margin:12px 40px;}
+ul{padding:0;margin:12px 2px 12px 40px;}
 .clear{clear: both;}
 
 /* box */
@@ -56,9 +56,9 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;h
 
 #sideNav div{padding:8px;padding-left: 24px;font-weight: bold;border-bottom: 1px solid #D6D6D6;border-top: 1px solid #FCFDFD;}
 
-#consoleLogin{padding:20px;background-color: #272D3B;}
+#consoleLogin{color:#e4e4e4;padding:30px;background-color: #272D3B;}
 #consoleLogin p{padding:5px 0;}
-#consoleLogin label{color:#e4e4e4;}
+#consoleLogin label.error{color:red;width:300px;text-align:right;display:block;}
 .tx_center{text-align:center;}
 .red{color:red;}
 .bold{font-weight: bold;}

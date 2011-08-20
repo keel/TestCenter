@@ -40,14 +40,36 @@
 		"scheduledPoolSize":10
 	},
 	"actions":[
-		{	
+		{
 			"_actName":"console",	
 			"_class":"com.k99k.khunter.acts.ConsoleAction",
 			"admin":[
 				{"name":"keel","pwd":"6667441","level":1,"state":1,"info":"202.102.113.*"},
 				{"name":"sike","pwd":"123456","level":2,"state":1,"info":"202.102.40.*"}
 			]
-		}		
+		},
+		{
+			"_actName":"auth",	
+			"_class":"com.k99k.testcenter.Auth"
+		},
+		{
+			"_actName":"[root]",	
+			"_class":"@auth",
+			"info":"@开头的_class为引用,[root]为根目录"
+		},
+		{
+			"_actName":"login",	
+			"_class":"com.k99k.khunter.acts.ToJSPAction",
+			"jspPath":"/WEB-INF/tc/login.jsp"
+		},
+		{
+			"_actName":"news",
+			"_class":"com.k99k.testcenter.News"
+		},
+		{
+			"_actName":"end",
+			"_class":"com.k99k.testcenter.End"
+		}
 	],
 	"io":{
 		"emails":{

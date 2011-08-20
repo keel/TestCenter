@@ -26,7 +26,6 @@ public class LoginAction extends Action {
 	private MongoUserDao userDao;
 
 	/**
-	 * FIXME 执行登录操作,若为新用户则自动注册
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
 	@Override

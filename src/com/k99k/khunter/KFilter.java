@@ -88,7 +88,8 @@ public final class KFilter implements Filter {
 		//requrl = (requrl == null) ? "" : requrl.substring(1);
 		String[] pathArr = requrl.split("\\/");
 		int rn = rootNum+1;
-		String actName = (pathArr.length <= rn) ? "" : pathArr[rn];
+		//[root]为默认Action
+		String actName = (pathArr.length <= rn) ? "[root]" : pathArr[rn];
 		//TODO 过滤静态请求,此处如果配合前端的web server过滤可省去
 		if (staticPath.containsKey(actName)) {
 //			String encoding = req.getHeader("Accept-Encoding");

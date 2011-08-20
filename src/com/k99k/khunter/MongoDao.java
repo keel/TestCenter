@@ -158,7 +158,7 @@ public class MongoDao implements DaoInterface{
 	 * @param id long
 	 * @return 未找到返回null
 	 */
-	public Map<String,Object> findOneMap(HashMap<String,Object> query){
+	public HashMap<String,Object> findOneMap(HashMap<String,Object> query){
 		BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 		
 		return this.findOneMap(q, null);
@@ -172,7 +172,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public Map<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
+	public HashMap<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
 			DBObject q = (query==null)?emptyBasicDBObject:((query instanceof DBObject)?(DBObject)query:new BasicDBObject(query));
 			DBObject f = (fields==null)?null:((query instanceof DBObject)?(DBObject)fields:new BasicDBObject(fields));
@@ -182,7 +182,7 @@ public class MongoDao implements DaoInterface{
 			if (o==null) {
 				return null;
 			}
-	        return (Map<String,Object>)o;
+	        return (HashMap<String,Object>)o;
 		} catch (Exception e) {
 			log.error("findOneMap error!", e);
 			return null;
@@ -299,13 +299,13 @@ public class MongoDao implements DaoInterface{
 	 * @return Map形式,未找到返回null
 	 */
 	@SuppressWarnings("unchecked")
-	public Map<String, Object> findOneMap(long id){
+	public HashMap<String, Object> findOneMap(long id){
 		try {
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
 			DBObject o = coll.findOne(id);
 			if (o != null) {
-				return (Map<String, Object>)o;
+				return (HashMap<String, Object>)o;
 			}
 			return null;
 		} catch (Exception e) {
