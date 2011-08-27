@@ -1,0 +1,8 @@
+{
+	"jspCache":[
+		{"name":"head0","txt":"jc/head0.txt","type":"str","intro":"html上部分直到默认的js和css"},
+		{"name":"main0","txt":"jc/main0.txt","type":"str","intro":"head结束直到wrapper中的header div结束"},
+		{"name":"foot0","txt":"jc/foot0.txt","type":"str"}
+	],
+	"jspCahe intro":"txt的路径为HTManager.getIniPath()后面的路径;当name为其他jc的组合时,type为array,名称最好加上@以示区别;"
+}

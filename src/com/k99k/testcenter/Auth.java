@@ -63,7 +63,7 @@ public class Auth extends Action {
 		//处理注销
 		else if(subact.equals("logout")){
 			WebTool.removeCookie("tcu", httpmsg.getHttpResp());
-			JOut.txtOut("ok", httpmsg);
+			msg.addData("[redirect]", "/login");
 			return super.act(msg);
 		}
 		//其他就根据cookie决定是否显示login.jsp

@@ -7,7 +7,7 @@ String prefix = KFilter.getPrefix();
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>KHT console</title>
+<title>游戏测试-登录</title>
 <link rel="stylesheet" type="text/css" href="<%=sPrefix %>/css/style.css" />
 <script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
@@ -60,8 +60,8 @@ $('#consoleLogin').validate({
 	<input type="text" name="uName" id="uName" style="width:300px;" /></p>
 	<p><label for="form_pwd">密 &nbsp;&nbsp;码:</label><br />
 	<input type="password" name="uPwd" id="uPwd" style="width:300px;" /></p>
-	<p style="float:right;padding:10px 0 0 0;"><input type="submit" id="submitBT" value="登录" style="width:80px;" /></p>
 	<p style="float:left;padding-top:10px;"><input type="checkbox" name="saveLogin" value="false" id="saveLogin"/><label for="saveLogin"> 保存登录状态</label></p>
+	<p style="float:right;padding:10px 0 0 0;"><input type="submit" id="submitBT" value="登录" style="width:80px;" /></p>
 	<div class="clear"></div>
 </form>
 	<div class="tx_center">

@@ -1,5 +1,6 @@
 package com.k99k.khunter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,10 +85,33 @@ public interface DaoInterface extends Cloneable{
 	 * @param skip 无则为0
 	 * @param len 无则为0
 	 * @param hint 无则为null
-	 * @return List<Map<String,Object>
+	 * @return ArrayList<Map<String,Object>
 	 */
-	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
+	public ArrayList<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
 	
+	/**
+	 * 通用的查找过程
+	 * @param query 必须有,为null则为默认查询
+	 * @param fields 全部则为null
+	 * @param sortBy 无则为null
+	 * @param skip 无则为0
+	 * @param len 无则为0
+	 * @param hint 无则为null
+	 * @return ArrayList<KObject>
+	 */
+	public ArrayList<KObject> queryKObj(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
+
+	/**
+	 * 按页查找
+	 * @param page 页码
+	 * @param pageSize 每页项目数
+	 * @param query
+	 * @param fields
+	 * @param sortBy
+	 * @param hint
+	 * @return ArrayList<KObject>
+	 */
+	public ArrayList<KObject> queryByPage(int page,int pageSize,HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,HashMap<String,Object> hint);
 	/**
 	 * 按条件查询数量,顺序号为6
 	 * @param query 必须有

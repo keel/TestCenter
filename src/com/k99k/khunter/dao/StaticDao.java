@@ -4,12 +4,16 @@
 package com.k99k.khunter.dao;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import org.apache.log4j.Logger;
 import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.DataSourceInterface;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
+import com.mongodb.BasicDBObject;
 
 /**
  * 静态方法执行的Dao，执有多个DaoManager的Dao对象,需要在最后一个Action中初始化
@@ -29,9 +33,14 @@ public class StaticDao extends MongoDao {
 	static final Logger log = Logger.getLogger(StaticDao.class);
 	
 	static DaoInterface tcUserDao;
+	static DaoInterface tcNewsDao;
+	
+	public static final BasicDBObject prop_level_id_desc = new BasicDBObject("level",-1).append("_id",-1);
+
 	
 	public static final void initS(){
 		tcUserDao = DaoManager.findDao("TCUserDao");
+		tcNewsDao = DaoManager.findDao("TCNewsDao");
 	}
 	
 	public static final KObject checkUser(String name,String pwd){
@@ -42,6 +51,14 @@ public class StaticDao extends MongoDao {
 			}
 		}
 		return null;
+	}
+	
+	public static final ArrayList<KObject> loadNews(int page,int pageSize){
+		return tcNewsDao.queryByPage(page,pageSize,prop_state_0, null, prop_level_id_desc, null);
+	}
+	
+	public static final ArrayList<KObject> search(int page,int pageSize,HashMap<String,Object> search){
+		return tcNewsDao.queryByPage(page,pageSize,search, null, prop_level_id_desc, null);
 	}
 	
 //	public static final boolean login(String uName,String uPwd){
@@ -55,4 +72,5 @@ public class StaticDao extends MongoDao {
 //	}
 	
 
+	
 }

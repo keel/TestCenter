@@ -184,7 +184,27 @@ public final class StringUtil {
 		java.util.Date d = new java.util.Date();
 		return sdf.format(d);
 	}
+	/**
+	 * 得到一个格式化日期
+	 * @param format yyyyMMdd 或yyyyMM等
+	 * @param java.util.Date
+	 * @return
+	 */
+	public static final String getFormatDateString(String format,java.util.Date date){
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(format);
+		return sdf.format(date);
+	}
 	
+	/**
+	 * 得到一个格式化日期
+	 * @param format yyyyMMdd 或yyyyMM等
+	 * @param long
+	 * @return
+	 */
+	public static final String getFormatDateString(String format,long date){
+		java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat(format);
+		return sdf.format(new java.util.Date(date));
+	}
 	/**
 	 * 把字符串中的HTML代码转换成页面显示的代码
 	 * @param 字符串 str

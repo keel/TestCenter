@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>KHT console</title>
+<link rel="stylesheet" type="text/css" href="../css/style.css" />
+<script src="../js/jquery.js" type="text/javascript"></script>
+<script src="../js/jquery.json-2.2.min.js" type="text/javascript"></script>
+<script src="../js/hotEdit.js" type="text/javascript"></script>
+<script type="text/javascript">
+$(function(){
+	//var obj = {s:true,name:"aaa",num:123,strNum:"2344",map:{a:"aa",b:33}};
+	//$("#newValue").text($.toJSON(obj));
+	
+	/*
+	var vara = "var:";
+function testCall (para,func) {
+	//func.arg = " --this is arg";
+	func(" --this is arg");
+	$("#newValue").text(vara+para);
+}
+
+	testCall("ppp",function (arg) {
+		vara +="haha "+arg+" : ";
+	});
+	*/
+var eParas2 = {
+	target:"",
+	subs:["td:eq(0)","td:eq(1)","td:eq(2)","td:eq(3)","td:eq(4)"],
+	key:["ta","tb","tc","td","te"],
+	//val如存在则默认为此值，若无则为原key的text值,HE#NULL表示为空值
+	//val:["aaa","HE#NULL","HE#NULL","HE#NULL","HE#NULL"], 
+	editor:[
+		$.hotEditor.inputTextEditor,
+		$.hotEditor.inputTextEditor,
+		$.hotEditor.selectEditor,
+		$.hotEditor.HENull,
+		$.hotEditor.checkBoxEditor
+	],
+	msg:"#newValue",
+	//url:"#act",
+	preParas:{schema_key:"kuser"},
+	jsonToStr:"schema_indexjson",
+	jsonTyps:["s","a","f","b","i"],
+	bts:"td:eq(5)",
+	addTarget:">",
+	delBT:">"
+	//,addBT:"#addBTHH"
+};	
+
+
+
+	$("#targetTB tr").each(function (i) {
+		//$.hotEditor.act(this,"#act",{schema_key:"kuser"},eParas2,"#newValue");
+		$.hotEditor.act(eParas2,this);
+		
+	});
+	
+	
+var eParas1 = {
+	msg:"#newValue"
+	,addTarget:"#addHH"
+	,addBT:"#addBTHH"
+	,key:["oldold"]
+	//,url:"#aaa"
+}	;
+	
+	$.hotEditor.act(eParas1,"#oldVal");
+
+	var str = "[]";
+	var str2 = "{}";
+	var pp= $.hotEditor.parseType("m",str);
+	//console.log(pp);
+	
+	var obj = {};
+	obj.a = "a";
+	obj.b = "b";
+	obj.s = $('#sideNav');
+	obj.s.f = function() {
+		alert(this.a);
+	};
+	//obj.s.ss = "ss";
+	obj.ddd = {};
+	obj.ddd.o = obj;
+	obj.s.xx = "aaa";
+	obj.s.click(obj,function() {
+		this.x = "bb";
+		//alert(obj.s.xx);
+	});
+	obj.a = "haha";
+	//alert(obj.s.xx);
+	var v = "[}]";
+	//var t = (/(^\[[^\]]*\]$)|(^\{[^\}]*\}$)/.test(v.toString()));
+	//alert(t);
+});
+
+</script>
+</head>
+<body>
+
+<div id="wrapper">
+
+	<div id="header">
+
+		<h1><a href="/" style="color:#FFF;">Console</a></h1> <span>Hi, <a href="#">keel</a>&nbsp; 
+			[ <a href="#">注销</a> ]  </span>
+
+	</div>
+
+	
+
+	<div id="mainBody">
+
+		<div id="sideNav">
+
+<div>产品测试</div>
+
+<ul>
+
+<li><a href="act?act=console&amp;right=state" >公告<span id="newNews" class="bold red">(3)</span></a></li>
+
+<li><a href="act?act=console&amp;right=exit" >待处理任务<span id="newTasks" class="bold red">(3)</span></a></li>
+<li><a href="act?act=console&amp;right=exit" >我的任务(创建/执行)</a></li>
+
+<li><a href="act?act=console&amp;right=changePwd" >产品管理</a></li>
+
+</ul>
+
+<div>相关文档</div>
+
+<ul>
+<li><a href="act?act=console&amp;right=Actions" >流程说明</a></li>
+
+<li><a href="act?act=console&amp;right=DataSources" >手机终端信息</a></li>
+
+<li><a href="act?act=console&amp;right=KObject" >适配常见问题</a></li>
+
+<li><a href="act?act=console&amp;right=DAOs" >电信接口</a></li>
+
+</ul>
+
+
+<div>讨论</div>
+
+<ul>
+
+<li><a href="act?act=console&amp;right=groups" >公共讨论</a></li>
+
+<li><a href="act?act=console&amp;right=users" >专项问题</a></li>
+
+</ul>
+
+<div>统计查询</div>
+
+<ul>
+<li><a href="act?act=console&amp;right=changeLogs" >查询</a></li>
+<li><a href="act?act=console&amp;right=changeLogs" >日报表</a></li>
+<li><a href="act?act=console&amp;right=changeLogs" >周报表</a></li>
+<li><a href="act?act=console&amp;right=changeLogs" >月报表</a></li>
+</ul>
+<div>数据维护</div>
+
+<ul>
+<li><a href="" >消息发布</a></li>
+<li><a href="#" >终端信息</a></li>
+<li><a href="" >厂商信息</a></li>
+<li><a href="" >用户管理</a></li>
+<li><a href="" >文档管理</a></li>
+<li><a href="" >话题管理</a></li>
+<li><a href="" >测试项</a></li>
+<li><a href="" >产品库*</a></li>
+
+</ul>
+
+<div>用户信息</div>
+
+<ul>
+
+<li><a href="act?act=console&amp;right=config" >修改密码</a></li>
+
+<li><a href="" >修改联系信息</a></li>
+
+<li><a href="" >注销</a></li>
+
+</ul>
+
+
+</div>
+
+		<div id="mainContent">
+<p>当前状态:ok</p>
+
+<p id="newValue">最新公告:新版本暂未上线.</p>
+<div id="addBTHH">
+	
+</div>
+<div id="addHH">
+	<input type="text" name="oldold" class="hotEditInput">
+</div>
+<p class="editable" id="oldVal">
+old value
+<div>
+
+<a href="#">link1</a> <a href="#" class="aButton">link2</a>
+<a href="#" class="aButtonUn">link3</a>
+</div>
+
+
+</p>
+<select name="s"> <option value="0">String</option> <option value="1">Integer</option> <option value="2">HashMap</option> <option value="3">ArrayList</option> <option value="4">Long</option> <option value="5">Boolean</option> <option value="6">Date</option> <option value="7">Double</option> </select>
+
+<table id="targetTB">
+<tr>
+<td>testA1</td>
+<td>232</td>
+<td>33.3</td>
+<td>false</td>
+<td>22ff233</td>
+<td></td>
+</tr>
+<tr>
+<td>testB1</td>
+<td>testB2</td>
+<td>testB3</td>
+<td>testB4</td>
+<td>testB5</td>
+<td></td>
+</tr>
+<tr>
+<td>testC1</td>
+<td>testC2</td>
+<td>testC3</td>
+<td>testC4</td>
+<td>testC5</td>
+<td></td>
+</tr>
+<tr>
+<td>testD1</td>
+<td>testD2</td>
+<td>testD3</td>
+<td>testD4</td>
+<td>testD5</td>
+<td></td>
+</tr>
+<tr>
+<td>testE1</td>
+<td>testE2</td>
+<td>testE3</td>
+<td>testE4</td>
+<td>testE5</td>
+<td></td>
+</tr>
+</table>
+
+<div class="abox">
+<div class="aboxTitle">公告之一 <span style="font-size:12px;color:#ccc;float:right;padding-top:3px;">sike &nbsp;&nbsp; ( 2011-2-3 33:33:22 )</span></div>
+<div class="aboxContent">
+<form action="">
+<div>标题：<br />
+<input type="text" name="news_name" style="width:90%;padding:5px;margin:0;" /></div>
+
+<div>内容：<br />
+<textarea name="news_text" rows="3" cols="3" style="height:200px;"></textarea></div>
+<div>显示级别：
+<select name="news_type"><option value="0">所有人</option><option value="1">厂家</option><option value="2">测试员</option><option value="3">组长</option><option value="4">管理员</option></select>
+置顶级别：
+<select name="news_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+</div>
+
+<div><a href="#" class="aButton tx_center" style="width:60px;">保存</a><a href="#" class="aButton tx_center" style="width:60px;">返回</a></div>
+</form>
+</div>
+</div>
+<div id="update_kobj">
+	<label for="update_dao">update_dao:</label><input type="text" name="update_dao" value="" id="update_dao"/>
+	
+	
+</div>
+
+
+
+		<div class="clear"></div>
+
+		</div>
+
+	</div>
+
+
+<div class="clear"></div>
+	<div id="footer">
+
+		<div id="copyright">
+
+			Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
+
+		</div>
+
+	</div>
+
+</div>
+
+
+
+</body>
+
+</html>

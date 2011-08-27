@@ -1,0 +1,10 @@
+<!--
+<div class="clear"></div>
+	<div id="footer">
+		<div id="copyright">
+			Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
+		</div>
+	</div> -->
+</div>
+</body>
+</html>

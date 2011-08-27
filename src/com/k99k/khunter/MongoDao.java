@@ -2,7 +2,7 @@ package com.k99k.khunter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -27,11 +27,6 @@ public class MongoDao implements DaoInterface{
 	 * id生成器,默认初始值为1,增量为1
 	 */
 	private IDManager idm;// = new IDManager(1,1);
-	
-	/**
-	 * 空BasicDBObject,备用
-	 */
-	static final BasicDBObject emptyBasicDBObject  = new BasicDBObject();
 	
 	/**
 	 * 数据库的表名
@@ -159,7 +154,7 @@ public class MongoDao implements DaoInterface{
 	 * @return 未找到返回null
 	 */
 	public HashMap<String,Object> findOneMap(HashMap<String,Object> query){
-		BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+		BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 		
 		return this.findOneMap(q, null);
 	}
@@ -174,7 +169,7 @@ public class MongoDao implements DaoInterface{
 	@SuppressWarnings("unchecked")
 	public HashMap<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String, Object> fields){
 		try {
-			DBObject q = (query==null)?emptyBasicDBObject:((query instanceof DBObject)?(DBObject)query:new BasicDBObject(query));
+			DBObject q = (query==null)?prop_empty:((query instanceof DBObject)?(DBObject)query:new BasicDBObject(query));
 			DBObject f = (fields==null)?null:((query instanceof DBObject)?(DBObject)fields:new BasicDBObject(fields));
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -189,10 +184,12 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
-	private static final BasicDBObject prop_id_desc = new BasicDBObject("_id",-1);
-	private static final BasicDBObject prop_id = new BasicDBObject("_id",1);
-	
-	
+	public static final BasicDBObject prop_id_desc = new BasicDBObject("_id",-1);
+	public static final BasicDBObject prop_id = new BasicDBObject("_id",1);
+	public static final BasicDBObject prop_state_0 = new BasicDBObject("state",0);
+	public static final BasicDBObject prop_empty = new BasicDBObject();
+	public static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
+
 	@Override
 	public boolean checkName(String name) {
 		try {
@@ -217,21 +214,21 @@ public class MongoDao implements DaoInterface{
 	 * @param skip 无则为0
 	 * @param len 无则为0
 	 * @param hint 无则为null
-	 * @return List<Map<String,Object>>
+	 * @return ArrayList<Map<String,Object>>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
+	public ArrayList<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
 		try {
-			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject field = (fields==null)?null:new BasicDBObject(fields);
 			BasicDBObject sort = (sortBy==null)?null:new BasicDBObject(sortBy);
 			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			
-			int initSize = 20;
+			int initSize = 24;
 			if (len > 0) {
 				initSize = len;
 			}
-			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
+			ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
 			
 				//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -252,6 +249,75 @@ public class MongoDao implements DaoInterface{
 		}
 		
 	}
+	/**
+	 * 通用的查找过程
+	 * @param query 必须有,为null则为默认查询
+	 * @param fields 全部则为null
+	 * @param sortBy 无则为null
+	 * @param skip 无则为0
+	 * @param len 无则为0
+	 * @param hint 无则为null
+	 * @return ArrayList<KObject>
+	 */
+	@SuppressWarnings("unchecked")
+	public ArrayList<KObject> queryKObj(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
+		try {
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject field = (fields==null)?null:new BasicDBObject(fields);
+			BasicDBObject sort = (sortBy==null)?null:new BasicDBObject(sortBy);
+			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
+			
+			int initSize = 24;
+			if (len > 0) {
+				initSize = len;
+			}
+			ArrayList<KObject> list = new ArrayList<KObject>(initSize);
+			
+				//coll = checkColl(coll);
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = null;
+			if (sortBy != null) {
+				cur = coll.find(q, field).sort(sort).skip(skip).limit(len).hint(hin);
+			} else {
+				cur = coll.find(q, field).skip(skip).limit(len).hint(hin);
+			}
+	        while(cur.hasNext()) {
+	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
+	        	list.add(new KObject(m));
+	        }
+	        return list;
+		} catch (Exception e) {
+			log.error("query error!", e);
+			return null;
+		}
+		
+	}
+	
+	/**
+	 * 按页查找,注意结果第一项为总计数,直接用getId()可取到
+	 * @param page 页码
+	 * @param pageSize 每页项目数
+	 * @param query
+	 * @param fields
+	 * @param sortBy
+	 * @param hint
+	 * @return ArrayList<KObject> 第一项为总计数,直接用getId()可取到
+	 */
+	public final ArrayList<KObject> queryByPage(int page,int pageSize,HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,HashMap<String,Object> hint){
+		int sum = this.count(query);
+		int skip = pagedSkip(page,sum,pageSize);
+		if (skip < 0) {
+			return null;
+		}
+		ArrayList<KObject> list = this.queryKObj(query, fields, sortBy, skip, pageSize, hint);
+		if (list == null) {
+			return null;
+		}
+		KObject cc = new KObject();
+		cc.setId(sum);
+		list.add(0, cc);
+		return list;
+	}
 	
 	/**
 	 * 按条件查询数量
@@ -262,7 +328,7 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query,HashMap<String,Object> hint){
 		
 		try {
-			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);
@@ -282,7 +348,7 @@ public class MongoDao implements DaoInterface{
 	public int count(HashMap<String,Object> query){
 		
 		try {
-			BasicDBObject q = (query==null)?emptyBasicDBObject:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			
 			DBCollection coll = this.dataSource.getColl(tableName);
 			return coll.find(q).count();
@@ -433,8 +499,6 @@ public class MongoDao implements DaoInterface{
 		return true;
 	}
 	
-	private static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
-	
 	/**
 	 * 标记删除,即将state置为-1,
 	 * @param id
@@ -534,7 +598,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	long initIDM(String tableName){
 		DBCollection coll = this.dataSource.getColl(tableName);
-		DBCursor cur = coll.find(emptyBasicDBObject,prop_id).sort(prop_id_desc).limit(1);
+		DBCursor cur = coll.find(prop_empty,prop_id).sort(prop_id_desc).limit(1);
 		if (cur.hasNext()) {
 			DBObject o = cur.next();
 			return Long.parseLong(o.get("_id").toString());
@@ -579,8 +643,80 @@ public class MongoDao implements DaoInterface{
 		return true;
 	}
 
+	/**
+	 * json输出ArrayList<KObject>
+	 * @param list ArrayList<KObject>
+	 * @return String
+	 */
+	public static final String writeKObjList(ArrayList<KObject> list){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		if (list == null || list.isEmpty()) {
+			sb.append("]");
+			return sb.toString();
+		}
+		for (Iterator<KObject> it = list.iterator(); it.hasNext();) {
+			KObject kobj = it.next();
+			sb.append(kobj.toString());
+			sb.append(",");
+		}
+		sb.deleteCharAt(sb.length()-1);
+		sb.append("]");
+		return sb.toString();
+	}
 	
-
+	/**
+	 * 由页码,总数,每页项目数计算skip数
+	 * @param page
+	 * @param sum
+	 * @param pageSize
+	 * @return
+	 */
+	public static int pagedSkip(int page,int sum,int pageSize){
+		if (sum<=0 || pageSize<=0) {
+			return -1;
+		}
+		int pageCount = sum/pageSize;
+		int mod = sum%pageSize;
+		if (mod != 0) {
+			pageCount++;
+		}
+		if (page<=0) {
+			page = 1;
+		}
+		if (page > pageCount) {
+			page = pageCount;
+		}
+		int skip = pageSize*(page-1);
+		
+		return skip;
+	}
+	
+	public static int[] pagedSkipForSlice(int page,int sum,int pageSize){
+		if (sum<=0 || pageSize<=0) {
+			return null;
+		}
+		int[] ii = new int[2];
+		int pageCount = sum/pageSize;
+		int mod = sum%pageSize;
+		if (mod != 0) {
+			pageCount++;
+		}
+		
+		if (page<=0) {
+			page = 1;
+		}
+		if (page >= pageCount) {
+			//最后一页
+			ii[0] = 0-sum;
+			ii[1] = (mod==0)?pageSize:mod;
+			return ii;
+		}
+		
+		ii[0] = 0-pageSize*page;
+		ii[1] = pageSize;
+		return ii;
+	}
 
 	/**
 	 * @return the dataSource
