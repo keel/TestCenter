@@ -70,7 +70,7 @@
 		{
 			"_actName":"news",
 			"_class":"com.k99k.testcenter.News",
-			"pageSize":30
+			"pageSize":5
 		},
 		{
 			"_actName":"newsTask",

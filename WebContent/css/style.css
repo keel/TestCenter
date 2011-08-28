@@ -16,7 +16,6 @@ th, td {padding:5px;}
 th { color:#fff;border-top:1px solid #000; background: url('../images/bk_dark_line.png');background-color:#444; }
 td { background:#fff; text-align:left;}
 ul{padding:0;margin:12px 2px 12px 40px;}
-.clear{clear: both;}
 
 input{padding:6px 8px;margin:1px;background-color: #FFF;color:#000;border: 1px solid #003333;}
 input[type="checkbox"]{padding:2px;background: transparent;color:#000;border: none;}
@@ -43,7 +42,6 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;h
 #sideNav div{padding:8px;padding-left: 24px;font-weight: bold;border-bottom: 1px solid #D6D6D6;border-top: 1px solid #FCFDFD;}
 
 #mainContent{padding:10px 20px 0 190px;}
-#mainContent p{padding:10px;}
 
 #footer{background-color: #393939;padding:10px;}
 #copyright{text-align:center;color:#E8E8E8;}
@@ -55,7 +53,7 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;h
 #rightTop{padding:5px;}
 #f_search{display:inline;}
 #list_search{width:250px;}
-.tb_list{background-color: #fff;border-bottom: 1px solid #e4e4e4;}
+.tb_list{background-color: #fff;border-bottom: 1px solid #e4e4e4;padding:10px;}
 /* classes */
 input.error,textarea.error{ border: 1px dotted red; }
 label.error{color:red;width:300px;text-align:left;display:block;}
@@ -63,6 +61,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .red{color:red;}
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}
+.txtLeft{text-align: left;}
 .weight{font-weight: bold;}
 .orangeBold{color:#ff8040;font-weight: bold;}
 .re{background-color: #fbf9ea;border: 1px solid red;padding:20px;}
@@ -71,6 +70,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 
 .sideON{color:#000;font-weight: bold;}
 .search{padding:10px 5px;}
+.table_list td{text-align: center;}
 
 /* pageNav */
  .pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
@@ -79,9 +79,9 @@ label.error{color:red;width:300px;text-align:left;display:block;}
  /* abox */
 .abox{border: 1px solid #aaa;background: #FFF;}
 .swfupload{ border: 1px solid #C8DDE9;}
-.aboxTitle{background: url('../images/bk_dark_line.png') repeat-x;color:#FFF;padding:6px 8px;font-weight: bold;}
-.aboxContent{padding:10px;}
-.aboxContent div{padding:5px;}
+.aboxTitle{height:23px;background: url('../images/bk_dark_line.png') repeat-x;color:#FFF;padding:6px 10px;font-weight: bold;}
+.aboxContent{padding:26px;}
+.aboxContent p{padding:5px 0;}
 .reOk{background: url(../images/msg_green.png)  no-repeat;background-position: center left;padding-left:20px;}
 .reErr{background: url(../images/msg_red.png)  no-repeat;background-position: center left;padding-left:20px;color:red;font-weight: bold;}
 .reWarn{background: url(../images/msg_yellow.png)  no-repeat;background-position: center left;padding-left:20px;}

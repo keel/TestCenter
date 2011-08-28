@@ -4,8 +4,10 @@
 package com.k99k.khunter.dao;
 
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import com.k99k.khunter.DaoInterface;
@@ -53,11 +55,32 @@ public class StaticDao extends MongoDao {
 		return null;
 	}
 	
+	/**
+	 * 处理阅读后未读公告的-1
+	 * @param userId
+	 * @param newsId
+	 */
+	public static final void readOneNews(long userId,long newsId){
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull = new HashMap<String, Object>(2);
+		pull.put("unReadNews", newsId);
+		set.put("$pull", pull);
+		HashMap<String,Object> inc = new HashMap<String, Object>(2);
+		inc.put("newNews", -1);
+		set.put("$inc", inc);
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("_id", userId);
+		tcUserDao.update(query, set, false, false);
+	}
+	
 	public static final ArrayList<KObject> loadNews(int page,int pageSize){
 		return tcNewsDao.queryByPage(page,pageSize,prop_state_0, null, prop_level_id_desc, null);
 	}
 	
-	public static final ArrayList<KObject> search(int page,int pageSize,HashMap<String,Object> search){
+	public static final ArrayList<KObject> searchNewsByName(int page,int pageSize,String key){
+		Pattern p = Pattern.compile(key);  
+		HashMap<String,Object> search = new HashMap<String, Object>(2);
+		search.put("name", p);
 		return tcNewsDao.queryByPage(page,pageSize,search, null, prop_level_id_desc, null);
 	}
 	

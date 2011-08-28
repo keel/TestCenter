@@ -58,18 +58,27 @@ function search(){
 	var k = $("#search_key").val();
 	if(k!=null && $.trim(k).length>1){
 	window.location="<%=prefix %>/news/search?k="+k;
-	}
+	}else{window.location="<%=prefix %>/news";}
 }
 $(function(){
-var side = $("#side_gg"),sidea = $("#side_gg a");side.addClass("sideON").append(sidea.html());sidea.remove();
-pageNav.fn = function(p,pn){
-    //$("#test").text("Page:"+p+" of "+pn + " pages.");载入表格数据
-    //alert("p:"+QueryString("p") + " p:"+p+" " + (QueryString("p") == p));
-    if(QueryString("p")!=null && QueryString("p") != p){
-    	window.location = "<%=prefix%>/news?p="+p+"&pz="+pn;
-    }
-};
-pageNav.go(<%=p%>,<%=pn%>);
+	$("#side_gg a").addClass("sideON");
+	$("#search_key").keypress(function(event) {
+		if ( event.which == 13 ) {
+			search();
+		}
+	});
+	pageNav.fn = function(p,pn){
+	    if(p != <%=p%>){
+	    	window.location = "<%=prefix%>/news?p="+p+"&pz="+<%=pz%>;
+	    }
+	};
+	pageNav.go(<%=p%>,<%=pn%>);
+	var unread = <%=user.getProp("unReadNews")%>;
+	if(unread && unread.length>0){
+		for(var i=0,j=unread.length;i<j;i++){
+			$("#news_"+unread[i]+" a").append(" (未读)").addClass("red");
+		}
+	}
 });
 
 </script>
@@ -85,27 +94,30 @@ pageNav.go(<%=p%>,<%=pn%>);
 <div class="search">
 查询:<select><option value="title">标题</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
 <%
-int type = Integer.parseInt(user.getProp("type").toString());
-if(type>=4){%><div style="float:right;padding:2px 0 0 0;"><a href="<%=prefix%>/news/new" class="aButton">新建公告</a></div><%} %>
+int usertype = Integer.parseInt(user.getType());
+if(usertype>=4){%><div style="float:right;padding:2px 0 0 0;"><a href="<%=prefix%>/news/new" class="aButton">新建公告</a></div><%} %>
 </div>
 
 <div>
-<table width="100%">
+<table width="100%" class="table_list">
 <tr>
-<th style="width:50px;">ID</th><th>标题</th><th style="width:140px;">时间</th><th style="width:60px;">发布人</th><%if(type>=4){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>标题</th><th style="width:140px;">时间</th><th style="width:60px;">发布人</th><%if(usertype>=4){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
-if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(type>=4){out.print("<td></td>");}}
+if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(usertype>=4){out.print("<td></td>");}}
 else{
 	StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
-		sb.append("<tr><td>").append(gg.getId()).append("<td><a href='");
+		if(usertype<Integer.parseInt(gg.getType())){
+			continue;
+		}
+		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='news_").append(gg.getId()).append("'><a href='");
 		sb.append(prefix).append("/news/").append(gg.getId()).append("' class='fullA'>");
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
-		if(type>=4){
+		if(usertype>=4){
 			sb.append("<td><a href='").append(prefix).append("/news/").append(gg.getId());
 			sb.append("?edit=true' class='aButton'>编辑</a><a href='javascript:delNews(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
 		}

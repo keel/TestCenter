@@ -3,9 +3,8 @@
  */
 package com.k99k.testcenter;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.k99k.khunter.Action;
@@ -54,12 +53,12 @@ public class News extends Action {
 		}
 		//子动作
 		if(subact.equals("")){
-			msg.addData("u", u);
 			String p_str = req.getParameter("p");
 			String pz_str = req.getParameter("pz");
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
 			ArrayList<KObject> list = StaticDao.loadNews(page, pz);
+			msg.addData("u", u);
 			msg.addData("list", list);
 			msg.addData("pz", pz);
 			msg.addData("p", page);
@@ -93,6 +92,7 @@ public class News extends Action {
 			if (req.getParameter("edit")!=null && u.getLevel()>=1) {
 				msg.addData("[jsp]", "/WEB-INF/tc/news_edit.jsp");
 			}else{
+				StaticDao.readOneNews(u.getId(), id);
 				msg.addData("[jsp]", "/WEB-INF/tc/news_one.jsp");
 			}
 			return super.act(msg);
@@ -108,17 +108,17 @@ public class News extends Action {
 			String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
 			if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
 				KObject kobj = KObjManager.findSchema("TCNews").createEmptyKObj();
-				kobj.setName(name.trim());
-				kobj.setProp("text", text.trim());
+				kobj.setName(StringUtil.repstr1(name.trim()));
+				kobj.setProp("text", StringUtil.repstr1(text.trim()));
 				kobj.setLevel(level);
 				kobj.setType(type);
 				kobj.setCreatorName(u.getName());
 				if (DaoManager.findDao("TCNewsDao").save(kobj)) {
-					re = "ok";
+					re = String.valueOf(kobj.getId());
 					msg.addData("[print]", re);
 					ActionMsg task = new ActionMsg("newsTask");
 					task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
-					task.addData("ggId", kobj.getId());
+					task.addData("newsId", kobj.getId());
 					TaskManager.makeNewTask("TCNewsTask:"+kobj.getId(), task);
 					return super.act(msg);
 				}
@@ -140,8 +140,8 @@ public class News extends Action {
 				if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
 					DaoInterface dao = DaoManager.findDao("TCNewsDao");
 					KObject kobj = dao.findOne(id);
-					kobj.setName(name.trim());
-					kobj.setProp("text", text.trim());
+					kobj.setName(StringUtil.repstr1(name.trim()));
+					kobj.setProp("text", StringUtil.repstr1(text.trim()));
 					kobj.setLevel(level);
 					kobj.setType(type);
 					if (dao.save(kobj)) {
@@ -171,17 +171,20 @@ public class News extends Action {
 			return super.act(msg);
 		}else if(subact.equals("search")){
 			if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
+				String key = null;
+				try {
+					//TODO 针对tomcatURL编码转换
+					key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
+				} catch (UnsupportedEncodingException e) {
+				}
 				String p_str = req.getParameter("p");
 				String pz_str = req.getParameter("pz");
 				int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 				int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-				String by = "name";//(StringUtil.isStringWithLen(req.getParameter("by"), 1))?req.getParameter("by").trim():"name";
-				String key = req.getParameter("k").trim();
-				HashMap<String,Object> search = new HashMap<String, Object>();
-				search.put(by, key);
+				//(StringUtil.isStringWithLen(req.getParameter("by"), 1))?req.getParameter("by").trim():"name";
 //				re = MongoDao.writeKObjList(StaticDao.search(page, pz,search));
 //				msg.addData("[print]", re);
-				ArrayList<KObject> list = StaticDao.loadNews(page, pz);
+				ArrayList<KObject> list = StaticDao.searchNewsByName(page, pz,key);
 				msg.addData("u", u);
 				msg.addData("list", list);
 				msg.addData("pz", pz);

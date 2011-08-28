@@ -92,6 +92,16 @@ var eParas1 = {
 	var v = "[}]";
 	//var t = (/(^\[[^\]]*\]$)|(^\{[^\}]*\}$)/.test(v.toString()));
 	//alert(t);
+	
+		
+	function showHtml(s,target) {
+	s=s.replace(/[\x20]/g,"&nbsp;");
+	s=s.replace(/\n/g,"<br />") ;
+	s=s.replace( /(http[s]?:\/\/[\w-]*(\.[\w-]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
+	$(target).html(s);
+	}
+	var s_test = "asdf sAdf  sfdfsfd   s.\n 可能 http://www.163.com, sdf";
+	showHtml(s_test,"#newValue");
 });
 
 </script>
