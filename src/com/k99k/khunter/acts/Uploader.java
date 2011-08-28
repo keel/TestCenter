@@ -65,6 +65,12 @@ public class Uploader extends Action {
 	}
 	
 	
+	/**
+	 * 在文件路径中增加后缀,如aaa.txt增加为aaa_1.txt,其中_1为tail
+	 * @param tail
+	 * @param filePath
+	 * @return
+	 */
 	public static final String addFileTail(String tail,String filePath){
 		int po = filePath.lastIndexOf(".");
 		po = (po<0)?0:po;

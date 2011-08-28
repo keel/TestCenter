@@ -198,101 +198,6 @@
 			],
 			"intro":"游戏实体包"
 		},
-		"TCTask":{
-			"dao":{
-				"tableName":"TCTask",
-				"newDaoName":"TCTaskDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":105,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"name",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"product name"
-				}
-			],
-			"columns":[
-				{
-					"col":"name",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"产品名称"
-				},
-				{
-					"col":"type",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"0新产品,1:新机型适配,2:demo,3:复测,4拨测,5其他"
-				},
-				{
-					"col":"gFile",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"实体包name"
-				},
-				{
-					"col":"url",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"wap的url"
-				},
-				{
-					"col":"creatorName",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"创建者name"
-				},
-				{
-					"col":"info",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"说明"
-				},
-				{
-					"col":"priority",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"优先级"
-				},
-				{
-					"col":"state",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"0已创建,11待确认,12待分配,1测试中,2通过,4部分通过,3待反馈,5已放弃,-1删除;8暂停"
-				},
-				{
-					"col":"operator",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"处理人name"
-				}
-			],
-			"intro":"测试任务"
-		},
 		"TCUser":{
 			"dao":{
 				"tableName":"TCUser",
@@ -305,18 +210,18 @@
 			},
 			"indexes":[
 				{
-					"col":"name",
-					"unique":true,
-					"asc":false,
-					"type":"type",
-					"intro":"用户名索引"
-				},
-				{
 					"col":"company",
 					"unique":false,
 					"asc":false,
 					"type":"type",
 					"intro":"公司名索引"
+				},
+				{
+					"col":"name",
+					"unique":true,
+					"asc":false,
+					"type":"type",
+					"intro":"用户名索引"
 				}
 			],
 			"columns":[
@@ -431,9 +336,140 @@
 					"required":false,
 					"type":1,
 					"intro":"测试人员分组中是否组长,0为否,1为是"
+				},
+				{
+					"col":"unReadNews",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"未读公告的ID集"
+				},
+				{
+					"col":"unReadNews.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"未读公告的ID"
+				},
+				{
+					"col":"unReadTasks",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"未读任务的ID集"
+				},
+				{
+					"col":"unReadTasks.*",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"未读任务的ID"
 				}
 			],
 			"intro":"登录平台的帐号"
+		},
+		"TCTask":{
+			"dao":{
+				"tableName":"TCTask",
+				"newDaoName":"TCTaskDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":105,
+					"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"name",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"product name"
+				}
+			],
+			"columns":[
+				{
+					"col":"name",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"产品名称"
+				},
+				{
+					"col":"type",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"0新产品,1:新机型适配,2:demo,3:复测,4拨测,5其他"
+				},
+				{
+					"col":"gFile",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"实体包name"
+				},
+				{
+					"col":"url",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"wap的url"
+				},
+				{
+					"col":"creatorName",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"创建者name"
+				},
+				{
+					"col":"info",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"说明"
+				},
+				{
+					"col":"priority",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"优先级"
+				},
+				{
+					"col":"state",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"0已创建,11待确认,12待分配,1测试中,2通过,4部分通过,3待反馈,5已放弃,-1删除;8暂停"
+				},
+				{
+					"col":"operator",
+					"def":"",
+					"len":0,
+					"required":true,
+					"type":0,
+					"intro":"处理人name"
+				}
+			],
+			"intro":"测试任务"
 		},
 		"TCProduct":{
 			"dao":{
@@ -447,13 +483,6 @@
 			},
 			"indexes":[
 				{
-					"col":"name",
-					"unique":true,
-					"asc":false,
-					"type":"type",
-					"intro":"产品名称"
-				},
-				{
 					"col":"company",
 					"unique":false,
 					"asc":false,
@@ -461,11 +490,11 @@
 					"intro":"company"
 				},
 				{
-					"col":"state",
-					"unique":false,
+					"col":"name",
+					"unique":true,
 					"asc":false,
 					"type":"type",
-					"intro":"state"
+					"intro":"产品名称"
 				},
 				{
 					"col":"testTimes",
@@ -473,6 +502,13 @@
 					"asc":false,
 					"type":"type",
 					"intro":"testTimes"
+				},
+				{
+					"col":"state",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"state"
 				}
 			],
 			"columns":[
@@ -926,18 +962,18 @@
 					"intro":"createTime"
 				},
 				{
-					"col":"level",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"置顶级别"
-				},
-				{
 					"col":"creatorName",
 					"unique":false,
 					"asc":false,
 					"type":"type",
 					"intro":"creatorName"
+				},
+				{
+					"col":"level",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"置顶级别"
 				},
 				{
 					"col":"name",

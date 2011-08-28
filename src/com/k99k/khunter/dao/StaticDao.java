@@ -7,6 +7,7 @@ package com.k99k.khunter.dao;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -59,18 +60,33 @@ public class StaticDao extends MongoDao {
 	 * 处理阅读后未读公告的-1
 	 * @param userId
 	 * @param newsId
+	 * @param unreadIds ArrayList<Long>
 	 */
-	public static final void readOneNews(long userId,long newsId){
-		HashMap<String,Object> set = new HashMap<String, Object>(4);
-		HashMap<String,Object> pull = new HashMap<String, Object>(2);
-		pull.put("unReadNews", newsId);
-		set.put("$pull", pull);
-		HashMap<String,Object> inc = new HashMap<String, Object>(2);
-		inc.put("newNews", -1);
-		set.put("$inc", inc);
-		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("_id", userId);
-		tcUserDao.update(query, set, false, false);
+	public static final void readOneNews(long userId,long newsId,ArrayList<Long> unreadIds){
+		boolean unread = false;
+		if (unreadIds == null || unreadIds.isEmpty()) {
+			return;
+		}
+		Iterator<Long> it = unreadIds.iterator();
+		while (it.hasNext()) {
+			long id = it.next();
+			if (newsId == id) {
+				unread = true;
+				break;
+			}
+		}
+		if (unread) {
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> pull = new HashMap<String, Object>(2);
+			pull.put("unReadNews", newsId);
+			set.put("$pull", pull);
+			HashMap<String,Object> inc = new HashMap<String, Object>(2);
+			inc.put("newNews", -1);
+			set.put("$inc", inc);
+			HashMap<String,Object> query = new HashMap<String, Object>(4);
+			query.put("_id", userId);
+			tcUserDao.update(query, set, false, false);
+		}
 	}
 	
 	public static final ArrayList<KObject> loadNews(int page,int pageSize){

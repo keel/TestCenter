@@ -64,11 +64,12 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .txtLeft{text-align: left;}
 .weight{font-weight: bold;}
 .orangeBold{color:#ff8040;font-weight: bold;}
+.blueBold{color:#8080ff;font-weight: bold;}
 .re{background-color: #fbf9ea;border: 1px solid red;padding:20px;}
 .hotEditTA{height:100px;}
 .fullA{display:block;width:100%;}
 
-.sideON{color:#000;font-weight: bold;}
+.sideON{color:#8080ff;font-weight: bold;}
 .search{padding:10px 5px;}
 .table_list td{text-align: center;}
 

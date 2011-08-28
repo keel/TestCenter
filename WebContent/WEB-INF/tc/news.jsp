@@ -25,26 +25,7 @@ out.print(JSPOut.out("head0","0","公告"));
 %>
 <script src="<%=sPrefix%>/js/pagenav.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-function QueryString(fieldName){ 
-var urlString = document.location.search;
-if(urlString != null){
-	var typeQu = fieldName+"=";
-	var urlEnd = urlString.indexOf(typeQu);
-	if(urlEnd != -1){
-		var paramsUrl = urlString.substring(urlEnd+typeQu.length);
-		var isEnd = paramsUrl.indexOf('&');
-		if(isEnd != -1){
-			return paramsUrl.substring(0, isEnd);
-		}else{
-			return paramsUrl;
-		}
-	}else{
-		return null;
-	}
-}else{
-	return null;
-}
-}
+
 function delNews(id){
 	var r=confirm("确认删除此条公告吗？");
 	if (r==true){
@@ -76,7 +57,7 @@ $(function(){
 	var unread = <%=user.getProp("unReadNews")%>;
 	if(unread && unread.length>0){
 		for(var i=0,j=unread.length;i<j;i++){
-			$("#news_"+unread[i]+" a").append(" (未读)").addClass("red");
+			$("#news_"+unread[i]+" a").prepend("(未读) ").addClass("red");
 		}
 	}
 });
@@ -114,7 +95,10 @@ else{
 			continue;
 		}
 		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='news_").append(gg.getId()).append("'><a href='");
-		sb.append(prefix).append("/news/").append(gg.getId()).append("' class='fullA'>");
+		sb.append(prefix).append("/news/").append(gg.getId()).append("' class='fullA");
+		if(gg.getLevel()>0){
+			sb.append(" blueBold'>(置顶) ");
+		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
 		if(usertype>=4){

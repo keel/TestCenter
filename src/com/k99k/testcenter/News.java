@@ -40,6 +40,7 @@ public class News extends Action {
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
@@ -92,7 +93,9 @@ public class News extends Action {
 			if (req.getParameter("edit")!=null && u.getLevel()>=1) {
 				msg.addData("[jsp]", "/WEB-INF/tc/news_edit.jsp");
 			}else{
-				StaticDao.readOneNews(u.getId(), id);
+				Object unReads = u.getProp("unReadNews");
+				ArrayList<Long> unreadIds = (unReads==null)?null:(ArrayList<Long>)unReads;
+				StaticDao.readOneNews(u.getId(), id,unreadIds);
 				msg.addData("[jsp]", "/WEB-INF/tc/news_one.jsp");
 			}
 			return super.act(msg);
