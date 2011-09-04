@@ -163,10 +163,18 @@ function uploadSuccess(file, serverData) {
 		var re = serverData;
 		swfu.startProg = false;
 		//console.log(re);
+		console.log(file);
 		if(re.length>=file.name.length){
-		swfok("<div class='file_upload'>"+file.name+" 上传成功!</div>");
-		}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
+		swfok("<div class='file_upload' id='fu_"+file.index+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+file.index+","+file.name+"\");'>删除 </a> ]</div>");
+		}else{swfok("<div class='file_upload file_upload_ERR'>"+f_enc+" 上传失败!</div>");}
 	} catch (ex) {}
+}
+function delFile(fid,fname){
+	console.log(fid);
+	$("#fu_"+fid).hide();
+	var ff = $("#news_files").val().split(",");
+	ff.splice(fid,1);
+	$("#news_files").val(ff.join(","));
 }
 function uploadError(file, errorCode, message) {
 	try {
