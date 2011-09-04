@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*,com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
@@ -38,7 +38,24 @@ $(function(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle"><div style="float:left;"><%=news_one.getName() %></div> <div style="font-size:12px;color:#ccc;float:right;padding-top:3px;"> <%=news_one.getCreatorName() %> &nbsp;&nbsp; ( <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %> ) </div></div>
-<div class="aboxContent" style="padding:20px;"><pre id="news_text"><%=news_one.getProp("text") %></pre></div>
+<div class="aboxContent" style="padding:20px;"><div><pre id="news_text"><%=news_one.getProp("text") %></pre></div>
+<%
+StringBuilder sb = new StringBuilder();
+Object o_f = news_one.getProp("files");
+if(o_f !=null){
+	ArrayList<String> fileList = (ArrayList<String>)o_f;
+	if(fileList != null && !fileList.isEmpty()){
+		sb.append("<div class='bold' style='padding-top:10px;'>文件列表</div>");
+		Iterator<String> it = fileList.iterator();
+		while(it.hasNext()){
+			String f=it.next();
+			sb.append("<div class='file_upload'><a href='").append(prefix).append("/file/").append(f).append("'>").append(f).append("</a></div>");
+		}
+		out.print(sb);
+	}
+}
+%>
+</div>
 <div style="padding:20px;"><a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
 </div>
 		<div class="clear"></div>

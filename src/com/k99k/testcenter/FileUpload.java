@@ -3,7 +3,12 @@
  */
 package com.k99k.testcenter;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
@@ -25,6 +30,7 @@ public class FileUpload extends Action {
 	public FileUpload(String name) {
 		super(name);
 	}
+	static final Logger log = Logger.getLogger(FileUpload.class);
 	
 	/**
 	 * 保存文件的路径
@@ -39,12 +45,19 @@ public class FileUpload extends Action {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		HttpServletRequest req = httpmsg.getHttpReq();
 		String file = req.getParameter("f");
+		try {
+			file = URLDecoder.decode(file, "utf-8");
+		} catch (UnsupportedEncodingException e) {
+			JOut.err(400, httpmsg);
+			return super.act(msg);
+		}
+		//log.info("f:"+file);
 		if (!StringUtil.isStringWithLen(file, 1)) {
 			JOut.err(400, httpmsg);
 			return super.act(msg);
 		}
-		String re = Uploader.upload(req,this.savePath,file,true);
-		
+		String re = Uploader.upload(req,this.savePath,file,false);
+		//log.info("upload ok :"+re);
 		msg.addData("[print]", re);
 		return super.act(msg);
 	}

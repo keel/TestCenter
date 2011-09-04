@@ -27,7 +27,7 @@ out.print(JSPOut.out("head0","0","公告"));
 <script type="text/javascript">
 
 function delNews(id){
-	var r=confirm("确认删除此条公告吗？");
+	var r=confirm("确认删除此条公告吗？\r\n\r\n"+$("#news_"+id+" a").text());
 	if (r==true){
 		$.post("<%=prefix %>/news/del", "id="+id ,function(data) {
 			if(data=="ok"){alert("删除成功");window.location = window.location;};

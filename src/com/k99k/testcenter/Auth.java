@@ -31,6 +31,10 @@ public class Auth extends Action {
 	
 	private static final HashMap<String,Permission> perMap = new HashMap<String, Permission>();
 	
+	private static final int cookieTime = 1200;
+	
+	private static final int cookieTimeHalfMi = 1200/2*1000;
+	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
@@ -49,9 +53,10 @@ public class Auth extends Action {
 				String cookie = httpmsg.getHttpReq().getParameter("saveLogin");
 				if (cookie != null && cookie.equals("true")) {
 					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()), httpmsg.getHttpResp());
+					WebTool.setCookie("co", "true", httpmsg.getHttpResp());
 				}else{
 					//默认20分钟
-					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),60*20, httpmsg.getHttpResp());
+					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),cookieTime, httpmsg.getHttpResp());
 				}
 				//返回ok
 				JOut.txtOut("ok", httpmsg);
@@ -86,10 +91,19 @@ public class Auth extends Action {
 	 */
 	public static final KObject checkCookieLogin(HttpActionMsg httpmsg){
 		String coStr = WebTool.getCookieValue(httpmsg.getHttpReq().getCookies(),"tcu","");
+		String co = WebTool.getCookieValue(httpmsg.getHttpReq().getCookies(), "co", "");
 		if (!coStr.equals("")) {
 			String[] u_p = Base64Coder.decodeString(coStr).split(":");
-			if (u_p.length >= 2) {
-				return StaticDao.checkUser(u_p[0], u_p[1]);
+			if (u_p.length == 3) {
+				KObject u = StaticDao.checkUser(u_p[0], u_p[1]);
+				if (u != null && (!co.equals("true"))) {
+					long now = System.currentTimeMillis();
+					//时间间隔大于cookie时间的一半时，重新设置
+					if ((now - Long.parseLong(u_p[2])) >= cookieTimeHalfMi) {
+						WebTool.setCookie("tcu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+now),cookieTime, httpmsg.getHttpResp());
+					}
+				}
+				return u;
 			}
 		}
 		return null;

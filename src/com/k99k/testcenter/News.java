@@ -4,6 +4,7 @@
 package com.k99k.testcenter;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import javax.servlet.http.HttpServletRequest;
 
@@ -107,6 +108,7 @@ public class News extends Action {
 			}
 			String name = req.getParameter("news_name");
 			String text = req.getParameter("news_text");
+			String files = req.getParameter("news_files");
 			int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
 			String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
 			if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
@@ -116,6 +118,18 @@ public class News extends Action {
 				kobj.setLevel(level);
 				kobj.setType(type);
 				kobj.setCreatorName(u.getName());
+				if (StringUtil.isStringWithLen(files, 1)) {
+					boolean enc = true;
+					try {
+						files = URLDecoder.decode(files, "utf-8");
+					} catch (UnsupportedEncodingException e) {
+						enc = false;
+					}
+					if (enc) {
+						String[] fs = files.split(",");
+						kobj.setProp("files", fs);
+					}
+				}
 				if (DaoManager.findDao("TCNewsDao").save(kobj)) {
 					re = String.valueOf(kobj.getId());
 					msg.addData("[print]", re);

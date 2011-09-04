@@ -73,13 +73,15 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .search{padding:10px 5px;}
 .table_list td{text-align: center;}
 
+.file_upload{border-top: 1px solid #ccc;background-color:#f7f7f7;padding:10px;width:90%;}
+.file_upload_ERR{color:red;}
+
 /* pageNav */
  .pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
  .cPageNum{font-weight: bold;padding:2px 5px;}
  #pageNav a:hover{text-decoration:none;background: #fff4d8; }
  /* abox */
 .abox{border: 1px solid #aaa;background: #FFF;}
-.swfupload{ border: 1px solid #C8DDE9;}
 .aboxTitle{height:23px;background: url('../images/bk_dark_line.png') repeat-x;color:#FFF;padding:6px 10px;font-weight: bold;}
 .aboxContent{padding:26px;}
 .aboxContent p{padding:5px 0;}
@@ -88,7 +90,8 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .reWarn{background: url(../images/msg_yellow.png)  no-repeat;background-position: center left;padding-left:20px;}
 .reInfo{background: url(../images/msg_blue.png)  no-repeat;background-position: center left;padding-left:20px;}
 .aboxBT{display: inline-block;zoom: 1; display: inline; padding:4px 15px; border: 1px solid #2B4A78;text-align: center;background-color: #EEE;}
-#swfBT{float:left;}
+#swfBT{padding:10px 10px 10px 0;font-size:12px;}
+.swfupload{border: 1px solid #000;color:#fff;}
 
 /*other*/
 #paraName,#paraValue{width:100px;}

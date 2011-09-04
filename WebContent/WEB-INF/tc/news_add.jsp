@@ -14,6 +14,7 @@ KObject user = (KObject)data.getData("u");
 out.print(JSPOut.out("head0","0","公告"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(function(){
@@ -45,9 +46,145 @@ $('#news_form').validate({
         }
     }
 });
+initUpload("<%=user.getName() %>");
 });
 function aSubmit(){
 	$("#news_form").submit();
+};
+$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
+//fileupload
+var swfu;
+function initUpload(uName){
+ swfu= new SWFUpload({
+	upload_url : $.prefix+"/upload",
+	flash_url : $.sPrefix+"/js/swfupload.swf",
+	post_params: {"uName":uName},
+	use_query_string:true, 
+	button_placeholder_id : "spanSWFUploadButton",
+	button_width: 100,
+	button_height: 29,
+	button_text: "<span class='swfTxt1'>选择上传文件</span>",
+	button_text_style: ".swfTxt1 {color:#ffffff;}",
+	button_text_left_padding: 12,
+	button_text_top_padding: 6,
+	button_image_url : $.sPrefix+"/images/swfBT_100x29.png",
+	
+	prevent_swf_caching:false,
+	upload_start_handler : fileQueue,
+	file_queue_error_handler : fileQueueError,
+	file_dialog_complete_handler : fileDialogComplete,
+	upload_progress_handler : uploadProgress,
+	upload_error_handler : uploadError,
+	upload_success_handler : uploadSuccess,
+	upload_complete_handler:uploadComplete,
+
+	file_types : "*.rar;*.zip;*.png;*.gif",  
+    file_types_description : "图片文件", 
+	file_size_limit : "123000"
+	//,debug:true
+	
+	});
+}
+function swferr(info){
+	$("#uploadInfo").html(info).css("color","red");
+}
+function swfinfo(info){
+	$("#uploadInfo").html(info).css("color","black");
+}
+function swfok(info){
+	$("#upFiles").append(info);
+	$("#uploadInfo").html("");
+}
+function swfreset(){
+	swfinfo("图片最大不超过3M,图片格式为jpg,png,gif");
+}
+function fileQueue(file){
+	var f_enc = encodeURIComponent(file.name);
+	swfu.addPostParam("f",f_enc);
+	//console.log("f_enc:"+f_enc);
+	if($("#news_files").val() == ""){
+		$("#news_files").val(f_enc);
+	}else{
+		$("#news_files").val($("#news_files").val()+","+f_enc);
+	}
+}
+
+function fileQueueError(file, errorCode, message) {
+	try {
+		switch (errorCode) {
+		case SWFUpload.QUEUE_ERROR.ZERO_BYTE_FILE:
+			swferr("文件大小为空.");
+			break;
+		case SWFUpload.QUEUE_ERROR.FILE_EXCEEDS_SIZE_LIMIT:
+			swferr("文件超过大小限制.");
+			break;
+		case SWFUpload.QUEUE_ERROR.INVALID_FILETYPE:
+			swferr("无效的文件类型.");
+			break;
+		default:
+			swferr("选择文件错误.");
+			break;
+		}
+	} catch (ex) {
+		swferr("选择文件错误.");
+	}
+}
+function uploadComplete(file) {
+	try {
+		if (this.getStats().files_queued === 0) {
+			//document.getElementById(this.customSettings.cancelButtonId).disabled = true;
+		} else {	
+			this.startUpload();
+		}
+	} catch (ex) {
+		this.debug(ex);
+	}
+}
+function fileDialogComplete(numFilesSelected, numFilesQueued) {
+	try {
+		if (numFilesQueued > 0) {
+			this.startUpload();return;
+		}
+	} catch (ex) {}
+}
+function uploadProgress(file, bytesLoaded) {
+	try {
+		if(swfu.startProg){
+			var percent = Math.ceil((bytesLoaded / file.size) * 100);
+			$("#swfuploadProgress").text(percent);			
+		}else{
+			swfu.startProg = true;	
+			swfinfo("文件上传中......已上传 [<span id='swfuploadProgress'>0</span> ] % , <a href='javascript:swfu.cancelUpload(\""+file.id+"\");'>取消</a>");
+		}
+	} catch (ex) {}
+}
+function uploadSuccess(file, serverData) {
+	try {
+		var re = serverData;
+		swfu.startProg = false;
+		//console.log(re);
+		if(re.length>=file.name.length){
+		swfok("<div class='file_upload'>"+file.name+" 上传成功!</div>");
+		}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
+	} catch (ex) {}
+}
+function uploadError(file, errorCode, message) {
+	try {
+		switch (errorCode) {
+		case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+			swfinfo("上传已取消.");
+			break;
+		case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+			swfinfo("上传已停止.");
+		case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+			swferr("上传文件超过服务器限制.");
+			break;
+		default:
+			swferr("上传失败:"+message);
+			break;
+		}
+	} catch (ex3) {
+	}
 };
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
@@ -73,9 +210,18 @@ function aSubmit(){
 置顶级别(数字最大的在顶部)：
 <select name="news_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
 </p>
-
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">保存</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
+<input type="hidden" id="news_files" name="news_files" value="" />
 </form>
+
+<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
+	<div id="swfBT">
+		<div id="spanSWFUploadButton">载入中...</div> 
+		<span id="uploadInfo">图片最大不超过3M,图片格式为jpg,png,gif</span>
+	</div>
+	<div id="upFiles"></div>
+</form>
+<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">保存</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
+
 </div>
 </div>
 		<div class="clear"></div>
