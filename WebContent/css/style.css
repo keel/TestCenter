@@ -76,7 +76,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 
 .file_upload{border-top: 1px solid #ccc;background-color:#f7f7f7;padding:10px;width:90%;}
 .file_upload_ERR{color:red;}
-
+.files_name{display:none;}
 /* pageNav */
  .pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
  .cPageNum{font-weight: bold;padding:2px 5px;}
