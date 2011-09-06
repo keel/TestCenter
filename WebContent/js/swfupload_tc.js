@@ -69,63 +69,50 @@ function fileQueueError(file, errorCode, message) {
 	}
 }
 function uploadComplete(file) {
-	try {
-		if (this.getStats().files_queued === 0) {
-			//document.getElementById(this.customSettings.cancelButtonId).disabled = true;
-		} else {	
-			this.startUpload();
-		}
-	} catch (ex) {
-		this.debug(ex);
+	if (this.getStats().files_queued === 0) {
+		//document.getElementById(this.customSettings.cancelButtonId).disabled = true;
+	} else {	
+		this.startUpload();
 	}
 }
 function fileDialogComplete(numFilesSelected, numFilesQueued) {
-	try {
-		if (numFilesQueued > 0) {
-			this.startUpload();return;
-		}
-	} catch (ex) {}
+	if (numFilesQueued > 0) {
+		this.startUpload();return;
+	}
 }
 function uploadProgress(file, bytesLoaded) {
-	try {
-		if(swfu.startProg){
-			var percent = Math.ceil((bytesLoaded / file.size) * 100);
-			$("#swfuploadProgress").text(percent);			
-		}else{
-			swfu.startProg = true;	
-			swfinfo("文件上传中......已上传 [<span id='swfuploadProgress'>0</span> ] % , <a href='javascript:swfu.cancelUpload(\""+file.id+"\");'>取消</a>");
-		}
-	} catch (ex) {}
+	if(swfu.startProg){
+		var percent = Math.ceil((bytesLoaded / file.size) * 100);
+		$("#swfuploadProgress").text(percent);			
+	}else{
+		swfu.startProg = true;	
+		swfinfo("文件上传中......已上传 [<span id='swfuploadProgress'>0</span> ] % , <a href='javascript:swfu.cancelUpload(\""+file.id+"\");'>取消</a>");
+	}
 }
 function uploadSuccess(file, serverData) {
-	try {
-		var re = serverData;
-		swfu.startProg = false;
-		//console.log(re);
-		//console.log(file);
-		if(re.length>=file.name.length){
-		swfok("<div class='file_upload' id='fu_"+file.index+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+file.index+"\");'>删除 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
-		}else{swfok("<div class='file_upload file_upload_ERR'>"+f_enc+" 上传失败!</div>");}
-	} catch (ex) {}
+	var re = serverData;
+	swfu.startProg = false;
+	//console.log(re);
+	//console.log(file);
+	if(re.length>=file.name.length){
+	swfok("<div class='file_upload' id='fu_"+file.index+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+file.index+"\");'>删除 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
+	}else{swfok("<div class='file_upload file_upload_ERR'>"+f_enc+" 上传失败!</div>");}
 }
 function delFile(fid){
 	$("#fu_"+fid).remove();
 }
 function uploadError(file, errorCode, message) {
-	try {
-		switch (errorCode) {
-		case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
-			swfinfo("上传已取消.");
-			break;
-		case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
-			swfinfo("上传已停止.");
-		case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
-			swferr("上传文件超过服务器限制.");
-			break;
-		default:
-			swferr("上传失败:"+message);
-			break;
-		}
-	} catch (ex3) {
+	switch (errorCode) {
+	case SWFUpload.UPLOAD_ERROR.FILE_CANCELLED:
+		swfinfo("上传已取消.");
+		break;
+	case SWFUpload.UPLOAD_ERROR.UPLOAD_STOPPED:
+		swfinfo("上传已停止.");
+	case SWFUpload.UPLOAD_ERROR.UPLOAD_LIMIT_EXCEEDED:
+		swferr("上传文件超过服务器限制.");
+		break;
+	default:
+		swferr("上传失败:"+message);
+		break;
 	}
 };

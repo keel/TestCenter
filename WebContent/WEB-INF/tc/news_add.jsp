@@ -24,6 +24,7 @@ $(function(){
 //处理请求
 $.validator.dealAjax = {
 	bt:$("#submitBT"),
+	loading:function(){abox("公告发表","<div style='width:200px;'>载入中...</div>");},
 	ok:function(data){
 		if(!isNaN(data)){
 			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/news/"+data+"';\" class=\"aButton\">查看公告</a>";
@@ -55,7 +56,7 @@ function aSubmit(){
 	$(".files_name").each(function(){
 		ff.push(encodeURIComponent($(this).text()));
 	});
-	console.log(ff);
+	//console.log(ff);
 	$("#news_files").val(ff.join(","));
 	$("#news_form").submit();
 };

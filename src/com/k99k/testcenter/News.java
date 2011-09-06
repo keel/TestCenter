@@ -16,6 +16,7 @@ import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObjManager;
+import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
 import com.k99k.khunter.TaskManager;
@@ -128,6 +129,20 @@ public class News extends Action {
 					if (enc) {
 						String[] fs = files.split(",");
 						kobj.setProp("files", fs);
+						//生成下载文件
+						DaoInterface fileDao = DaoManager.findDao("TCFileDao");
+						KObjSchema sc = KObjManager.findSchema("TCFile");
+						for (int i = 0; i < fs.length; i++) {
+							KObject newf = sc.createEmptyKObj(fileDao);
+							String f = fs[i];
+							int po = f.lastIndexOf(".");
+							newf.setName(f.substring(0,po));
+							newf.setProp("fileName", f);
+							newf.setProp("type", f.substring(po+1));
+							newf.setProp("creatorName", u.getName());
+							fileDao.save(newf);
+						}
+						
 					}
 				}
 				if (DaoManager.findDao("TCNewsDao").save(kobj)) {

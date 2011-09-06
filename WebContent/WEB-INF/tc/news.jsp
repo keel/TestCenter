@@ -97,7 +97,7 @@ else{
 		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='news_").append(gg.getId()).append("'><a href='");
 		sb.append(prefix).append("/news/").append(gg.getId()).append("' class='fullA");
 		if(gg.getLevel()>0){
-			sb.append(" blueBold'>(置顶) ");
+			sb.append(" purpleBold'>(置顶) ");
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
