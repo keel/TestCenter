@@ -2,7 +2,7 @@
 <div class="clear"></div>
 	<div id="footer">
 		<div id="copyright">
-			Copyright:&copy;2010-2012 KEEL.SIKE All rights reserved. 
+			Copyright:&copy;2010-2012 中国电信游戏运营中心 . 管理员: 15301588025@189.cn 
 		</div>
 	</div> -->
 </div>

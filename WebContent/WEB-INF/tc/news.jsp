@@ -73,16 +73,18 @@ $(function(){
 
 		<div id="mainContent">
 <div class="search">
+<div style="float:left;padding-bottom:5px;">
 查询:<select><option value="title">标题</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
+</div>
 <%
 int usertype = Integer.parseInt(user.getType());
-if(usertype>=4){%><div style="float:right;padding:2px 0 0 0;"><a href="<%=prefix%>/news/new" class="aButton">新建公告</a></div><%} %>
+if(usertype>=4){%><div style="float:right;padding:2px 0 0 0;text-align:right;"><a href="<%=prefix%>/news/new" class="aButton">新建公告</a></div><%} %>
 </div>
 
 <div>
-<table width="100%" class="table_list">
+<table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>标题</th><th style="width:140px;">时间</th><th style="width:60px;">发布人</th><%if(usertype>=4){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">时间</th><th style="width:80px;">发布人</th><%if(usertype>=4){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
 if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(usertype>=4){out.print("<td></td>");}}

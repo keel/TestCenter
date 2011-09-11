@@ -1,18 +1,18 @@
 ﻿html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, del, em, font, img, ins, q, s, samp, small, strong, sub, sup, tt, var, b, u, i, center,fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0;padding: 0;border: 0 none; outline: 0;font-size: 100%;vertical-align: baseline;}
 body {line-height: 1.5; }
-table {border-collapse: separate;}
+table {border-collapse: separate;border-spacing:1px;}
 blockquote, q {quotes: none; }
 blockquote:before, blockquote:after, q:before, q:after { content: ''; content: none; }
 .clear{clear: both;}
 
 /* default */
-html{font:0.9em Helvetica,Verdana, Arial, sans-serif;}
+html{font:0.9em Verdana,Arial, sans-serif;}
 body{background-color: #e4e4e4;color:#000;}
+div{word-wrap: break-word; word-break: normal;}
 a { color:#6E747B; text-decoration:none; }
 	a:hover { color:#000;text-decoration:underline;}
 	/* a:focus, input:focus {outline-style:none; outline-width:medium; } */
-table {border-spacing:1px;}
-th, td {padding:5px;}
+th, td {padding:7px;}
 th { color:#fff;border-top:1px solid #000; background: url('../images/bk_dark_line.png');background-color:#444; }
 td { background:#fff; text-align:left;}
 ul{padding:0;margin:12px 2px 12px 40px;}
@@ -71,7 +71,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .fullA{display:block;width:100%;}
 
 .sideON{color:#8080ff;font-weight: bold;}
-.search{padding:10px 5px;}
+.search{padding:5px;}
 .table_list td{text-align: center;}
 
 .file_upload{border-top: 1px solid #ccc;background-color:#f7f7f7;padding:10px;width:90%;}
@@ -83,7 +83,9 @@ label.error{color:red;width:300px;text-align:left;display:block;}
  #pageNav a:hover{text-decoration:none;background: #fff4d8; }
  /* abox */
 .abox{border: 1px solid #aaa;background: #FFF;}
-.aboxTitle{height:23px;background: url('../images/bk_dark_line.png') repeat-x;color:#FFF;padding:6px 10px;font-weight: bold;}
+.aboxTitle{background: url('../images/bk_dark_line.png') repeat-x;color:#FFF;padding:6px 10px;font-weight: bold;}
+.aboxSub{padding:8px 20px;text-align:right;border-bottom: 1px dotted #ccc;font-size:12px;}
+.aboxSub2{padding:8px 20px;text-align:right;border-top: 1px dotted #ccc;font-size:12px;}
 .aboxContent{padding:26px;}
 .aboxContent p{padding:5px 0;}
 .reOk{background: url(../images/msg_green.png)  no-repeat;background-position: center left;padding-left:20px;}

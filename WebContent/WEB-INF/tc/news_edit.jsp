@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*,com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
@@ -12,11 +12,14 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("u");
 KObject news_one = (KObject)data.getData("news_one");
-out.print(JSPOut.out("head0","0","公告"));%>
+out.print(JSPOut.out("head0","0","公告-编辑"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script type="text/javascript">
+$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $(function(){
 	$("#side_gg a").addClass("sideON");
 //处理请求
@@ -43,13 +46,20 @@ $('#news_form').validate({
         }
     }
 });
+initUpload("<%=user.getName() %>");
 //初始化select
 var level = <%=news_one.getLevel()%>;
 var type = <%=news_one.getType()%>;
 $("#news_type").val(type);
 $("#news_level").val(level);
+$.hasFileIndex = $(".files_name").length;
 });
 function aSubmit(){
+	var ff = [];
+	$(".files_name").each(function(){
+		ff.push(encodeURIComponent($(this).text()));
+	});
+	$("#news_files").val(ff.join(","));
 	$("#news_form").submit();
 };
 </script>
@@ -63,7 +73,7 @@ function aSubmit(){
 
 		<div id="mainContent">
 <div class="abox">
-<div class="aboxTitle">新建公告</div>
+<div class="aboxTitle">编辑公告</div>
 <div class="aboxContent">
 <form action="<%=prefix%>/news/update" method="post" id="news_form">
 <p>标题：<br />
@@ -77,9 +87,35 @@ function aSubmit(){
 <select name="news_level" id="news_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
 <input type="hidden" name="id" value="<%=news_one.getId()%>" />
 </p>
-
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">保存</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
+<input type="hidden" id="news_files" name="news_files" value="" />
 </form>
+<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
+	<div id="swfBT">
+		<div id="spanSWFUploadButton">载入中...</div> 
+		<span id="uploadInfo">图片最大不超过3M,图片格式为jpg,png,gif</span>
+	</div>
+	<div id="upFiles"></div>
+</form>
+<%
+StringBuilder sb = new StringBuilder();
+Object o_f = news_one.getProp("files");
+if(o_f !=null){
+	ArrayList<String> fileList = (ArrayList<String>)o_f;
+	int i = 0;
+	if(fileList != null && !fileList.isEmpty()){
+		sb.append("<div class='bold' style='padding-top:10px;'>文件列表</div>");
+		Iterator<String> it = fileList.iterator();
+		while(it.hasNext()){
+			String f=it.next();
+			sb.append("<div class='file_upload' id='fu_").append(i).append("'><a href='").append(prefix).append("/file/").append(f).append("'>").append(f).append("</a> [ <a href='javascript:delFile(").append(i).append(");'>删除</a> ]<span class=\"files_name\">").append(f).append("</span></div>");
+			i++;
+		}
+		out.print(sb);
+	}
+}
+%>
+<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">保存</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
+
 </div>
 </div>
 		<div class="clear"></div>

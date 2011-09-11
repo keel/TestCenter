@@ -6,6 +6,8 @@ package com.k99k.testcenter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.k99k.khunter.Action;
@@ -167,6 +169,7 @@ public class News extends Action {
 				long id = Long.parseLong(req.getParameter("id"));
 				String name = req.getParameter("news_name");
 				String text = req.getParameter("news_text");
+				String files = req.getParameter("news_files");
 				int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
 				String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
 				if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
@@ -176,6 +179,39 @@ public class News extends Action {
 					kobj.setProp("text", StringUtil.repstr1(text.trim()));
 					kobj.setLevel(level);
 					kobj.setType(type);
+					if (StringUtil.isStringWithLen(files, 1)) {
+						boolean enc = true;
+						try {
+							files = URLDecoder.decode(files, "utf-8");
+						} catch (UnsupportedEncodingException e) {
+							enc = false;
+						}
+						if (enc) {
+							String[] fs = files.split(",");
+							ArrayList<String> oldFiles = (ArrayList<String>) kobj.getProp("files");
+							ArrayList<String> newFiles = new ArrayList<String>();
+							for (int i = 0; i < fs.length; i++) {
+								if (!oldFiles.contains(fs[i])) {
+									newFiles.add(fs[i]);
+								}
+							}
+							kobj.setProp("files", fs);
+							//生成下载文件
+							DaoInterface fileDao = DaoManager.findDao("TCFileDao");
+							KObjSchema sc = KObjManager.findSchema("TCFile");
+							Iterator<String> it = newFiles.iterator();
+							while (it.hasNext()) {
+								String f = it.next();
+								KObject newf = sc.createEmptyKObj(fileDao);
+								int po = f.lastIndexOf(".");
+								newf.setName(f.substring(0,po));
+								newf.setProp("fileName", f);
+								newf.setProp("type", f.substring(po+1));
+								newf.setProp("creatorName", u.getName());
+								fileDao.save(newf);
+							}
+						}
+					}
 					if (dao.save(kobj)) {
 						re = "ok";
 						msg.addData("[print]", re);
@@ -236,8 +272,9 @@ public class News extends Action {
 			msg.addData("[print]", re);
 			return super.act(msg);
 		}else{
-			msg.addData("u", u);
-			msg.addData("[jsp]", "/WEB-INF/tc/news.jsp");
+			JOut.err(404, httpmsg);
+//			msg.addData("u", u);
+//			msg.addData("[jsp]", "/WEB-INF/tc/news.jsp");
 		}
 		
 		return super.act(msg);

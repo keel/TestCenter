@@ -11,7 +11,7 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("u");
-out.print(JSPOut.out("head0","0","公告"));%>
+out.print(JSPOut.out("head0","0","公告-新建"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
@@ -24,7 +24,7 @@ $(function(){
 //处理请求
 $.validator.dealAjax = {
 	bt:$("#submitBT"),
-	loading:function(){abox("公告发表","<div style='width:200px;'>载入中...</div>");},
+	loading:function(){abox("公告发表","请稍候...");},
 	ok:function(data){
 		if(!isNaN(data)){
 			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/news/"+data+"';\" class=\"aButton\">查看公告</a>";
@@ -60,8 +60,8 @@ function aSubmit(){
 	$("#news_files").val(ff.join(","));
 	$("#news_form").submit();
 };
-//fileupload
---></script>
+-->
+</script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 

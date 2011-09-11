@@ -59,6 +59,7 @@ public class Auth extends Action {
 					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),cookieTime, httpmsg.getHttpResp());
 				}
 				//返回ok
+				//msg.addData("[redirect]", "/news");
 				JOut.txtOut("ok", httpmsg);
 			}else{
 				JOut.err(401, httpmsg);
@@ -68,6 +69,7 @@ public class Auth extends Action {
 		//处理注销
 		else if(subact.equals("logout")){
 			WebTool.removeCookie("tcu", httpmsg.getHttpResp());
+			WebTool.removeCookie("co", httpmsg.getHttpResp());
 			msg.addData("[redirect]", "/login");
 			return super.act(msg);
 		}

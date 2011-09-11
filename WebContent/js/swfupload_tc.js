@@ -92,11 +92,12 @@ function uploadProgress(file, bytesLoaded) {
 function uploadSuccess(file, serverData) {
 	var re = serverData;
 	swfu.startProg = false;
+	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
 	//console.log(re);
 	//console.log(file);
 	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+file.index+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+file.index+"\");'>删除 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
-	}else{swfok("<div class='file_upload file_upload_ERR'>"+f_enc+" 上传失败!</div>");}
+	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
+	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 }
 function delFile(fid){
 	$("#fu_"+fid).remove();

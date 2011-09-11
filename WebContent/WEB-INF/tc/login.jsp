@@ -12,7 +12,6 @@ String prefix = KFilter.getPrefix();
 <script src="<%=sPrefix %>/js/jquery.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-<!--
 $(function(){
 $("#saveLogin").click(function(){
 	$("#saveLogin").val(($(":checked").val() == "false")?"true":"false");
@@ -46,7 +45,6 @@ $('#consoleLogin').validate({
 });
 
 });
--->
 </script>
 </head>
 <body>

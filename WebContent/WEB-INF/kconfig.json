@@ -70,7 +70,7 @@
 		{
 			"_actName":"news",
 			"_class":"com.k99k.testcenter.News",
-			"pageSize":10
+			"pageSize":20
 		},
 		{
 			"_actName":"newsTask",
@@ -80,6 +80,11 @@
 			"_actName":"upload",
 			"_class":"com.k99k.testcenter.FileUpload",
 			"savePath":"F:/works/workspace_keel/TestCenter/WebContent/file/"
+		},
+		{
+			"_actName":"download",
+			"_class":"com.k99k.testcenter.Download",
+			"downPath":"F:/works/workspace_keel/TestCenter/WebContent/file/"
 		},
 		{
 			"_actName":"end",

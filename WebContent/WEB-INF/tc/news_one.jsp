@@ -12,14 +12,16 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("u");
 KObject news_one = (KObject)data.getData("news_one");
-out.print(JSPOut.out("head0","0","公告"));%>
+out.print(JSPOut.out("head0","0","公告-"+news_one.getName()));%>
+<script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script type="text/javascript">
 function showHtml(target) {
 	var s = $(target).html(),pa = $(target).parent();;
 	$(target).remove();
 	s=s.replace(/\x20/g,"&nbsp;");
 	s=s.replace(/\n/g,"<br />") ;
-	s=s.replace( /(http[s]?:\/\/[\w-]*(\.[\w-]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
+	s=s.replace( /(http[s]?:\/\/[\w-\/]*(\.[\w-\/]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
 	pa.append($("<div>"+s+"</div>"));
 }
 $(function(){
@@ -37,8 +39,10 @@ $(function(){
 
 		<div id="mainContent">
 <div class="abox">
-<div class="aboxTitle"><div style="float:left;"><%=news_one.getName() %></div> <div style="font-size:12px;color:#ccc;float:right;padding-top:3px;"> <%=news_one.getCreatorName() %> &nbsp;&nbsp; ( <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %> ) </div></div>
-<div class="aboxContent" style="padding:20px;"><div><pre id="news_text"><%=news_one.getProp("text") %></pre></div>
+<div class="aboxTitle"><div><%=news_one.getName() %></div> </div>
+<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=news_one.getCreatorName() %> &nbsp; 发布于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %>  </div><a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
+<div class="aboxContent" style="padding:20px;">
+<div><pre id="news_text"><%=news_one.getProp("text") %></pre></div>
 <%
 StringBuilder sb = new StringBuilder();
 Object o_f = news_one.getProp("files");
@@ -56,7 +60,7 @@ if(o_f !=null){
 }
 %>
 </div>
-<div style="padding:20px;"><a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
+<div class="aboxSub2"><a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
 </div>
 		<div class="clear"></div>
 		</div>
