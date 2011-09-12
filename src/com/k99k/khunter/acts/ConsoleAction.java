@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
-import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.HTManager;

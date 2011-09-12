@@ -84,6 +84,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @param paras
 	 * @return List<Map<String,Object>>
 	 */
+	@SuppressWarnings("unchecked")
 	public List<Map<String,Object>> findUserList(Map<String, Object> paras){
 		Object o = paras.get("query");
 		BasicDBObject query = (o == null)?null:new BasicDBObject((Map)o);
@@ -111,6 +112,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @param paras
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean updateOneUser(Map<String, Object> paras){
 		Object o = paras.get("query");
 		BasicDBObject query = (o == null)?null:new BasicDBObject((Map)o);
@@ -124,6 +126,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @param paras
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public boolean updateUser(Map<String, Object> paras){
 		Object o = paras.get("query");
 		BasicDBObject query = (o == null)?null:new BasicDBObject((Map)o);

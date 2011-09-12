@@ -7,11 +7,8 @@ import java.util.Date;
 
 import com.k99k.khunter.dao.MongoUserDao;
 import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
-import com.mongodb.DBRef;
 
 /**
  * TODO Mongodb配置及设置

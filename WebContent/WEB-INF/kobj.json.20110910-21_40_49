@@ -224,18 +224,11 @@
 					"intro":"level"
 				},
 				{
-					"col":"PID",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"product id"
-				},
-				{
 					"col":"name",
 					"unique":false,
 					"asc":false,
 					"type":"type",
-					"intro":"task name"
+					"intro":"product name"
 				}
 			],
 			"columns":[
@@ -249,11 +242,11 @@
 				},
 				{
 					"col":"type",
-					"def":0,
+					"def":"",
 					"len":0,
 					"required":false,
-					"type":1,
-					"intro":"0新产品,1,回归测试;2:新机型适配,3:demo,4:复测,5拨测,6其他"
+					"type":0,
+					"intro":"0新产品,1:新机型适配,2:demo,3:复测,4拨测,5其他"
 				},
 				{
 					"col":"creatorName",
@@ -277,7 +270,7 @@
 					"len":0,
 					"required":false,
 					"type":1,
-					"intro":"0已创建,11已确认,1测试中,2通过,4部分通过,3待反馈,-2已放弃,-1删除;5暂停"
+					"intro":"0已创建,11待确认,12待分配,1测试中,2通过,4部分通过,3待反馈,-2已放弃,-1删除;5暂停"
 				},
 				{
 					"col":"operator",
@@ -315,37 +308,11 @@
 				},
 				{
 					"col":"log.*",
-					"def":{
-						
-					},
-					"len":0,
-					"required":false,
-					"type":2,
-					"intro":"操作记录对象"
-				},
-				{
-					"col":"log.*.time",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":4,
-					"intro":"操作时间(ms)"
-				},
-				{
-					"col":"log.*.user",
 					"def":"",
 					"len":0,
 					"required":false,
 					"type":0,
-					"intro":"操作者name"
-				},
-				{
-					"col":"log.*.info",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"操作说明"
+					"intro":"操作记录内容(用户和时间直接包括在内)"
 				}
 			],
 			"intro":"测试任务"
@@ -1399,14 +1366,6 @@
 					"required":false,
 					"type":3,
 					"intro":"联系人id集"
-				},
-				{
-					"col":"contacts.*",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":4,
-					"intro":"联系人id"
 				}
 			],
 			"intro":"公司"

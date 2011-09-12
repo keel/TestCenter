@@ -103,6 +103,7 @@ public class MongoWrapper implements DBObject {
 	/* (non-Javadoc)
 	 * @see org.bson.BSONObject#putAll(org.bson.BSONObject)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void putAll(BSONObject arg0) {
 		kobj.getPropMap().putAll(arg0.toMap());
@@ -111,6 +112,7 @@ public class MongoWrapper implements DBObject {
 	/* (non-Javadoc)
 	 * @see org.bson.BSONObject#putAll(java.util.Map)
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void putAll(Map arg0) {
 		kobj.getPropMap().putAll(arg0);

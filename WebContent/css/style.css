@@ -1,4 +1,4 @@
-﻿html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, del, em, font, img, ins, q, s, samp, small, strong, sub, sup, tt, var, b, u, i, center,fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0;padding: 0;border: 0 none; outline: 0;font-size: 100%;vertical-align: baseline;}
+﻿html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, code, del, em, font, img, ins, q, s, samp, small, strong, sub, sup, tt, var, b, u, i, center,form, label, table, caption, tbody, tfoot, thead, tr, th, td {margin: 0;padding: 0;border: 0 none; outline: 0;font-size: 100%;vertical-align: baseline;}
 body {line-height: 1.5; }
 table {border-collapse: separate;border-spacing:1px;}
 blockquote, q {quotes: none; }
@@ -12,19 +12,20 @@ div{word-wrap: break-word; word-break: normal;}
 a { color:#6E747B; text-decoration:none; }
 	a:hover { color:#000;text-decoration:underline;}
 	/* a:focus, input:focus {outline-style:none; outline-width:medium; } */
-th, td {padding:7px;}
+th, td {padding:5px;}
 th { color:#fff;border-top:1px solid #000; background: url('../images/bk_dark_line.png');background-color:#444; }
 td { background:#fff; text-align:left;}
 ul{padding:0;margin:12px 2px 12px 40px;}
-
+fieldset{border: 1px solid #003333;width:90%;margin:0;padding: 5px;}
 input{padding:6px 8px;margin:1px;background-color: #FFF;color:#000;border: 1px solid #003333;}
-input[type="checkbox"]{padding:2px;background: transparent;color:#000;border: none;}
+input[type="checkbox"],input[type="radio"]{padding:2px;background: transparent;color:#000;border: none;}
 input[type="button"],input[type="submit"]{border: 1px solid #000;background-color: #286FA2;color:#fff;}
 input[type="text"],input[type="password"]{width:200px;}
 textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;height:400px;padding:5px;}
 .smallTA{background-color: #FFF;color:#000;border: 1px solid #003333;width:70%;height:200px;padding:5px;}
 .hide{display: none;}
 .wide300{width:300px;}
+.legend{font-weight: bold;padding:5px;}
 
 .aButton{display: inline-block; color:#fff;padding:3px 10px; border: 1px solid #fff;background-color: #286FA2;}
 .aButton:hover { color:#fff;text-decoration:none; background-color: #1F5982;}

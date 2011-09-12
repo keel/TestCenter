@@ -4,7 +4,6 @@
 package com.k99k.khunter.dao;
 
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +37,9 @@ public class StaticDao extends MongoDao {
 	static DaoInterface tcUserDao;
 	static DaoInterface tcNewsDao;
 	
+	/**
+	 * {level:-1,_id:-1}
+	 */
 	public static final BasicDBObject prop_level_id_desc = new BasicDBObject("level",-1).append("_id",-1);
 
 	
@@ -97,6 +99,7 @@ public class StaticDao extends MongoDao {
 		Pattern p = Pattern.compile(key);  
 		HashMap<String,Object> search = new HashMap<String, Object>(2);
 		search.put("name", p);
+		search.put("state",0);
 		return tcNewsDao.queryByPage(page,pageSize,search, null, prop_level_id_desc, null);
 	}
 	

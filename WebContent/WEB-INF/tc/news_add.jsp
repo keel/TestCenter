@@ -75,10 +75,10 @@ function aSubmit(){
 <div class="aboxTitle">新建公告</div>
 <div class="aboxContent">
 <form action="<%=prefix%>/news/add" method="post" id="news_form">
-<p>标题：<br />
+<p>标题：<span class="red">*</span><br />
 <input type="text" name="news_name" style="width:90%;padding:5px;margin:0;" /></p>
 
-<p>内容：<br />
+<p>内容：<span class="red">*</span><br />
 <textarea name="news_text" rows="3" cols="3" style="height:200px;"></textarea></p>
 <p>显示级别：
 <select name="news_type"><option value="0">所有人</option><option value="1">厂家</option><option value="2">测试员</option><option value="3">组长</option><option value="4">管理员</option></select>
@@ -90,8 +90,8 @@ function aSubmit(){
 
 <form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 	<div id="swfBT">
-		<div id="spanSWFUploadButton">载入中...</div> 
-		<span id="uploadInfo">图片最大不超过3M,图片格式为jpg,png,gif</span>
+		<div id="spanSWFUploadButton">请稍候...</div> 
+		<span id="uploadInfo"> &nbsp;&nbsp;注:文件最大不超过100M,格式限定为rar,zip,apk,jpg,gif,png,jar,doc,docx,xls,xlsx,ppt,pptx,txt</span>
 	</div>
 	<div id="upFiles"></div>
 </form>

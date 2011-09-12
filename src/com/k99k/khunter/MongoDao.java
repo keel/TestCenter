@@ -184,10 +184,29 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
+	/**
+	 * {_id:-1}
+	 */
 	public static final BasicDBObject prop_id_desc = new BasicDBObject("_id",-1);
+	/**
+	 * {_id:1}
+	 */
 	public static final BasicDBObject prop_id = new BasicDBObject("_id",1);
+	/**
+	 * {state:0}
+	 */
 	public static final BasicDBObject prop_state_0 = new BasicDBObject("state",0);
+	/**
+	 * {state:{$gte:0}}
+	 */
+	public static final BasicDBObject prop_state_normal = new BasicDBObject("state",new BasicDBObject("$gte",0));
+	/**
+	 * {}
+	 */
 	public static final BasicDBObject prop_empty = new BasicDBObject();
+	/**
+	 * {$set:{state:-1}}
+	 */
 	public static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
 
 	@Override

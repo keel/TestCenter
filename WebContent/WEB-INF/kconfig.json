@@ -87,6 +87,28 @@
 			"downPath":"F:/works/workspace_keel/TestCenter/WebContent/file/"
 		},
 		{
+			"_actName":"phone",
+			"_class":"com.k99k.testcenter.Phone"
+		},
+		{
+			"_actName":"company",
+			"_class":"com.k99k.testcenter.Company"
+		},
+		{
+			"_actName":"product",
+			"_class":"com.k99k.testcenter.Product",
+			"pageSize":20
+		},
+		{
+			"_actName":"testUnit",
+			"_class":"com.k99k.testcenter.TestUnit"
+		},
+		{
+			"_actName":"tasks",
+			"_class":"com.k99k.testcenter.TTask",
+			"pageSize":20
+		},
+		{
 			"_actName":"end",
 			"_class":"com.k99k.testcenter.End"
 		}

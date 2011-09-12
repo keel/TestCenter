@@ -11,6 +11,8 @@ import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KFilter;
+import com.k99k.khunter.KObjManager;
+import com.k99k.khunter.KObjSchema;
 
 /**
  * 文件下载处理(权限验证,文件形式下载)
@@ -27,6 +29,7 @@ public class Download extends Action {
 	}
 	
 	static DaoInterface dao;
+	static KObjSchema schema;
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -48,7 +51,8 @@ public class Download extends Action {
 	 */
 	@Override
 	public void init() {
-		dao = DaoManager.findDao("TCFile");
+		dao = DaoManager.findDao("TCFileDao");
+		schema = KObjManager.findSchema("TCFile");
 		super.init();
 	}
 

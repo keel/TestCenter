@@ -96,7 +96,8 @@ public class JSONFormatWriter {
     }
     
 
-    private void value(Object object) {
+    @SuppressWarnings("unchecked")
+	private void value(Object object) {
         if (object == null || cyclic(object)) {
             add("null");
         } else {
@@ -123,7 +124,8 @@ public class JSONFormatWriter {
      * @param object
      * @return
      */
-    private boolean cyclic(Object object) {
+    @SuppressWarnings("unchecked")
+	private boolean cyclic(Object object) {
         Iterator it = calls.iterator();
         while (it.hasNext()) {
             Object called = it.next();
@@ -214,7 +216,8 @@ public class JSONFormatWriter {
 		}
     }
 
-    private void map(Map map) {
+    @SuppressWarnings("unchecked")
+	private void map(Map map) {
         add("{");
         addFormat(1);
         Iterator it = map.entrySet().iterator();
@@ -234,7 +237,8 @@ public class JSONFormatWriter {
         
     }
     
-    private void array(Iterator it) {
+    @SuppressWarnings("unchecked")
+	private void array(Iterator it) {
         add("[");
         addFormat(1);
         while (it.hasNext()) {

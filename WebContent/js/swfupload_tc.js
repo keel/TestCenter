@@ -1,5 +1,5 @@
 var swfu;
-function initUpload(uName){
+function initUpload(uName,f_types,f_types_say,f_size){
  swfu= new SWFUpload({
 	upload_url : $.prefix+"/upload",
 	flash_url : $.sPrefix+"/js/swfupload.swf",
@@ -23,9 +23,9 @@ function initUpload(uName){
 	upload_success_handler : uploadSuccess,
 	upload_complete_handler:uploadComplete,
 
-	file_types : "*.rar;*.zip;*.png;*.gif",  
-     file_types_description : "上传文件", 
-	file_size_limit : "123000"
+	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif",  
+     file_types_description :(f_types_say)?f_types_say: "上传文件", 
+	file_size_limit :(f_size)?f_size: "123000"
 	//,debug:true
 	
 	});
@@ -41,7 +41,7 @@ function swfok(info){
 	$("#uploadInfo").html("");
 }
 function swfreset(){
-	swfinfo("文件最大不超过100M,格式为jpg,png,gif");
+	swfinfo("文件最大不超过"+(swfu.file_size_limit/1000)+"MB,格式为"+swfu.file_types);
 }
 function fileQueue(file){
 	var f_enc = encodeURIComponent(file.name);

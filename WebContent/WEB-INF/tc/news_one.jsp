@@ -16,6 +16,15 @@ out.print(JSPOut.out("head0","0","公告-"+news_one.getName()));%>
 <script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script type="text/javascript">
+function del(id){
+	var r=confirm("确认删除此条公告吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
+	if (r==true){
+		$.post("<%=prefix %>/news/del", "id="+id ,function(data) {
+			if(data=="ok"){alert("删除成功");window.location = window.location;};
+		});
+	}
+	return;
+}
 function showHtml(target) {
 	var s = $(target).html(),pa = $(target).parent();;
 	$(target).remove();
@@ -40,7 +49,15 @@ $(function(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle"><div><%=news_one.getName() %></div> </div>
-<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=news_one.getCreatorName() %> &nbsp; 发布于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %>  </div><a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
+<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=news_one.getCreatorName() %> &nbsp; 发布于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %>  </div>
+<%if(Integer.parseInt(user.getType())>10){ 
+	String ggid = String.valueOf(news_one.getId());
+	String edit = prefix+"/news/"+ggid+"?edit=true";
+%>
+<a href="<%=edit%>" class="aButton">编辑</a>
+<a href="javascript:del(<%=ggid%>);" class="aButton">删除</a>
+<%} %>
+<a href="<%=prefix%>/news" class="aButton">返回公告列表</a></div>
 <div class="aboxContent" style="padding:20px;">
 <div><pre id="news_text"><%=news_one.getProp("text") %></pre></div>
 <%

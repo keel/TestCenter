@@ -40,6 +40,9 @@ public class News extends Action {
 	}
 	
 	private int pageSize = 30;
+	
+	static DaoInterface dao;
+	static KObjSchema schema;
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -71,7 +74,7 @@ public class News extends Action {
 			return super.act(msg);
 		}else if (subact.equals("new")) {
 			msg.addData("u", u);
-			if (Integer.parseInt(u.getType()) < 4) {
+			if (Integer.parseInt(u.getType()) < 10 || u.getLevel()<1) {
 				//权限不够
 				JOut.err(403, httpmsg);
 				return super.act(msg);
@@ -81,7 +84,7 @@ public class News extends Action {
 		}else if (StringUtil.isDigits(subact)) {
 			msg.addData("u", u);
 			long id = Long.parseLong(subact);
-			KObject news_one = DaoManager.findDao("TCNewsDao").findOne(id);
+			KObject news_one = dao.findOne(id);
 			if (news_one == null) {
 				JOut.err(404, httpmsg);
 				return super.act(msg);
@@ -115,7 +118,7 @@ public class News extends Action {
 			int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
 			String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
 			if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
-				KObject kobj = KObjManager.findSchema("TCNews").createEmptyKObj();
+				KObject kobj = schema.createEmptyKObj();
 				kobj.setName(StringUtil.repstr1(name.trim()));
 				kobj.setProp("text", StringUtil.repstr1(text.trim()));
 				kobj.setLevel(level);
@@ -132,22 +135,20 @@ public class News extends Action {
 						String[] fs = files.split(",");
 						kobj.setProp("files", fs);
 						//生成下载文件
-						DaoInterface fileDao = DaoManager.findDao("TCFileDao");
-						KObjSchema sc = KObjManager.findSchema("TCFile");
 						for (int i = 0; i < fs.length; i++) {
-							KObject newf = sc.createEmptyKObj(fileDao);
+							KObject newf = Download.schema.createEmptyKObj(Download.dao);
 							String f = fs[i];
 							int po = f.lastIndexOf(".");
 							newf.setName(f.substring(0,po));
 							newf.setProp("fileName", f);
 							newf.setProp("type", f.substring(po+1));
 							newf.setProp("creatorName", u.getName());
-							fileDao.save(newf);
+							Download.dao.save(newf);
 						}
 						
 					}
 				}
-				if (DaoManager.findDao("TCNewsDao").save(kobj)) {
+				if (dao.save(kobj)) {
 					re = String.valueOf(kobj.getId());
 					msg.addData("[print]", re);
 					ActionMsg task = new ActionMsg("newsTask");
@@ -173,7 +174,6 @@ public class News extends Action {
 				int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
 				String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
 				if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
-					DaoInterface dao = DaoManager.findDao("TCNewsDao");
 					KObject kobj = dao.findOne(id);
 					kobj.setName(StringUtil.repstr1(name.trim()));
 					kobj.setProp("text", StringUtil.repstr1(text.trim()));
@@ -197,18 +197,16 @@ public class News extends Action {
 							}
 							kobj.setProp("files", fs);
 							//生成下载文件
-							DaoInterface fileDao = DaoManager.findDao("TCFileDao");
-							KObjSchema sc = KObjManager.findSchema("TCFile");
 							Iterator<String> it = newFiles.iterator();
 							while (it.hasNext()) {
 								String f = it.next();
-								KObject newf = sc.createEmptyKObj(fileDao);
+								KObject newf = Download.schema.createEmptyKObj(Download.dao);
 								int po = f.lastIndexOf(".");
 								newf.setName(f.substring(0,po));
 								newf.setProp("fileName", f);
 								newf.setProp("type", f.substring(po+1));
 								newf.setProp("creatorName", u.getName());
-								fileDao.save(newf);
+								Download.dao.save(newf);
 							}
 						}
 					}
@@ -229,7 +227,7 @@ public class News extends Action {
 			}
 			if (StringUtil.isDigits(req.getParameter("id"))) {
 				long id = Long.parseLong(req.getParameter("id"));
-				if (DaoManager.findDao("TCNewsDao").deleteOne(id) !=null) {
+				if (dao.deleteOne(id) !=null) {
 					re = "ok";
 					msg.addData("[print]", re);
 					return super.act(msg);
@@ -279,6 +277,20 @@ public class News extends Action {
 		
 		return super.act(msg);
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see com.k99k.khunter.Action#init()
+	 */
+	@Override
+	public void init() {
+		dao = DaoManager.findDao("TCNewsDao");
+		schema = KObjManager.findSchema("TCNews");
+		super.init();
+	}
+
+
 
 	/**
 	 * @return the pageSize

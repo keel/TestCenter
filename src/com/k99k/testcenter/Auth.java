@@ -4,6 +4,9 @@
 package com.k99k.testcenter;
 
 import java.util.HashMap;
+
+import org.apache.log4j.Logger;
+
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HttpActionMsg;
@@ -29,9 +32,14 @@ public class Auth extends Action {
 		super(name);
 	}
 	
+	static final Logger log = Logger.getLogger(Auth.class);
+	
 	private static final HashMap<String,Permission> perMap = new HashMap<String, Permission>();
 	
-	private static final int cookieTime = 1200;
+	/**
+	 * 默认40分钟超时
+	 */
+	private static final int cookieTime = 2400;
 	
 	private static final int cookieTimeHalfMi = 1200/2*1000;
 	
@@ -100,8 +108,10 @@ public class Auth extends Action {
 				KObject u = StaticDao.checkUser(u_p[0], u_p[1]);
 				if (u != null && (!co.equals("true"))) {
 					long now = System.currentTimeMillis();
+					//log.info("Cookie time:"+new Date(Long.parseLong(u_p[2]))+" Cookie time left:"+(now - Long.parseLong(u_p[2])));
 					//时间间隔大于cookie时间的一半时，重新设置
 					if ((now - Long.parseLong(u_p[2])) >= cookieTimeHalfMi) {
+						//log.info("Cookie rebuilt."+(now - Long.parseLong(u_p[2])));
 						WebTool.setCookie("tcu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+now),cookieTime, httpmsg.getHttpResp());
 					}
 				}
