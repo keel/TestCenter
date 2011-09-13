@@ -236,7 +236,7 @@ public class MongoDao implements DaoInterface{
 	 * @return ArrayList<Map<String,Object>>
 	 */
 	@SuppressWarnings("unchecked")
-	public ArrayList<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
+	public ArrayList<HashMap<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
 		try {
 			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject field = (fields==null)?null:new BasicDBObject(fields);
@@ -247,7 +247,7 @@ public class MongoDao implements DaoInterface{
 			if (len > 0) {
 				initSize = len;
 			}
-			ArrayList<Map<String,Object>> list = new ArrayList<Map<String,Object>>(initSize);
+			ArrayList<HashMap<String,Object>> list = new ArrayList<HashMap<String,Object>>(initSize);
 			
 				//coll = checkColl(coll);
 			DBCollection coll = this.dataSource.getColl(tableName);

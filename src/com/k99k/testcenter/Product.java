@@ -3,7 +3,10 @@
  */
 package com.k99k.testcenter;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,6 +55,8 @@ public class Product extends Action {
 			this.list(req, u, httpmsg);
 		}else if(subact.equals("new")){
 			
+		}else if(subact.equals("find")){
+			this.find(req, u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			
 		}else if(subact.equals("a_a")){
@@ -64,6 +69,35 @@ public class Product extends Action {
 			
 		}
 		return super.act(msg);
+	}
+	
+	/**
+	 * 查询产品,按产品名称拼音头字母缩写,根据用户所属的公司和查询参数q
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void find(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String q = req.getParameter("q");
+		String c = req.getParameter("c");
+		//长度少于2直接返回空
+		if (!StringUtil.isStringWithLen(q, 2) || !StringUtil.isStringWithLen(c, 2)) {
+			msg.addData("[print]", "");
+			return ;
+		}
+		try {
+			c = new String(c.trim().getBytes("ISO-8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		Pattern p = Pattern.compile(q.trim());
+		HashMap<String,Object> query = new HashMap<String, Object>(6);
+		query.put("company", c);
+		query.put("state", 0);
+		query.put("shortName", p);
+		String re = StaticDao.queryStr(dao, query,  null, 0, 0, null);
+		msg.addData("[print]",re);
+		return;
 	}
 	
 	/**

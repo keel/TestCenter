@@ -1,60 +1,5 @@
 {
 	"kobjs":{
-		"TCTestCase":{
-			"dao":{
-				"tableName":"TCTestCase",
-				"newDaoName":"TCTestCaseDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":115,
-					"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"type",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"type"
-				}
-			],
-			"columns":[
-				{
-					"col":"name",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"测试项目名称"
-				},
-				{
-					"col":"level",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":1,
-					"intro":"测试项重要性,越高越重要"
-				},
-				{
-					"col":"info",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"测试项描述"
-				},
-				{
-					"col":"type",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":1,
-					"intro":"测试类型,java,android等,待定"
-				}
-			],
-			"intro":"测试项目"
-		},
 		"TCTopic":{
 			"dao":{
 				"tableName":"TCTopic",
@@ -621,13 +566,6 @@
 					"asc":false,
 					"type":"type",
 					"intro":"testTimes"
-				},
-				{
-					"col":"shortName",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"shortName"
 				}
 			],
 			"columns":[
@@ -686,38 +624,6 @@
 					"required":true,
 					"type":0,
 					"intro":"产品名称拼音头字母缩写"
-				},
-				{
-					"col":"netType",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":1,
-					"intro":"0单机,1联网,2WAP"
-				},
-				{
-					"col":"sys",
-					"def":0,
-					"len":0,
-					"required":true,
-					"type":1,
-					"intro":"0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other"
-				},
-				{
-					"col":"netPort",
-					"def":0,
-					"len":0,
-					"required":false,
-					"type":1,
-					"intro":"0:未调通接口,1:已调通,2:接口调测中"
-				},
-				{
-					"col":"feeInfo",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"计费点描述"
 				}
 			],
 			"intro":"产品"
@@ -746,13 +652,6 @@
 					"asc":false,
 					"type":"type",
 					"intro":"state"
-				},
-				{
-					"col":"shortName",
-					"unique":false,
-					"asc":false,
-					"type":"type",
-					"intro":"shortName"
 				},
 				{
 					"col":"type",
@@ -874,14 +773,6 @@
 					"required":false,
 					"type":4,
 					"intro":"外借时间(ms)"
-				},
-				{
-					"col":"shortName",
-					"def":"",
-					"len":0,
-					"required":true,
-					"type":0,
-					"intro":"缩写"
 				}
 			],
 			"intro":"终端"

@@ -3,6 +3,7 @@
  */
 package com.k99k.khunter.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +86,7 @@ public class MongoUserDao extends MongoDao implements HTUserDaoInterface{
 	 * @return List<Map<String,Object>>
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Map<String,Object>> findUserList(Map<String, Object> paras){
+	public List<HashMap<String,Object>> findUserList(Map<String, Object> paras){
 		Object o = paras.get("query");
 		BasicDBObject query = (o == null)?null:new BasicDBObject((Map)o);
 		Object o1 = paras.get("feilds");

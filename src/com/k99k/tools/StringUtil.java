@@ -221,7 +221,7 @@ public final class StringUtil {
 	}
 	
 	/**
-	 * 把页面的HTML代码转换成页面显示的代码
+	 * 把页面的HTML代码转换成页面显示的代码,如<换成&lt;
 	 * @param String 替换前的字符串
 	 * @return String 替换后的字符串
 	 */

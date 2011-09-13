@@ -2,7 +2,6 @@ package com.k99k.khunter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import com.mongodb.DBCollection;
 
@@ -86,7 +85,7 @@ public interface DaoInterface extends Cloneable{
 	 * @param hint 无则为null
 	 * @return ArrayList&ltMap&ltString,Object&gt&gt
 	 */
-	public ArrayList<Map<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
+	public ArrayList<HashMap<String,Object>> query(HashMap<String,Object> query,HashMap<String,Object> fields,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint);
 	
 	/**
 	 * 通用的查找过程

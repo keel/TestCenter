@@ -92,7 +92,8 @@
 		},
 		{
 			"_actName":"company",
-			"_class":"com.k99k.testcenter.Company"
+			"_class":"com.k99k.testcenter.Company",
+			"pageSize":30
 		},
 		{
 			"_actName":"product",

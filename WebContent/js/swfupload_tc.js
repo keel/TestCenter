@@ -1,5 +1,5 @@
 var swfu;
-function initUpload(uName,f_types,f_types_say,f_size){
+function initUpload(uName,sucFn,f_types,f_types_say,f_size){
  swfu= new SWFUpload({
 	upload_url : $.prefix+"/upload",
 	flash_url : $.sPrefix+"/js/swfupload.swf",
@@ -20,7 +20,7 @@ function initUpload(uName,f_types,f_types_say,f_size){
 	file_dialog_complete_handler : fileDialogComplete,
 	upload_progress_handler : uploadProgress,
 	upload_error_handler : uploadError,
-	upload_success_handler : uploadSuccess,
+	upload_success_handler : (sucFn)?sucFn:uploadSuccess,
 	upload_complete_handler:uploadComplete,
 
 	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif",  

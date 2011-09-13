@@ -7,6 +7,7 @@ package com.k99k.khunter.dao;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
@@ -16,6 +17,8 @@ import com.k99k.khunter.DataSourceInterface;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
 import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
 
 /**
  * 静态方法执行的Dao，执有多个DaoManager的Dao对象,需要在最后一个Action中初始化
@@ -101,6 +104,47 @@ public class StaticDao extends MongoDao {
 		search.put("name", p);
 		search.put("state",0);
 		return tcNewsDao.queryByPage(page,pageSize,search, null, prop_level_id_desc, null);
+	}
+	
+	private static final BasicDBObject prop_queryStr_fields = new BasicDBObject("name",1);
+	static{
+		prop_queryStr_fields.put("shortName", 1);
+	}
+	/**
+	 * 通用的单字符串内容查找过程,查找的字段为{name:1,shortName:1}
+	 * @param dao 必须有
+	 * @param query 必须有,为null则为默认查询
+	 * @param fields 必须有,且仅有一个
+	 * @param sortBy 无则为null
+	 * @param skip 无则为0
+	 * @param len 无则为0
+	 * @param hint 无则为null
+	 * @return String 各项用\n分开
+	 */
+	@SuppressWarnings("unchecked")
+	public static final String queryStr(DaoInterface dao,HashMap<String,Object> query,HashMap<String,Object> sortBy,int skip,int len,HashMap<String,Object> hint){
+		try {
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject sort = (sortBy==null)?null:new BasicDBObject(sortBy);
+			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
+			
+			StringBuilder sb = new StringBuilder();
+			DBCollection coll = dao.getColl();
+			DBCursor cur = null;
+			if (sortBy != null) {
+				cur = coll.find(q, prop_queryStr_fields).sort(sort).skip(skip).limit(len).hint(hin);
+			} else {
+				cur = coll.find(q, prop_queryStr_fields).skip(skip).limit(len).hint(hin);
+			}
+	        while(cur.hasNext()) {
+	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
+	        	sb.append((String)m.get("shortName")).append("|").append((String)m.get("name")).append("\n");
+	        }
+	        return sb.toString();
+		} catch (Exception e) {
+			log.error("query string error!", e);
+			return null;
+		}
 	}
 	
 //	public static final boolean login(String uName,String uPwd){
