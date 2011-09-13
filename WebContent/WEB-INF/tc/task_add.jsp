@@ -119,7 +119,7 @@ function urlSet(){
 <div class="aboxContent">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
 <p id="chooseCompany">
-选择公司：<span class="red">*</span><span class="gray">(输入公司名称拼音首字母检索,如:输入jsdx,检索“江苏电信”)</span><br />
+<label for="task_company">选择公司：</label><span class="red">*</span><span class="gray">(输入公司名称拼音首字母检索,如:输入jsdx,检索“江苏电信”)</span><br />
 <input type="text" id="task_company" name="task_company" style="width:90%;padding:5px;margin:0;" />
 </p>
 <p id="chooseType">任务类型：<span class="red">*</span><br />
@@ -188,8 +188,8 @@ function urlSet(){
 
 
 
-<p>任务说明：<br />
-<textarea name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
+<p><label for="task_info">任务说明：</label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
 <p>任务优先级：
 <select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
@@ -206,10 +206,26 @@ function urlSet(){
 
 <div id="hide">
 
-<div id="choosePhone">
-<div id="selectedPhones"></div>
-<div id="phoneCates">240x320</div>
-<div id="phones"></div>
+<div id="choosePhone" class="inBox">
+<div style="padding:10px;">
+<div id="selectedPhones">
+	<div class="inBoxTitle">已选中机型：</div>
+	<div class="inBoxContent" style="padding:10px;border-bottom: 1px dotted #aaa;background-color:#FFF;">
+		<a class="phone phone1" href="javascript:void(0);">moto xt800</a>
+	</div>
+</div>
+<br />
+<div id="phones">
+	<div id="phoneCates" class="inBoxTitle">机型组：
+		<a class="aButton" href="javascript:void(0);">代表机型</a><a class="aButton" href="javascript:void(0);">240x320</a><a class="aButton" href="javascript:void(0);">320x480</a>
+	</div>
+	<div class="inBoxContent" style="padding:10px;border-bottom: 1px dotted #aaa;background-color:#FFF;">
+		<a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a>
+	</div>
+</div>
+</div>
 </div>
 
 </div>

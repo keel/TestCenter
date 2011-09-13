@@ -75,6 +75,9 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .inBoxTitle{padding:5px;border-bottom: 1px dotted #aaa;font-weight: bold;}
 .inBoxContent{padding:15px 5px;}
 .inBoxLine{padding-bottom:10px;}
+.phone{font-size: 12px;border: 1px solid #000;padding:2px 5px;display: inline-block;background-color:#d26900;color:#FFF; font-weight: bold;}
+.phone1{background-color:#B913B9;}
+.phone:hover { color: #fff; text-decoration: none; background-color: #1F5982; }
 
 .sideON{color:#8080ff;font-weight: bold;}
 .search{padding:5px;}
