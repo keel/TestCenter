@@ -71,14 +71,14 @@ var sucFn = function(file, serverData){
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
 $("#task_company").autocomplete("<%=prefix %>/company/find",
-	{cacheLength:10,matchSubset:1,matchContains:1,minChars:2,
+	{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
 	formatItem:function(row){return row[1];},
 	onItemSelect:function(li){$("#task_company").val($(li).text());},
 	chk:function(v){return (escape(v).indexOf("%u") < 0);}
 	});
 
 $("#task_p_search").autocomplete("<%=prefix %>/product/find",
-		{cacheLength:10,matchSubset:1,matchContains:1,minChars:2,
+		{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
 		formatItem:function(row){return row[1];},
 		onItemSelect:function(li){$("#task_p_search").val($(li).text());},
 		chk:function(v){return (escape(v).indexOf("%u") < 0);},
@@ -205,26 +205,59 @@ function urlSet(){
 
 
 <div id="hide">
+<!-- 
+JSON方式获取该系统的所有机型和分组数据,考虑在服务端使用缓存;
+js解析json后生成机型组对象和机型对象,分别进行填充,机型按分组进行隐藏和显示;
+机型对象有选中和非选中两个状态,点击后的动作不同;
+确定选择时将phone1的对象进行收集,生成json填充到隐藏的textarea中去,同时将选中的对象复制到对应文件后面;
+需要有个reset方法来重置初始对象而不需要重新获取服务器数据;
+搜索需要实现;
 
+任务，产品为分别两个表单，分别进行验证检测;
+
+真正最后提交的字段包括2个JSON数据字段：产品和机型(testUnit创建用);
+ -->
 <div id="choosePhone" class="inBox">
 <div style="padding:10px;">
 <div id="selectedPhones">
-	<div class="inBoxTitle">已选中机型：</div>
-	<div class="inBoxContent" style="padding:10px;border-bottom: 1px dotted #aaa;background-color:#FFF;">
-		<a class="phone phone1" href="javascript:void(0);">moto xt800</a>
+	<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
+	<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
+		<table width="100%">
+		<tr><td id="td_in">
+		<div>
+		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
+</div>
+		</td>
+		<td style="width:120px;"><a class="aButton" href="javascript:void(0);" style="width:100px;text-align:center;">确定机型选择</a></td></tr>
+		</table>
+		
 	</div>
 </div>
-<br />
 <div id="phones">
-	<div id="phoneCates" class="inBoxTitle">机型组：
-		<a class="aButton" href="javascript:void(0);">代表机型</a><a class="aButton" href="javascript:void(0);">240x320</a><a class="aButton" href="javascript:void(0);">320x480</a>
-	</div>
-	<div class="inBoxContent" style="padding:10px;border-bottom: 1px dotted #aaa;background-color:#FFF;">
-		<a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a>
+	<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在全部机型中筛选)</span></div>
+	<a class="aButton phoneCate" href="javascript:void(0);">代表机型</a><a class="aButton phoneCate" href="javascript:void(0);">240x320</a><a class="aButton phoneCate" href="javascript:void(0);">320x480</a><a class="aButton phoneCate" href="javascript:void(0);">480x800</a><a class="aButton phoneCate" href="javascript:void(0);">480x854</a><a class="aButton phoneCate" href="javascript:void(0);">其他</a><span class="aButton phoneCate">
+	<label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
+	<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
+		<table width="100%">
+		<tr><td id="td_out">
+		<div>
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		</div>
+		<div>
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+		</div>
+		</td>
+		<td style="width:60px;"><a class="aButton" href="javascript:void(0);">全选</a></td></tr>
+		</table>
 	</div>
 </div>
+
 </div>
 </div>
 
