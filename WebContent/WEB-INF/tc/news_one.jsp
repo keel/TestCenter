@@ -20,7 +20,7 @@ function del(id){
 	var r=confirm("确认删除此条公告吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
 		$.post("<%=prefix %>/news/del", "id="+id ,function(data) {
-			if(data=="ok"){alert("删除成功");window.location = window.location;};
+			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>/news";};
 		});
 	}
 	return;

@@ -3,7 +3,6 @@
  */
 package com.k99k.testcenter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Pattern;
@@ -19,7 +18,6 @@ import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
-import com.k99k.khunter.MongoDao;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.StringUtil;
 
@@ -57,6 +55,8 @@ public class Phone extends Action {
 			
 		}else if(subact.equals("find")){
 			this.find(req, u, httpmsg);
+		}else if(subact.equals("json")){
+			this.json(req, u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			
 		}else if(subact.equals("a_a")){
@@ -72,7 +72,8 @@ public class Phone extends Action {
 	}
 
 	/**
-	 * 根据手机的操作系统查询
+	 * 用于机型的快速查找,需要有机型系统参数,
+	 * 例:http://localhost/TestCenter/phone/find?s=1&q=00
 	 * @param req
 	 * @param u
 	 * @param msg
@@ -80,19 +81,39 @@ public class Phone extends Action {
 	private void find(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//s为手机的操作系统
 		String s = req.getParameter("s");
-		//长度少于2直接返回空
-		if (!StringUtil.isStringWithLen(s, 2)) {
+		String q = req.getParameter("q");
+		//长度少于2直接返回空,机型系统必为数字
+		if (!StringUtil.isStringWithLen(q, 2) || !StringUtil.isDigits(s)) {
 			msg.addData("[print]", "");
 			return ;
 		}
-		
-		//TODO 返回json形式的数据
-		
-		
+		Pattern p = Pattern.compile(q.trim());
 		HashMap<String,Object> query = new HashMap<String, Object>(6);
-		query.put("type", s);
-		query.put("state", 0);
+		query.put("shortName", p);
+		query.put("type", Integer.parseInt(s));
 		String re = StaticDao.queryStr(dao, query,  null, 0, 0, null);
+		msg.addData("[print]",re);
+		return;
+	}
+	
+	/**
+	 * 用于机型组的备选,必须要有系统参数
+	 * 例:http://localhost/TestCenter/phone/json?s=1
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void json(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//s为手机的操作系统
+		String s = req.getParameter("s");
+		//长度少于2直接返回空,机型系统必为数字
+		if (!StringUtil.isDigits(s)) {
+			msg.addData("[print]", "");
+			return ;
+		}
+		HashMap<String,Object> query = new HashMap<String, Object>(2);
+		query.put("type", Integer.parseInt(s));
+		String re = StaticDao.queryGroupJson(dao, query, 0, 0, null);
 		msg.addData("[print]",re);
 		return;
 	}

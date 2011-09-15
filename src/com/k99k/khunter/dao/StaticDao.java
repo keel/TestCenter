@@ -19,6 +19,7 @@ import com.k99k.khunter.MongoDao;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 /**
  * 静态方法执行的Dao，执有多个DaoManager的Dao对象,需要在最后一个Action中初始化
@@ -107,14 +108,19 @@ public class StaticDao extends MongoDao {
 	}
 	
 	private static final BasicDBObject prop_queryStr_fields = new BasicDBObject("name",1);
+	private static final BasicDBObject prop_queryGroup_fields = new BasicDBObject("name",1);
+	private static final BasicDBObject prop_queryGroup_sort = new BasicDBObject("group",1);
 	static{
 		prop_queryStr_fields.put("shortName", 1);
+		prop_queryGroup_fields.put("shortName", 1);
+		prop_queryGroup_fields.put("group", 1);
 	}
+	
+	
 	/**
 	 * 通用的单字符串内容查找过程,查找的字段为{name:1,shortName:1}
 	 * @param dao 必须有
 	 * @param query 必须有,为null则为默认查询
-	 * @param fields 必须有,且仅有一个
 	 * @param sortBy 无则为null
 	 * @param skip 无则为0
 	 * @param len 无则为0
@@ -146,6 +152,45 @@ public class StaticDao extends MongoDao {
 			return null;
 		}
 	}
+	
+	/**
+	 * json形式的查找,查找的字段为{name:1,shortName:1,group:1},sortby:prop_queryGroup_sort
+	 * @param dao
+	 * @param query
+	 * @param skip
+	 * @param len
+	 * @param hint
+	 * @return json string
+	 */
+	@SuppressWarnings("unchecked")
+	public static final String queryGroupJson(DaoInterface dao,HashMap<String,Object> query,int skip,int len,HashMap<String,Object> hint){
+		try {
+			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
+			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
+			StringBuilder sb = new StringBuilder();
+			DBCollection coll = dao.getColl();
+			DBCursor cur = null;
+			cur = coll.find(q, prop_queryGroup_fields).sort(prop_queryGroup_sort).skip(skip).limit(len).hint(hin);
+			sb.append("[{\"g\":-1,\"d\":[");
+			int groupC = -1;
+	        while(cur.hasNext()) {
+	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
+	        	int g = (Integer)m.get("group");
+	        	if (g != groupC) {
+					sb.append("]},{\"g\":").append(g).append(",\"d\":[\"").append((String)m.get("name")).append("\"");
+					groupC = g;
+				}else{
+					sb.append(",\"").append((String)m.get("name")).append("\"");
+				}
+	        }
+	        sb.append("]}]");
+	        return sb.toString();
+		} catch (Exception e) {
+			log.error("queryGroupJson error!", e);
+			return null;
+		}
+	}
+	
 	
 //	public static final boolean login(String uName,String uPwd){
 //		if (uName != null && uPwd != null && uName.toString().trim().length()>3 && uPwd.toString().trim().length()>=6) {

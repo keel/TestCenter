@@ -126,7 +126,7 @@ public class TTask extends Action {
 	private void one(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		long id = Long.parseLong(subact);
 		KObject one = dao.findOne(id);
-		if (one== null) {
+		if (one== null || one.getState() == -1) {
 			JOut.err(404, msg);
 			return;
 		}

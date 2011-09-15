@@ -85,7 +85,7 @@ public class News extends Action {
 			msg.addData("u", u);
 			long id = Long.parseLong(subact);
 			KObject news_one = dao.findOne(id);
-			if (news_one == null) {
+			if (news_one == null || news_one.getState() == -1) {
 				JOut.err(404, httpmsg);
 				return super.act(msg);
 			}
