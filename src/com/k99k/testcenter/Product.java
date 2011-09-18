@@ -57,6 +57,8 @@ public class Product extends Action {
 			
 		}else if(subact.equals("find")){
 			this.find(req, u, httpmsg);
+		}else if(subact.equals("one")){
+			this.one(req, u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			
 		}else if(subact.equals("a_a")){
@@ -69,6 +71,30 @@ public class Product extends Action {
 			
 		}
 		return super.act(msg);
+	}
+	
+	/**
+	 * 查询单个产品(json形式)
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void one(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String p = req.getParameter("p");
+		//长度少于2直接返回空
+		if (!StringUtil.isStringWithLen(p,2)) {
+			msg.addData("[print]", "");
+			return ;
+		}
+		try {
+			p = new String(p.trim().getBytes("ISO-8859-1"),"utf-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		KObject pt = dao.findOne(p);
+		String re = (pt==null)?"":pt.toString();
+		msg.addData("[print]",re);
+		return;
 	}
 	
 	/**

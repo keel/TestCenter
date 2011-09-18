@@ -23,9 +23,25 @@ out.print(JSPOut.out("head0","0","创建新任务"));%>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.isMy = <%=(ismy)?"true":"false" %>;
+$.userType = <%=user.getType() %>;
+$.company = "<%=user.getProp("company") %>";
 $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
 	$(tar).addClass("sideON");
+	//是否显示选择公司
+	if($.userType>=4){$("#chooseCompany").show();}
+	$(".prev1").hide();
+	//任务类型
+	$("input[name='task_type']").click(function(){
+		var t = $(this).val();$.t = t;
+		if(t<=1){$("#productFS2").appendTo($("#hide"));$("#productFS1").appendTo($("#task_new"));}
+		else{$("#productFS1").appendTo($("#hide"));$("#productFS2").appendTo($("#task_new"));}
+	});
+	//产品
+	var acc = $("#task_p_acc0").parent();acc.hide();
+	$("input[name='task_p_net']").click(function(){if($(this).val()!=0){acc.show();}else{acc.hide();}});
+	
+	
 //处理请求
 $.validator.dealAjax = {
 	bt:$("#submitBT"),
@@ -43,22 +59,43 @@ $.validator.dealAjax = {
 $.validator.setDefaults({
 	//处理radio选择的错误提示
 	errorPlacement : function(label, element){
-	if(element.attr("name")=="task_type"){$("#task_type_err").append(label);}else{element.after(label);}
+	if(element.attr("type")=="radio"){
+		var n = $("input[name='"+element.attr("name")+"']").last().next();var t=(n && n[0].nodeName.toUpperCase()=="LABEL")?n:n.prev();
+	t.after(label);}else{element.after(label);}
 	}
 });
-//开始验证
-$('#add_form').validate({
-    /* 设置验证规则 */
+
+$.validator.over = function(form){
+	switch (form.id) {
+	case "productFrom":
+		$("#productFrom input,#productFrom select,#productFrom textarea").each(function(i){
+			var v = (this.nodeName=="SELECT")?$(this).find("option:selected").text():($(this).attr("type")=="radio")?$("input[name='"+this.name+"']:checked").next().text():$(this).val();
+			$("#"+this.name+"_v").html(v);$("#"+this.name+"_h").val($(this).val());
+		});
+		pJSON.name = $("#task_name").val();
+		pJSON.productID = $("#task_p_id").val();
+		pJSON.sys = $("#task_p_sys").val();
+		pJSON.type = $("#task_p_type").val();
+		pJSON.netType = $("input[name='task_p_net']:checked").val();
+		pJSON.netPort = (pJSON.netType>0)?$("input[name='task_p_acc']:checked").val():0;
+		pJSON.feeInfo = $("#task_p_fee").val();
+		pJSON.company = ($("#task_company").val() == "")?$.company:$("#task_company").val();
+		next(1);
+		$("#productFS1").appendTo($("#hide"));$("#productFS3").appendTo($("#task_new"));$("#chooseType").hide();
+		break;
+	default:
+		break;
+	}
+}
+
+$('#productFrom').validate({
     rules: {
-		task_info: {
-            rangelength:[1,500]
-        },
-        task_type:{
-            required:true
-        },
-        task_company:{
-        	required:true,rangelength:[1,50]
-        }
+		task_name: {required:true,rangelength:[1,500]},
+		task_p_id: {required:true,number:true},
+		task_p_sys: {required:true},
+		task_p_type: {required:true},
+		task_p_net: {required:true},
+		task_p_fee: {required:true,rangelength:[1,1500]}
     }
 });
 var sucFn = function(file, serverData){
@@ -66,7 +103,7 @@ var sucFn = function(file, serverData){
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
 	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:delFile(\""+i+"\");'>选择机型 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
+	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:selectPhone(\""+i+"\");'>选择机型 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
@@ -75,17 +112,89 @@ $("#task_company").autocomplete("<%=prefix %>/company/find",
 	formatItem:function(row){return row[1];},
 	onItemSelect:function(li){$("#task_company").val($(li).text());},
 	chk:function(v){return (escape(v).indexOf("%u") < 0);}
-	});
-
-$("#task_p_search").autocomplete("<%=prefix %>/product/find",
-		{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
-		formatItem:function(row){return row[1];},
-		onItemSelect:function(li){$("#task_p_search").val($(li).text());},
-		chk:function(v){return (escape(v).indexOf("%u") < 0);},
-		extraParams:addCompany
-		});
-
 });
+$("#task_p_search").autocomplete("<%=prefix %>/product/find",
+	{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
+	formatItem:function(row){return row[1];},
+	onItemSelect:function(li){$("#task_p_search").val($(li).text());},
+	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0)};},
+	extraParams:addCompany
+});
+
+/*
+$.getJSON("<%=prefix %>/phone/json?s=",function(data){
+	var i = 0;
+	for(var j=data.length;i<j;i++){
+		$("#msgList").append(li);
+	}
+	if(i>0){$("#emptyLI").remove();};
+});
+*/
+});
+//------------------------------
+var pJSON = {};
+var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960",11:"代表机型",12:"其他"};
+var allPData = [];
+var cGroup = 0;
+function selectPhone(i){
+	$("#fu_"+i).css("background-color","#FFF");
+	if(allPType.length == 0){
+		$.getJSON("<%=prefix %>/phone/json?s="+pJSON.sys,function(data){
+			if(data==""){alert("产品操作系统不正确.请返回上一步重设.");return;}
+			for(var i=1,j=data.length;i<j;i++){
+				var gg = $("<a class=\"aButton phoneCate\" href=\"javascript:showGroup("+data[i].g+");\" id='"+data[i].g+"'>"+phoneType[data[i].g]+"<\/a>");
+				$("#phoneCates").after(gg);
+			}
+			allPData = data;
+			$("#phone_fast").keyup(function(e){scPh(e);});
+			addP2Group(data);
+		});
+	}else{clearIn();}
+	$("#choosePhone").appendTo($("#fu_"+i));
+}
+function clearIn(){
+	//清除td_in
+}
+function scPh(e){
+	var k = e.keyCode;
+	if(k==38||k==40||k==9||k==13||k==46||(k>8&&k<32)){return;}
+	var q = $("#phone_fast").val();
+	$("#g"+cGroup).hide();
+	cGroup = 999;
+	var gg=$("#g999");
+	gg.html("").show();
+	q = $.trim(q).toLowerCase();
+	for ( var i = 1; i < allPData.length; i++) {
+		for ( var j = 0; j < allPData[i].d.length; j++) {
+			if(allPData[i].d[j].toLowerCase().indexOf(q)>=0){
+			$("<a class=\"phone\" href=\"javascript:inPh("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+allPData[i].d[j]+"<\/a>").appendTo(gg);
+			}
+		}
+	}
+}
+function inPh(i,j){
+	$("#p_"+i+"_"+j).attr("href","javascript:outPh("+i+","+j+");").addClass("phone1").appendTo($("#td_in"));
+}
+function outPh(i,j){
+	$("#p_"+i+"_"+j).attr("href","javascript:inPh("+i+","+j+");").removeClass("phone1").appendTo($("#g"+(i-1)));
+}
+function addP2Group(data){
+	for ( var i = 1; i < data.length; i++) {
+		var gg = $("<div id='g"+data[i].g+"'></div>");
+		for(var j = 0,k=data[i].d.length;j<k;j++){
+			$("<a class=\"phone\" href=\"javascript:inPh("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+data[i].d[j]+"<\/a>").appendTo(gg);
+		}
+		gg.hide().appendTo($("#td_out"));
+	}
+	showGroup(0);
+}
+function showGroup(i){
+	if($("#td_out").find("#g"+i).length>0){
+		$("#g"+cGroup).hide();
+		$("#g"+i).show();
+		cGroup = i;
+	}
+}
 function addCompany(){
 	return {c:$("#task_company").val()};
 }
@@ -98,11 +207,68 @@ function aSubmit(){
 	$("#news_files").val(ff.join(","));
 	$("#news_form").submit();
 };
-function pSearch(){
-	
+function saveP(){$('#productFrom').submit();}
+function editP(){
+	var e = ($.t<=1)?$('#productFS1'):$('#productFS2');
+	e.appendTo($("#task_new"));$('#productFS3').appendTo($("#hide"));
+}
+function pSelect(){
+	$.getJSON("<%=prefix %>/product/one?p="+$("#task_p_search").val(),function(data){
+		if(data==""){alert("产品不存在!请确认产品名称已正确输入.");return;}
+		else{
+			$("#task_p_json_h").val(data);
+			pJSON = data;
+			$("#task_name_v").text(data.name);
+			$("#task_p_id_v").text(data.productID);
+			$("#task_p_sys_v").text($("#task_p_sys > option[value="+data.sys+"]").text());
+			$("#task_p_type_v").text($("#task_p_type > option[value="+data.type+"]").text());
+			$("#task_p_net_v").text($("label[for='task_p_net"+data.netPort+"']").text());
+			$("#task_p_acc_v").text($("label[for='task_p_acc"+data.netPort+"']").text());
+			$("#task_p_fee_v").text(data.feeInfo);
+			$("#productFS2").appendTo($("#hide"));$("#productFS3").appendTo($("#task_new"));$("#chooseType").hide();
+		}
+		next(1);
+	}).error(function(){alert("查找产品出错!请刷新页面或稍后再试.");});
+}
+function next(i){
+	switch (i) {
+	case 1:
+		$(".prev1,.next1,#p_e").show();
+		break;
+	case 2:
+		$(".next1,#p_e").hide();
+		if($("#task_p_sys_v").text()=="WAP"){$("#fileupload").hide();$("#urlSet").show();}else{$("#urlSet").hide();$("#fileupload").show();};
+		$("#task_new").append($("#uploadFS"));
+		break;
+
+	default:
+		break;
+	}
+}
+function pre(i){
+	switch (i) {
+	case 1:
+		$(".next1,#p_e").show();
+		$("#chooseType").show();$(".prev1").hide();
+		$("#productFS1,#productFS3").appendTo("#hide");
+		break;
+	case 2:
+		editP();next(1);
+		$("#uploadFS").appendTo($("#hide"));
+		break;
+
+	default:
+		break;
+	}
 }
 function urlSet(){
 	
+}
+function filesSet(){
+	
+}
+function task_company(){
+	$("#task_company_h").val($("#task_company").val());
 }
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
@@ -116,95 +282,26 @@ function urlSet(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle">创建新任务</div>
-<div class="aboxContent">
-<form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
-<p id="chooseCompany">
+<div class="aboxContent" id="task_new">
+<p id="chooseCompany" class="hide">
 <label for="task_company">选择公司：</label><span class="red">*</span><span class="gray">(输入公司名称拼音首字母检索,如:输入jsdx,检索“江苏电信”)</span><br />
-<input type="text" id="task_company" name="task_company" style="width:90%;padding:5px;margin:0;" />
+<input type="text" id="task_company" name="task_company" style="width:90%;padding:5px;margin:0;" /><br />
 </p>
 <p id="chooseType">任务类型：<span class="red">*</span><br />
-<input type="radio" name="task_type" id="type0" value="0" /><label for="type0">新产品</label>
-<input type="radio" name="task_type" id="type1" value="1" /><label for="type1">修改后复测</label>
-<input type="radio" name="task_type" id="type2" value="2" /><label for="type2">新机型适配</label>
-<input type="radio" name="task_type" id="type3" value="3" /><label for="type3">DEMO测试</label>
+<input type="radio" name="task_type" id="type0" value="0" /><label for="type0">新产品测试</label>
+<input type="radio" name="task_type" id="type1" value="1" /><label for="type1">DEMO测试</label>
+<input type="radio" name="task_type" id="type2" value="2" /><label for="type2">修正Bug</label>
+<input type="radio" name="task_type" id="type3" value="3" /><label for="type3">新机型适配</label>
 <input type="radio" name="task_type" id="type4" value="4" /><label for="type4">指定复测</label>
 <input type="radio" name="task_type" id="type5" value="5" /><label for="type5">拨测</label>
 <input type="radio" name="task_type" id="type6" value="6" /><label for="type6">其他</label>
 <br /><span id="task_type_err"></span>
 </p>
-<div class="inBox">
-    <div class="inBoxTitle">产品信息</div> 
-    <div class="inBoxContent">
-    	<div class="inBoxLine"><label for="task_name">产品名称:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_name" id="task_name" /></div> 
-    	<div class="inBoxLine"><label for="task_p_id">产品ID:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_p_id" id="task_p_id" /> </div> 
-    	<div class="inBoxLine"><label for="task_p_sys">操作系统:</label><span class="red">*</span><select name="task_p_sys" id="task_p_sys"><option value="0">KJava</option><option value="1">Android</option><option value="2">WAP</option><option value="3">Brew</option><option value="4">Windows mobile</option><option value="5">Windows CE</option><option value="6">其他</option></select></div> 
-    	<div class="inBoxLine"><label for="task_p_type">产品计费类型:</label><span class="red">*</span><select name="task_p_type" id="task_p_type"><option value="0">免费</option><option value="1">短代</option><option value="2">点数</option><option value="3">按次下载</option><option value="4">进游戏包</option></select></div> 
-    	<div class="inBoxLine"><label for="task_p_acc">接口调测情况:</label><span class="red">*</span><input type="radio" name="task_p_acc" id="task_p_acc0" value="0" /><label for="task_p_acc0">未调测</label>
-    	<input type="radio" name="task_p_acc" id="task_p_acc1" value="1" /><label for="task_p_acc1">已调通</label>
-    	<input type="radio" name="task_p_acc" id="task_p_acc2" value="2" /><label for="task_p_acc2">调测中</label></div> 
-    	<div class="inBoxLine"><label for="task_p_fee">计费点描述:</label><span class="gray">(注意要与业务管理平台完全一致)</span><br /><textarea name="task_p_fee" id="task_p_fee" rows="3" cols="3" style="height:100px;"></textarea> </div> 
-    	<a href="javascript:saveP();" class="aButton tx_center" style="width:60px;">确定</a>
-    </div>
+
+</div>
 </div>
 
-
-<br />
-
-
-
-<div class="inBox">
-    <div class="inBoxTitle">产品选择</div> 
-    <div class="inBoxContent">
-    	<label for="task_p_search">产品名称检索：</label><span class="red">*</span><span class="gray">(输入产品名称拼音首字母检索)</span><br />
-    	<input type="text" name="task_p_search" id="task_p_search" style="width:300px;" /><a href="javascript:pSearch();" class="aButton">确定</a>
-    </div>
-</div>
-
-
-
-<br />
-
-<div class="inBox">
-    <div class="inBoxTitle">游戏实体包上传或URL设置</div> 
-    <div class="inBoxContent">
-	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
-		<div id="swfBT" class="inBoxLine">
-			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo"> &nbsp;文件最大不超过100M,格式限定为apk,jar,jad,zip</span>
-		</div>
-		<div id="upFiles"></div>
-	</form>
-	<div id="urlSet">
-		<label for="task_p_url">URL设置：</label><span class="red">*</span><span class="gray">(请输入WAP游戏的入口URL)</span><br />
-		<input type="text" name="task_p_url" id="task_p_url" style="width:300px;" />
-		<a href="javascript:urlSet();" class="aButton">确定</a>
-	</div>
-    </div>
-</div>
-
-
-
-<br />
-
-
-
-<p><label for="task_info">任务说明：</label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
-<p>任务优先级：
-<select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
-</p>
-<p>下一流程处理人：
-<select name="task_operator"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
-</p>
-
-<input type="hidden" id="news_files" name="news_files" value="" />
-</form>
-
-
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
-
-
-<div id="hide">
+<div id="hide" class="hide">
 <!-- 
 JSON方式获取该系统的所有机型和分组数据,考虑在服务端使用缓存;
 js解析json后生成机型组对象和机型对象,分别进行填充,机型按分组进行隐藏和显示;
@@ -217,57 +314,109 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 
 真正最后提交的字段包括2个JSON数据字段：产品和机型(testUnit创建用);
  -->
+<div class="inBox" id="productFS1">
+    <div class="inBoxTitle">产品信息</div> 
+    <form action="" id="productFrom">
+    <div class="inBoxContent">
+    	<div class="inBoxLine"><label for="task_name">产品名称:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_name" id="task_name" /></div> 
+    	<div class="inBoxLine"><label for="task_p_id">产品ID:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_p_id" id="task_p_id" /> </div> 
+    	<div class="inBoxLine"><label for="task_p_sys">操作系统:</label><span class="red">*</span><select name="task_p_sys" id="task_p_sys"><option value="0">KJava</option><option value="1">Android</option><option value="2">WAP</option><option value="3">Brew</option><option value="4">Windows mobile</option><option value="5">Windows CE</option><option value="6">其他</option></select></div> 
+    	<div class="inBoxLine"><label for="task_p_type">产品类型:</label><span class="red">*</span><select name="task_p_type" id="task_p_type"><option value="0">免费</option><option value="1">短代</option><option value="2">点数</option><option value="3">按次下载</option><option value="4">进游戏包</option></select></div> 
+    	<div class="inBoxLine"><label for="task_p_net">联网情况:</label><span class="red">*</span>
+    	<input type="radio" name="task_p_net" id="task_p_net0" value="0" /><label for="task_p_net0">单机</label>
+    	<input type="radio" name="task_p_net" id="task_p_net1" value="1" /><label for="task_p_net1">网游</label>
+    	<input type="radio" name="task_p_net" id="task_p_net2" value="2" /><label for="task_p_net2">WAP</label></div> 
+    	<div class="inBoxLine"><label for="task_p_acc">接口调测情况:</label>
+    	<input type="radio" name="task_p_acc" id="task_p_acc0" value="0" checked="checked" /><label for="task_p_acc0">未调测</label>
+    	<input type="radio" name="task_p_acc" id="task_p_acc1" value="1" /><label for="task_p_acc1">已调通</label>
+    	<input type="radio" name="task_p_acc" id="task_p_acc2" value="2" /><label for="task_p_acc2">调测中</label></div> 
+    	<div class="inBoxLine"><label for="task_p_fee">计费点描述:</label><span class="gray">(注意要与业务管理平台完全一致)</span><br /><textarea name="task_p_fee" id="task_p_fee" rows="3" cols="3" style="height:100px;"></textarea> </div> 
+    	<a href="javascript:saveP();" class="aButton tx_center" style="width:60px;">确定</a> <a href="javascript:pre(1);" class="aButton tx_center prev1">上一步</a>
+    </div>
+    </form>
+</div>
+
+<div class="inBox" id="productFS3">
+    <div class="inBoxTitle">产品信息</div> 
+    <div class="inBoxContent">
+    	<div class="inBoxLine">产品名称: <span id="task_name_v" class="blueBold"></span> 产品ID: <span id="task_p_id_v" class="blueBold"></span> 操作系统: <span id="task_p_sys_v" class="blueBold"></span></div> 
+    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"></span> 联网情况: <span id="task_p_net_v" class="blueBold"></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"></span></div> 
+    	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="blueBold"></span></div>
+    	<a href="javascript:editP();" class="aButton tx_center" style="width:60px;" id="p_e">更改</a> 
+    	<a href="javascript:next(2);" class="aButton tx_center next1">下一步：上传文件(或设置WAP产品url)</a>
+    </div>
+</div>
+
+<div class="inBox" id="productFS2">
+    <div class="inBoxTitle">产品选择</div> 
+    <div class="inBoxContent">
+    	<label for="task_p_search">产品名称检索：</label><span class="red">*</span><span class="gray">(输入产品名称拼音首字母检索)</span><br />
+    	<input type="text" name="task_p_search" id="task_p_search" style="width:300px;" /><a href="javascript:pSelect();" class="aButton">确定</a>   <a href="javascript:pre(1);" class="aButton tx_center prev1">上一步</a>
+    </div>
+</div>
+ 
 <div id="choosePhone" class="inBox">
-<div style="padding:10px;">
-<div id="selectedPhones">
-	<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
-	<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
-		<table width="100%">
-		<tr><td id="td_in">
-		<div>
-		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a><a class="phone phone1" href="javascript:void(0);">moto xt800</a> 
-</div>
-		</td>
-		<td style="width:120px;"><a class="aButton" href="javascript:void(0);" style="width:100px;text-align:center;">确定机型选择</a></td></tr>
-		</table>
-		
+	<div style="padding:10px;">
+	<div id="selectedPhones">
+		<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
+		<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
+			<table width="100%">
+			<tr><td id="td_in"></td>
+			<td style="width:120px;"><a class="aButton" href="javascript:void(0);" style="width:100px;text-align:center;">确定机型选择</a></td></tr>
+			</table>
+			
+		</div>
 	</div>
-</div>
-<div id="phones">
-	<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在全部机型中筛选)</span></div>
-	<a class="aButton phoneCate" href="javascript:void(0);">代表机型</a><a class="aButton phoneCate" href="javascript:void(0);">240x320</a><a class="aButton phoneCate" href="javascript:void(0);">320x480</a><a class="aButton phoneCate" href="javascript:void(0);">480x800</a><a class="aButton phoneCate" href="javascript:void(0);">480x854</a><a class="aButton phoneCate" href="javascript:void(0);">其他</a><span class="aButton phoneCate">
-	<label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
-	<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
-		<table width="100%">
-		<tr><td id="td_out">
-		<div>
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
+	<div id="phones">
+		<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在全部机型中筛选)</span></div><span class="aButton phoneCate"><label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
+		<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
+			<table width="100%">
+			<tr><td id="td_out"><div id="g999"></div></td>
+			<td style="width:60px;"><a class="aButton" href="javascript:void(0);">全选</a></td></tr>
+			</table>
 		</div>
-		<div>
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
-		<a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a><a class="phone" href="javascript:void(0);">moto xt800</a> 
-		</div>
-		</td>
-		<td style="width:60px;"><a class="aButton" href="javascript:void(0);">全选</a></td></tr>
-		</table>
+	</div>
 	</div>
 </div>
 
+<div class="inBox" id="uploadFS">
+    <div class="inBoxTitle">游戏实体包上传或URL设置</div> 
+    <div class="inBoxContent">
+	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
+		<div id="swfBT" class="inBoxLine">
+			<div id="spanSWFUploadButton">请稍候...</div> 
+			<span id="uploadInfo"> &nbsp;文件最大不超过100M,格式限定为apk,jar,jad,zip</span>
+		</div>
+		<div id="upFiles"></div>
+		<br /><a href="javascript:filesSet();" class="aButton">确定</a> <a href="javascript:pre(2);" class="aButton tx_center pre2">上一步</a> 
+	</form>
+	<div id="urlSet">
+		<label for="task_p_url">URL设置：</label><span class="red">*</span><span class="gray">(请输入WAP游戏的入口URL)</span><br />
+		<input type="text" name="task_p_url" id="task_p_url" style="width:300px;" />
+		<a href="javascript:urlSet();" class="aButton">确定</a> <a href="javascript:pre(2);" class="aButton tx_center pre2">上一步</a>
+	</div>
+    </div>
 </div>
-</div>
+
+<div id="taskFS">
+<form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
+<p><label for="task_info">任务说明：</label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
+<p>任务优先级：
+<select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+</p>
+<p>下一流程处理人：
+<select name="task_operator"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+</p>
+<input type="hidden" id="task_p_json_h" class="task_p_json_h" value="" />
+<input type="hidden" id="news_files" name="news_files" value="" />
+</form>
+
+
+<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
 
 </div>
-
-
-
-
-
-</div>
+<!-- end of hide -->
 </div>
 		<div class="clear"></div>
 		</div>

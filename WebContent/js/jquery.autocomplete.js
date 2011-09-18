@@ -1,4 +1,5 @@
-jQuery.autocomplete = function(input, options) {
+/* http://www.pengoworks.com/workshop/jquery/autocomplete.htm */
+$.autocomplete = function(input, options) {
 	// Create a link to self
 	var me = this;
 
@@ -44,23 +45,23 @@ jQuery.autocomplete = function(input, options) {
 
 		// no url was specified, we need to adjust the cache length to make sure it fits the local data store
 		if( typeof options.url != "string" ) options.cacheLength = 1;
-
-		// loop through the array and create a lookup structure
-		for( var i=0; i < options.data.length; i++ ){
-			// if row is a string, make an array otherwise just reference the array
-			row = ((typeof options.data[i] == "string") ? [options.data[i]] : options.data[i]);
-
-			// if the length is zero, don't add to list
-			if( row[0].length > 0 ){
-				// get the first character
-				sFirstChar = row[0].substring(0, 1).toLowerCase();
-				// if no lookup array for this character exists, look it up now
-				if( !stMatchSets[sFirstChar] ) stMatchSets[sFirstChar] = [];
-				// if the match is a string
-				stMatchSets[sFirstChar].push(row);
+		//Keel:ONLY matchContains need push cache first
+		if(!options.matchContains){
+			// loop through the array and create a lookup structure
+			for( var i=0; i < options.data.length; i++ ){
+				// if row is a string, make an array otherwise just reference the array
+				row = ((typeof options.data[i] == "string") ? [options.data[i]] : options.data[i]);
+				// if the length is zero, don't add to list
+				if( row[0].length > 0 ){
+					// get the first character
+					sFirstChar = row[0].substring(0, 1).toLowerCase();
+					// if no lookup array for this character exists, look it up now
+					if( !stMatchSets[sFirstChar] ) stMatchSets[sFirstChar] = [];
+					// if the match is a string
+					stMatchSets[sFirstChar].push(row);
+				}
 			}
 		}
-
 		// add the data items to the cache
 		for( var k in stMatchSets ){
 			// increase the cache size
@@ -350,6 +351,16 @@ jQuery.autocomplete = function(input, options) {
 	function loadFromCache(q) {
 		if (!q) return null;
 		if (cache.data[q]) return cache.data[q];
+		//keel:search from data directly!!
+		if(options.data && options.matchContains){
+			var re = [];
+			for (var i=0; i < options.data.length; i++) {
+				var d = options.data[i];
+				if(d.toLowerCase().indexOf(q.toLowerCase())>=0){re.push([d])};
+			};
+			return (re.length==0)?null:re;
+		}
+		
 		if (options.matchSubset) {
 			for (var i = q.length - 1; i >= options.minChars; i--) {
 				var qs = q.substr(0, i);
@@ -475,7 +486,7 @@ jQuery.fn.autocomplete = function(url, options, data) {
 	options.delay = options.delay || 400;
 	options.matchCase = options.matchCase || 0;
 	options.matchSubset = options.matchSubset || 1;
-	options.matchContains = options.matchContains || 0;
+	options.matchContains = options.matchContains || 1;
 	options.cacheLength = options.cacheLength || 1;
 	options.mustMatch = options.mustMatch || 0;
 	options.extraParams = options.extraParams || {};
