@@ -100,7 +100,9 @@ function uploadSuccess(file, serverData) {
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 }
 function delFile(fid){
-	$("#fu_"+fid).remove();
+	var t = $("#fu_"+fid);
+	if(t.find("#choosePhone").length>=0){$("#choosePhone").appendTo("#hide");}
+	t.remove();
 }
 function uploadError(file, errorCode, message) {
 	switch (errorCode) {

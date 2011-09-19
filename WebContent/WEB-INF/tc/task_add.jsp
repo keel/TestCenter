@@ -29,7 +29,7 @@ $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
 	$(tar).addClass("sideON");
 	//是否显示选择公司
-	if($.userType>=4){$("#chooseCompany").show();}
+	if($.userType>=4){$("#chooseCompany")[0].need = true;gs(true);}
 	$(".prev1").hide();
 	//任务类型
 	$("input[name='task_type']").click(function(){
@@ -103,7 +103,7 @@ var sucFn = function(file, serverData){
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
 	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:selectPhone(\""+i+"\");'>选择机型 </a> ]<span class=\"files_name\">"+file.name+"</span></div>");
+	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:selectPhone(\""+i+"\");'>选择机型 </a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
@@ -136,9 +136,17 @@ var pJSON = {};
 var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960",11:"代表机型",12:"其他"};
 var allPData = [];
 var cGroup = 0;
+function selectOK(){
+	var ok = $("<div class='sok'></div>");
+	$("#td_in").find(".phone1").each(function(i){
+		$("<span class='txtBox' id='s"+this.id+"'>"+$(this).text()+"</span>").appendTo(ok);
+	});
+	ok.appendTo($("#fu_"+$("#choosePhone")[0].fu));
+	clearIn();$("#choosePhone").appendTo("#hide");
+}
 function selectPhone(i){
 	$("#fu_"+i).css("background-color","#FFF");
-	if(allPType.length == 0){
+	if(allPData.length == 0){
 		$.getJSON("<%=prefix %>/phone/json?s="+pJSON.sys,function(data){
 			if(data==""){alert("产品操作系统不正确.请返回上一步重设.");return;}
 			for(var i=1,j=data.length;i<j;i++){
@@ -149,11 +157,15 @@ function selectPhone(i){
 			$("#phone_fast").keyup(function(e){scPh(e);});
 			addP2Group(data);
 		});
-	}else{clearIn();}
+	}else{clearIn();$("#fu_"+i).find(".sok").remove();}
+	$("#choosePhone")[0].fu = i;
 	$("#choosePhone").appendTo($("#fu_"+i));
 }
 function clearIn(){
-	//清除td_in
+	$("#td_in").find(".phone1").each(function(i){
+		var arr =this.id.split("_");
+		outPh(arr[1],arr[2]);
+	});
 }
 function scPh(e){
 	var k = e.keyCode;
@@ -188,6 +200,9 @@ function addP2Group(data){
 	}
 	showGroup(0);
 }
+function chooseAll(){
+	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");inPh(a[1],a[2]);});
+}
 function showGroup(i){
 	if($("#td_out").find("#g"+i).length>0){
 		$("#g"+cGroup).hide();
@@ -213,8 +228,8 @@ function editP(){
 	e.appendTo($("#task_new"));$('#productFS3').appendTo($("#hide"));
 }
 function pSelect(){
-	$.getJSON("<%=prefix %>/product/one?p="+$("#task_p_search").val(),function(data){
-		if(data==""){alert("产品不存在!请确认产品名称已正确输入.");return;}
+	$.getJSON("<%=prefix %>/product/one?p="+encodeURI($("#task_p_search").val()),function(data){
+		if(!data || data==""){alert("产品不存在!请确认产品名称已正确输入.");return;}
 		else{
 			$("#task_p_json_h").val(data);
 			pJSON = data;
@@ -234,9 +249,10 @@ function next(i){
 	switch (i) {
 	case 1:
 		$(".prev1,.next1,#p_e").show();
+		gs(false);
 		break;
 	case 2:
-		$(".next1,#p_e").hide();
+		$(".next1,#p_e").hide();$("#swfBT,.u_ok").show();
 		if($("#task_p_sys_v").text()=="WAP"){$("#fileupload").hide();$("#urlSet").show();}else{$("#urlSet").hide();$("#fileupload").show();};
 		$("#task_new").append($("#uploadFS"));
 		break;
@@ -245,11 +261,13 @@ function next(i){
 		break;
 	}
 }
+function gs(show){
+	if( $("#chooseCompany")[0].need){$("#c_ok").remove();if(show){$("#chooseCompany").show();}else{$("#chooseCompany").hide().after($("<p id='c_ok'>公司:</p>").append($("#task_company").val()));}};
+}
 function pre(i){
 	switch (i) {
 	case 1:
-		$(".next1,#p_e").show();
-		$("#chooseType").show();$(".prev1").hide();
+		$(".next1,#p_e,#chooseType").show();gs(true);$(".prev1").hide();
 		$("#productFS1,#productFS3").appendTo("#hide");
 		break;
 	case 2:
@@ -265,7 +283,8 @@ function urlSet(){
 	
 }
 function filesSet(){
-	
+	//生成文件json
+	$("#swfBT,.u_ok").hide();
 }
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
@@ -355,24 +374,24 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
     </div>
 </div>
  
-<div id="choosePhone" class="inBox">
+<div id="choosePhone" class="inBox" style="width:95%;">
 	<div style="padding:10px;">
 	<div id="selectedPhones">
 		<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
 		<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
 			<table width="100%">
 			<tr><td id="td_in"></td>
-			<td style="width:120px;"><a class="aButton" href="javascript:void(0);" style="width:100px;text-align:center;">确定机型选择</a></td></tr>
+			<td style="width:90px;"><a class="aButton" href="javascript:selectOK();" style="width:70px;text-align:center;">确定所选</a></td></tr>
 			</table>
 			
 		</div>
 	</div>
 	<div id="phones">
-		<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在全部机型中筛选)</span></div><span class="aButton phoneCate"><label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
+		<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在<span class="black bold">该类系统所有机型</span>中筛选)</span></div><span class="aButton phoneCate"><label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
 		<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
 			<table width="100%">
 			<tr><td id="td_out"><div id="g999"></div></td>
-			<td style="width:60px;"><a class="aButton" href="javascript:void(0);">全选</a></td></tr>
+			<td style="width:60px;"><a class="aButton" href="javascript:chooseAll();">全选</a></td></tr>
 			</table>
 		</div>
 	</div>
@@ -385,7 +404,7 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
 			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo"> &nbsp;文件最大不超过100M,格式限定为apk,jar,jad,zip</span>
+			<span id="uploadInfo"> &nbsp;文件最大不超过100M,格式限定为apk,jar,jad,zip,按住Ctrl键可多选</span>
 		</div>
 		<div id="upFiles"></div>
 		<br /><a href="javascript:filesSet();" class="aButton">确定</a> <a href="javascript:pre(2);" class="aButton tx_center pre2">上一步</a> 

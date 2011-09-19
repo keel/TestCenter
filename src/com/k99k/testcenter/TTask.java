@@ -56,7 +56,7 @@ public class TTask extends Action {
 		}
 		if (subact.equals("")) {
 			this.list(subact,req, u, httpmsg);
-		}if (subact.equals("my")) {
+		}else if (subact.equals("my")) {
 			String subact2 = KFilter.actPath(msg, 3, "");
 			if (subact2.equals("")) {
 				this.list(subact,req, u, httpmsg);

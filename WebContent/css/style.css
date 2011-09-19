@@ -60,10 +60,11 @@ input.error,textarea.error{ border: 1px dotted red; }
 label.error{color:red;width:300px;text-align:left;display:block;}
 .tx_center{text-align:center;}
 .red{color:red;}
+.black{color:#000;}
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}
 .txtLeft{text-align: left;}
-.gray{color:#bbb;}
+.gray{color:#999;}
 .orangeBold{color:#ff8040;font-weight: bold;}
 .blueBold{color:#8080ff;font-weight: bold;}
 .blue{color:#8080ff;}
@@ -82,7 +83,8 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .phone:hover {color:#fff;text-decoration:none; background-color: #1F5982; }
 /*fontsize set to 13px fix NOT in line on IE*/
 .phoneCate{line-height: 30px;padding:3px 7px;vertical-align:top;font-size:13px;background-color:#eee;color:#1F5982;margin:0;border: 1px solid #1F5982;border-left:none;}
-
+.txtBox{display: inline-block;background-color:#eee;color:#1F5982;padding:3px;margin:3px 3px 0 0;border: 1px solid #1F5982;}
+.sok{padding:10px 0;}
 .okBT{width:60px;text-align: center;}
 
 .sideON{color:#8080ff;font-weight: bold;}
