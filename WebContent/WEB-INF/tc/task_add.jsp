@@ -103,7 +103,7 @@ var sucFn = function(file, serverData){
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
 	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:selectPhone(\""+i+"\");'>选择机型 </a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
+	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>选择机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
@@ -298,19 +298,44 @@ function urlSet(){
 	
 }
 function filesSet(){
-	$("#swfBT,.u_ok").hide();
-	//生成文件json
+	//检测是否每个文件都指定了机型组
+	
+	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
+	//生成文件json
 	
 }
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
 }
-
-var phoneType_java = ["C5900","E329","W239","F839","F339","E379","C7500","other"];
-var phoneType_android = ["240x320","320x480","480x800","480x854","960x800","other"];
-function choosePhType(){
-	
+//-------------------------
+var phTypes = [["C5900","E329","W239","F839","F339","E379","C7500","其他"],
+                  ["240x320","320x480","480x800","480x854","960x800","其他"]];
+function choosePhType(fu){
+	var pt = $("#task_p_sys").val();
+	$("#fu_"+fu).css("background-color","#FFF");
+	if(pt>=0 && pt<=1){
+		if($("#phTypes").length<=0){
+			var tt = $("<div id='phTypes'></div>");
+			for ( var i = 0; i < phTypes[pt].length; i++) {
+				$("<input type='checkbox' class='pht' name='pht' id='pht_"+i+"' value='"+phTypes[pt][i]+"' /><label for='pht_"+i+"'>"+phTypes[pt][i]+"</label> ").appendTo(tt);
+			}
+			tt.append("<br /><a href=\"javascript:phtSet();\" class=\"aButton\">确定<\/a>");
+			tt[0].fu = fu;
+			tt.appendTo($("#fu_"+fu));
+		}else{
+			var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
+			p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
+		}
+	}
+}
+function phtSet(){
+	var ok = $("<div class='sok'></div>");
+	$("#phTypes").find(".pht:checked").each(function(i){
+		$("<span class='txtBox'>"+$(this).val()+"</span>").appendTo(ok);
+	});
+	ok.appendTo($("#fu_"+$("#phTypes")[0].fu));
+	$("#phTypes").appendTo($("#hide"));
 }
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
