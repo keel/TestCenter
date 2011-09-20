@@ -120,19 +120,10 @@ $("#task_p_search").autocomplete("<%=prefix %>/product/find",
 	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0)};},
 	extraParams:addCompany
 });
-
-/*
-$.getJSON("<%=prefix %>/phone/json?s=",function(data){
-	var i = 0;
-	for(var j=data.length;i<j;i++){
-		$("#msgList").append(li);
-	}
-	if(i>0){$("#emptyLI").remove();};
 });
-*/
-});
-//------------------------------
+//-------------------------------------
 var pJSON = {};
+//-----------机型选择-------------------
 var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960",11:"代表机型",12:"其他"};
 var allPData = [];
 var cGroup = 0;
@@ -157,51 +148,74 @@ function selectPhone(i){
 			$("#phone_fast").keyup(function(e){scPh(e);});
 			addP2Group(data);
 		});
-	}else{clearIn();$("#fu_"+i).find(".sok").remove();}
+	}else{clearIn();
+		$("#fu_"+i).find(".txtBox").each(function(){
+			var a = this.id.split("_");$("#p_"+a[1]+"_"+a[2])[0].io();
+		});
+	$("#fu_"+i).find(".sok").remove();}
 	$("#choosePhone")[0].fu = i;
 	$("#choosePhone").appendTo($("#fu_"+i));
 }
 function clearIn(){
 	$("#td_in").find(".phone1").each(function(i){
-		var arr =this.id.split("_");
-		outPh(arr[1],arr[2]);
+		this.io();
 	});
 }
 function scPh(e){
 	var k = e.keyCode;
 	if(k==38||k==40||k==9||k==13||k==46||(k>8&&k<32)){return;}
-	var q = $("#phone_fast").val();
+	var q = $.trim($("#phone_fast").val());
+	if(q==""){resetPh();return;}
 	$("#g"+cGroup).hide();
 	cGroup = 999;
-	var gg=$("#g999");
-	gg.html("").show();
-	q = $.trim(q).toLowerCase();
+	var gg=$("#g999");gg.show();
+	q = q.toLowerCase();
 	for ( var i = 1; i < allPData.length; i++) {
 		for ( var j = 0; j < allPData[i].d.length; j++) {
+			var e = $("#p_"+i+"_"+j)[0];
 			if(allPData[i].d[j].toLowerCase().indexOf(q)>=0){
-			$("<a class=\"phone\" href=\"javascript:inPh("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+allPData[i].d[j]+"<\/a>").appendTo(gg);
-			}
+				e.out();
+			}else if(e.state==2){e.reset();}
 		}
 	}
 }
-function inPh(i,j){
-	$("#p_"+i+"_"+j).attr("href","javascript:outPh("+i+","+j+");").addClass("phone1").appendTo($("#td_in"));
+function io(i,j){
+	$("#p_"+i+"_"+j)[0].io();
 }
-function outPh(i,j){
-	$("#p_"+i+"_"+j).attr("href","javascript:inPh("+i+","+j+");").removeClass("phone1").appendTo($("#g"+(i-1)));
+function createPh(i,j,c){
+	var p = $("<a class=\"phone\" href=\"javascript:io("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+c+"<\/a>");
+	p[0].state=1;p[0].i=i;p[0].j=j;p[0].c=c;
+	p[0].io = function(){
+		if(this.state!=0){$(this).addClass("phone1").appendTo("#td_in");this.state=0;}
+		else{$(this).removeClass("phone1").appendTo("#g"+(this.i-1));this.state=1;}
+	};
+	//如果不在in中则移动到当前group,用于search
+	p[0].out = function(){
+		if(this.state!=0){$(this).appendTo("#g"+cGroup);this.state=2;}
+	};
+	p[0].reset = function(){
+		if(this.state==0){this.io();}else if(this.state==2){$(this).appendTo("#g"+(this.i-1));}
+	};
+	return p;
+}
+function resetPh(){
+	$("#g999").find(".phone").each(function(i){
+		this.reset();
+	});
+	showGroup(0);
 }
 function addP2Group(data){
 	for ( var i = 1; i < data.length; i++) {
 		var gg = $("<div id='g"+data[i].g+"'></div>");
 		for(var j = 0,k=data[i].d.length;j<k;j++){
-			$("<a class=\"phone\" href=\"javascript:inPh("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+data[i].d[j]+"<\/a>").appendTo(gg);
+			createPh(i,j,data[i].d[j]).appendTo(gg);
 		}
 		gg.hide().appendTo($("#td_out"));
 	}
 	showGroup(0);
 }
 function chooseAll(){
-	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");inPh(a[1],a[2]);});
+	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");io(a[1],a[2]);});
 }
 function showGroup(i){
 	if($("#td_out").find("#g"+i).length>0){
@@ -210,6 +224,7 @@ function showGroup(i){
 		cGroup = i;
 	}
 }
+//--------------------
 function addCompany(){
 	return {c:$("#task_company").val()};
 }
@@ -283,11 +298,19 @@ function urlSet(){
 	
 }
 function filesSet(){
-	//生成文件json
 	$("#swfBT,.u_ok").hide();
+	//生成文件json
+	$("#taskFS").appendTo("#task_new");
+	
 }
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
+}
+
+var phoneType_java = ["C5900","E329","W239","F839","F339","E379","C7500","other"];
+var phoneType_android = ["240x320","320x480","480x800","480x854","960x800","other"];
+function choosePhType(){
+	
 }
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>

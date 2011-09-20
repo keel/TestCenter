@@ -95,8 +95,8 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .file_upload_ERR{color:red;}
 .files_name{display:none;}
 /* pageNav */
- .pageNum{border: 1px solid #999;padding:2px 8px;display: inline-block;}
- .cPageNum{font-weight: bold;padding:2px 5px;}
+ .pageNum{vertical-align: top;border: 1px solid #999;padding:2px 8px;display: inline-block;}
+ .cPageNum{vertical-align: baseline;display: inline-block;font-weight: bold;padding:2px 5px;}
  #pageNav a:hover{text-decoration:none;background: #fff4d8; }
  /* abox */
 .abox{border: 1px solid #aaa;background: #FFF;}
