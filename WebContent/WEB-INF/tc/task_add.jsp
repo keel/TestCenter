@@ -103,7 +103,8 @@ var sucFn = function(file, serverData){
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
 	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+i+"'>"+file.name+" <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>选择机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
+	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>适配机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
+	$.hasFileIndex = i;
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
@@ -246,7 +247,6 @@ function pSelect(){
 	$.getJSON("<%=prefix %>/product/one?p="+encodeURI($("#task_p_search").val()),function(data){
 		if(!data || data==""){alert("产品不存在!请确认产品名称已正确输入.");return;}
 		else{
-			$("#task_p_json_h").val(data);
 			pJSON = data;
 			$("#task_name_v").text(data.name);
 			$("#task_p_id_v").text(data.productID);
@@ -289,7 +289,10 @@ function pre(i){
 		editP();next(1);
 		$("#uploadFS").appendTo($("#hide"));
 		break;
-
+	case 3:
+		$("#swfBT,.u_ok,#fileupload .aButton").show();
+		$("#taskFS").appendTo("#hide");
+		break;
 	default:
 		break;
 	}
@@ -297,13 +300,26 @@ function pre(i){
 function urlSet(){
 	
 }
+
 function filesSet(){
 	//检测是否每个文件都指定了机型组
-	
+	var b = true,tmp = [];
+	$("#upFiles").find(".file_upload").each(function(){
+		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"file":n,"groups":[]};
+		if(v.length<=0){alert("请为所有文件都指定机型组!");b=false;return false;}
+		else{
+			v.each(function(){
+				j.groups.push($(this).text());
+			});
+			tmp.push(j);
+		}
+	});
+	if(!b){return;}
+	//生成文件json
+	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").val(pJSON);}
+	console.log(pJSON);
 	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
-	//生成文件json
-	
 }
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
@@ -312,7 +328,7 @@ function task_company(){
 var phTypes = [["C5900","E329","W239","F839","F339","E379","C7500","其他"],
                   ["240x320","320x480","480x800","480x854","960x800","其他"]];
 function choosePhType(fu){
-	var pt = $("#task_p_sys").val();
+	var pt = pJSON.sys;
 	$("#fu_"+fu).css("background-color","#FFF");
 	if(pt>=0 && pt<=1){
 		if($("#phTypes").length<=0){
@@ -480,7 +496,7 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 </form>
 
 
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a><a href="<%=prefix%>/news" class="aButton tx_center" style="width:60px;">返回</a></p>
+<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a> <a href="javascript:pre(3);" class="aButton tx_center" style="width:60px;">上一步</a></p>
 
 </div>
 <!-- end of hide -->
