@@ -19,6 +19,7 @@ out.print(JSPOut.out("head0","0","创建新任务"));%>
 <script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.autocomplete.js" type="text/javascript"></script>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
@@ -290,15 +291,25 @@ function pre(i){
 		$("#uploadFS").appendTo($("#hide"));
 		break;
 	case 3:
-		$("#swfBT,.u_ok,#fileupload .aButton").show();
-		$("#taskFS").appendTo("#hide");
+		if(pJSON.sys!="2"){
+			$("#swfBT,.u_ok,#fileupload .aButton").show();$("#taskFS").appendTo("#hide");
+		}else{
+			$("#urlInput").show();
+			$("#urlSet .blueBold").text("").hide();
+			$("#taskFS").appendTo("#hide");
+		}
 		break;
 	default:
 		break;
 	}
 }
 function urlSet(){
-	
+	var v=$("#task_p_url").val();
+	if(!v || $.trim(v).length<=0){alert("请正确填写WAP的入口URL地址");return;}
+	else{pJSON.url=v;$("#task_p_json_h").val($.toJSON(pJSON));
+	$("#urlInput").hide();$("#urlSet .blueBold").text($("#task_p_url").val()).show();
+	$("#taskFS").appendTo("#task_new");
+	}
 }
 
 function filesSet(){
@@ -316,8 +327,8 @@ function filesSet(){
 	});
 	if(!b){return;}
 	//生成文件json
-	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").val(pJSON);}
-	console.log(pJSON);
+	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").val($.toJSON(pJSON));}
+	//console.log(pJSON);
 	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
 }
@@ -475,8 +486,8 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 	</form>
 	<div id="urlSet">
 		<label for="task_p_url">URL设置：</label><span class="red">*</span><span class="gray">(请输入WAP游戏的入口URL)</span><br />
-		<input type="text" name="task_p_url" id="task_p_url" style="width:300px;" />
-		<a href="javascript:urlSet();" class="aButton">确定</a> <a href="javascript:pre(2);" class="aButton tx_center pre2">上一步</a>
+		http://<span class="blueBold"></span><span id="urlInput"><input type="text" name="task_p_url" id="task_p_url" style="width:300px;" />
+		<a href="javascript:urlSet();" class="aButton">确定</a> <a href="javascript:pre(2);" class="aButton tx_center pre2">上一步</a></span>
 	</div>
     </div>
 </div>
