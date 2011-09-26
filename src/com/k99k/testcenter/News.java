@@ -76,7 +76,7 @@ public class News extends Action {
 			msg.addData("u", u);
 			if (Integer.parseInt(u.getType()) < 10 || u.getLevel()<1) {
 				//权限不够
-				JOut.err(403, httpmsg);
+				JOut.err(401, httpmsg);
 				return super.act(msg);
 			}
 			msg.addData("[jsp]", "/WEB-INF/tc/news_add.jsp");
@@ -109,7 +109,7 @@ public class News extends Action {
 		}else if(subact.equals("add")){
 			if (Integer.parseInt(u.getType()) < 4) {
 				//权限不够
-				JOut.err(403, httpmsg);
+				JOut.err(401, httpmsg);
 				return super.act(msg);
 			}
 			String name = req.getParameter("news_name");
@@ -163,7 +163,7 @@ public class News extends Action {
 		}else if(subact.equals("update")){
 			if (Integer.parseInt(u.getType()) < 4) {
 				//权限不够
-				JOut.err(403, httpmsg);
+				JOut.err(401, httpmsg);
 				return super.act(msg);
 			}
 			if (StringUtil.isDigits(req.getParameter("id"))) {
@@ -222,7 +222,7 @@ public class News extends Action {
 		}else if(subact.equals("del")){
 			if (Integer.parseInt(u.getType()) < 4) {
 				//权限不够
-				JOut.err(403, httpmsg);
+				JOut.err(401, httpmsg);
 				return super.act(msg);
 			}
 			if (StringUtil.isDigits(req.getParameter("id"))) {

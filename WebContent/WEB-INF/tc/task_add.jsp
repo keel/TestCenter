@@ -35,7 +35,7 @@ $(function(){
 	//任务类型
 	$("input[name='task_type']").click(function(){
 		var t = $(this).val();$.t = t;
-		if(t<=1){$("#productFS2").appendTo($("#hide"));$("#productFS1").appendTo($("#task_new"));}
+		if(t<=1){if(t==0){$("#t_pid").show();}else{$("#task_p_id").val("0");$("#t_pid").hide();};$("#productFS2").appendTo($("#hide"));$("#productFS1").appendTo($("#task_new"));}
 		else{$("#productFS1").appendTo($("#hide"));$("#productFS2").appendTo($("#task_new"));}
 	});
 	//产品
@@ -51,25 +51,18 @@ $.validator.dealAjax = {
 		if(!isNaN(data)){
 			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>";
 			abox("创建任务","<div class='reOk'>创建任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
-		}else{abox("创建任务","<div class='reErr'>创建任务失败! &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
+		}else{abox("创建任务","<div class='reErr'>创建任务失败! "+data+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
 	},
 	err:function(){
 		abox("创建任务","<div class='reErr'>创建任务失败! &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
 	}
 };
-$.validator.setDefaults({
-	//处理radio选择的错误提示
-	errorPlacement : function(label, element){
-	if(element.attr("type")=="radio"){
-		var n = $("input[name='"+element.attr("name")+"']").last().next();var t=(n && n[0].nodeName.toUpperCase()=="LABEL")?n:n.prev();
-	t.after(label);}else{element.after(label);}
-	}
-});
-
+	//处理radio选择的错误提示d:label,a:element
+//当form的action为""时,调用 $.validator.over()而不提交form
 $.validator.over = function(form){
 	switch (form.id) {
-	case "productFrom":
-		$("#productFrom input,#productFrom select,#productFrom textarea").each(function(i){
+	case "productForm":
+		$("#productForm input,#productForm select,#productForm textarea").each(function(i){
 			var v = (this.nodeName=="SELECT")?$(this).find("option:selected").text():($(this).attr("type")=="radio")?$("input[name='"+this.name+"']:checked").next().text():$(this).val();
 			$("#"+this.name+"_v").html(v);$("#"+this.name+"_h").val($(this).val());
 		});
@@ -84,14 +77,12 @@ $.validator.over = function(form){
 		next(1);
 		$("#productFS1").appendTo($("#hide"));$("#productFS3").appendTo($("#task_new"));$("#chooseType").hide();
 		break;
-	default:
-		break;
 	}
-}
+};
 
-$('#productFrom').validate({
+$('#productForm').validate({
     rules: {
-		task_name: {required:true,rangelength:[1,500]},
+		task_name: {required:true,rangelength:[1,100]},
 		task_p_id: {required:true,number:true},
 		task_p_sys: {required:true},
 		task_p_type: {required:true},
@@ -99,6 +90,18 @@ $('#productFrom').validate({
 		task_p_fee: {required:true,rangelength:[1,1500]}
     }
 });
+$('#add_form').validate({
+    rules: {
+		task_level: {required:true}
+    }
+});
+
+$("#task_p_sys").change(function(){
+	if($(this).val()==2){
+		$("#task_p_net2").attr("checked","checked");$("#task_p_net0,#task_p_net1").attr("disabled","disabled");$("#task_p_net2").removeAttr("disabled");
+	}else{$("#task_p_net2").removeAttr("checked");$("#task_p_net0,#task_p_net1").removeAttr("disabled");$("#task_p_net2").attr("disabled","disabled");}
+});
+
 var sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
@@ -119,7 +122,7 @@ $("#task_p_search").autocomplete("<%=prefix %>/product/find",
 	{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
 	formatItem:function(row){return row[1];},
 	onItemSelect:function(li){$("#task_p_search").val($(li).text());},
-	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0)};},
+	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0);};},
 	extraParams:addCompany
 });
 });
@@ -237,9 +240,9 @@ function aSubmit(){
 	});
 	//console.log(ff);
 	$("#news_files").val(ff.join(","));
-	$("#news_form").submit();
+	$("#add_form").submit();
 };
-function saveP(){$('#productFrom').submit();}
+function saveP(){$('#productForm').submit();}
 function editP(){
 	var e = ($.t<=1)?$('#productFS1'):$('#productFS2');
 	e.appendTo($("#task_new"));$('#productFS3').appendTo($("#hide"));
@@ -278,7 +281,7 @@ function next(i){
 	}
 }
 function gs(show){
-	if( $("#chooseCompany")[0].need){$("#c_ok").remove();if(show){$("#chooseCompany").show();}else{$("#chooseCompany").hide().after($("<p id='c_ok'>公司:</p>").append($("#task_company").val()));}};
+	if( $("#chooseCompany")[0].need){$("#c_ok").remove();if(show){$("#chooseCompany").show();}else{$("#chooseCompany").hide().after($("<p id='c_ok'>公司:</p>").append(pJSON.company));}};
 }
 function pre(i){
 	switch (i) {
@@ -307,6 +310,7 @@ function urlSet(){
 	var v=$("#task_p_url").val();
 	if(!v || $.trim(v).length<=0){alert("请正确填写WAP的入口URL地址");return;}
 	else{pJSON.url=v;$("#task_p_json_h").val($.toJSON(pJSON));
+	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
 	$("#urlInput").hide();$("#urlSet .blueBold").text($("#task_p_url").val()).show();
 	$("#taskFS").appendTo("#task_new");
 	}
@@ -314,21 +318,23 @@ function urlSet(){
 
 function filesSet(){
 	//检测是否每个文件都指定了机型组
-	var b = true,tmp = [];
+	var b = true,tmp = [],i=0;
 	$("#upFiles").find(".file_upload").each(function(){
 		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"file":n,"groups":[]};
-		if(v.length<=0){alert("请为所有文件都指定机型组!");b=false;return false;}
+		if(v.length<=0){b=false;return false;}
 		else{
 			v.each(function(){
 				j.groups.push($(this).text());
 			});
 			tmp.push(j);
 		}
+		i++;
 	});
-	if(!b){return;}
+	if(!b){alert("请为所有文件都指定机型组!");return;}
+	if(i==0){alert("请上传文件并指定机型组!");return;}
 	//生成文件json
 	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").val($.toJSON(pJSON));}
-	//console.log(pJSON);
+	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
 	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
 }
@@ -410,16 +416,16 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
  -->
 <div class="inBox" id="productFS1">
     <div class="inBoxTitle">产品信息</div> 
-    <form action="" id="productFrom">
+    <form action="" id="productForm">
     <div class="inBoxContent">
     	<div class="inBoxLine"><label for="task_name">产品名称:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_name" id="task_name" /></div> 
-    	<div class="inBoxLine"><label for="task_p_id">产品ID:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_p_id" id="task_p_id" /> </div> 
+    	<div class="inBoxLine" id="t_pid"><label for="task_p_id">业务平台产品ID:</label><span class="red">*</span><span class="gray">(注意要与业务管理平台完全一致)</span><br /><input type="text" name="task_p_id" id="task_p_id" /> </div> 
     	<div class="inBoxLine"><label for="task_p_sys">操作系统:</label><span class="red">*</span><select name="task_p_sys" id="task_p_sys"><option value="0">KJava</option><option value="1">Android</option><option value="2">WAP</option><option value="3">Brew</option><option value="4">Windows mobile</option><option value="5">Windows CE</option><option value="6">其他</option></select></div> 
     	<div class="inBoxLine"><label for="task_p_type">产品类型:</label><span class="red">*</span><select name="task_p_type" id="task_p_type"><option value="0">免费</option><option value="1">短代</option><option value="2">点数</option><option value="3">按次下载</option><option value="4">进游戏包</option></select></div> 
     	<div class="inBoxLine"><label for="task_p_net">联网情况:</label><span class="red">*</span>
     	<input type="radio" name="task_p_net" id="task_p_net0" value="0" /><label for="task_p_net0">单机</label>
     	<input type="radio" name="task_p_net" id="task_p_net1" value="1" /><label for="task_p_net1">网游</label>
-    	<input type="radio" name="task_p_net" id="task_p_net2" value="2" /><label for="task_p_net2">WAP</label></div> 
+    	<input type="radio" name="task_p_net" id="task_p_net2" value="2" disabled="disabled" /><label for="task_p_net2">WAP</label></div> 
     	<div class="inBoxLine"><label for="task_p_acc">接口调测情况:</label>
     	<input type="radio" name="task_p_acc" id="task_p_acc0" value="0" checked="checked" /><label for="task_p_acc0">未调测</label>
     	<input type="radio" name="task_p_acc" id="task_p_acc1" value="1" /><label for="task_p_acc1">已调通</label>
@@ -436,8 +442,8 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
     	<div class="inBoxLine">产品名称: <span id="task_name_v" class="blueBold"></span> 产品ID: <span id="task_p_id_v" class="blueBold"></span> 操作系统: <span id="task_p_sys_v" class="blueBold"></span></div> 
     	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"></span> 联网情况: <span id="task_p_net_v" class="blueBold"></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"></span></div> 
     	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="blueBold"></span></div>
+    	<a href="javascript:next(2);" class="aButton tx_center next1">下一步：上传文件或设置WAP产品url</a>
     	<a href="javascript:editP();" class="aButton tx_center" style="width:60px;" id="p_e">更改</a> 
-    	<a href="javascript:next(2);" class="aButton tx_center next1">下一步：上传文件(或设置WAP产品url)</a>
     </div>
 </div>
 
@@ -500,10 +506,10 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 <select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
 <p>下一流程处理人：
-<select name="task_operator"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
+<select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
-<input type="hidden" id="task_p_json_h" class="task_p_json_h" value="" />
-<input type="hidden" id="news_files" name="news_files" value="" />
+<input type="hidden" id="task_type_h" name="task_type_h" value="" />
+<input type="hidden" id="task_p_json_h" name="task_p_json_h" value="" />
 </form>
 
 

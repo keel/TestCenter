@@ -10,6 +10,8 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
@@ -34,6 +36,7 @@ public class Product extends Action {
 	public Product(String name) {
 		super(name);
 	}
+	static final Logger log = Logger.getLogger(Product.class);
 	
 	static DaoInterface dao;
 	static KObjSchema schema;
@@ -71,6 +74,28 @@ public class Product extends Action {
 			
 		}
 		return super.act(msg);
+	}
+	
+	/**
+	 * 检测参数并添加Product
+	 * @param p HashMap
+	 * @return pid ,失败则返回负值
+	 */
+	static long add(HashMap<String,Object> p){
+		//增加一个sys与url的联动验证
+		Object syso = p.get("sys");
+		if(!StringUtil.isDigits(syso)){return -1;}
+		int sys = Integer.parseInt(String.valueOf(syso));
+		if(sys==2 && !StringUtil.isStringWithLen(p.get("url"), 3)){return -2;}
+		KObject kobj = new KObject();
+		if(schema.setPropFromMapForCreate(p,kobj)){
+			return -3;
+		}
+		kobj.setId(dao.getIdm().nextId());
+		if(dao.save(kobj)){
+			return kobj.getId();
+		}
+		return -4;
 	}
 	
 	/**

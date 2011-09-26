@@ -263,7 +263,8 @@ public class KObjColumn {
 	
 	/**
 	 * 验证本字段,如果有子字段则轮循验证子字段,同时设置KObject字段
-	 * @param columnData
+	 * @param columnData 需要设置的字段值
+	 * @param kobj 原KObject对象
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -271,12 +272,10 @@ public class KObjColumn {
 		if (columnData == null) {
 			return false;
 		}
-		//处理Long
-		if (this.type == 1 && columnData.getClass().getName().equals(KOBJ_COLUMN_TYPES[4])) {
-			columnData = Integer.parseInt(columnData.toString());
-		};
+		String dType = columnData.getClass().getName();
+		
 		//验证类型
-		if (columnData.getClass().getName().equals(KOBJ_COLUMN_TYPES[this.type])) {
+		if (dType.equals(KOBJ_COLUMN_TYPES[this.type])) {
 			//验证子字段为HashMap时
 			if (this.type == 2) {
 				if (this.subColMap==null || (kobj.getProp(keyName) == null) || !(kobj.getProp(keyName) instanceof HashMap)) {
@@ -316,6 +315,16 @@ public class KObjColumn {
 			}
 			//单个属性直接设置
 			kobj.setProp(this.keyName, columnData);
+		}
+		//处理Long和int
+		else if (this.type == 1 && (dType.equals(KOBJ_COLUMN_TYPES[4])||dType.equals(KOBJ_COLUMN_TYPES[0]))) {
+			columnData = Integer.parseInt(columnData.toString());
+			kobj.setProp(this.keyName, columnData);
+			return true;
+		}else if(this.type == 4 && (dType.equals(KOBJ_COLUMN_TYPES[1])||dType.equals(KOBJ_COLUMN_TYPES[0]))){
+			columnData = Long.parseLong(columnData.toString());
+			kobj.setProp(this.keyName, columnData);
+			return true;
 		}else{
 			return false;
 		}

@@ -130,7 +130,7 @@ public final class StringUtil {
 		return true;
 	}
 	/**
-	 * 判断String是否达到指定长度(>=len)
+	 * 判断String是否达到指定长度(>=len),(先经过trim处理)
 	 * @param str
 	 * @param len
 	 * @return

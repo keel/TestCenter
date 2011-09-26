@@ -501,7 +501,7 @@ public class KObjSchema {
 	
 	
 	/**
-	 * 验证并设置属性,支持子对象设置,必要字段必须要全部有数据,注意返回失败仍可能有部分属性设置已完成
+	 * 验证并设置属性(不统计必要字段数量),支持子对象设置,必要字段必须要全部有数据,注意返回失败仍可能有部分属性设置已完成
 	 * FIXME 实现KObject.clone()方法，在失败时返回原对象
 	 * @param kobjMap HashMap<String,Object>
 	 * @param kobj 可为空对象或已有属性的对象，注意map中的数据会覆盖原属性
@@ -635,7 +635,7 @@ public class KObjSchema {
 	}
 	
 	/**
-	 * 创建一个空的KObject,注意只涉及一级KObjColumn设置，子KObjColumn不会再处理,均按父KObjColumn中的默认值设置
+	 * 创建一个空的KObject(由dao生成id),注意只涉及一级KObjColumn设置，子KObjColumn不会再处理,均按父KObjColumn中的默认值设置
 	 * @param dao DaoInterface
 	 * @return KObject
 	 */

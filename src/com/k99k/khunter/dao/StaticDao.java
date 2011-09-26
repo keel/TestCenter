@@ -53,7 +53,7 @@ public class StaticDao extends MongoDao {
 	}
 	
 	public static final KObject checkUser(String name,String pwd){
-		if (name != null && pwd != null && name.toString().trim().length()>3 && pwd.toString().trim().length()>=6) {
+		if (name != null && pwd != null && name.toString().trim().length()>1 && pwd.toString().trim().length()>=6) {
 			KObject ko = tcUserDao.findOne(name);
 			if (ko != null && ko.getProp("pwd").equals(pwd)) {
 				return ko;

@@ -73,8 +73,17 @@
 			"pageSize":20
 		},
 		{
+			"_actName":"user",
+			"_class":"com.k99k.testcenter.TUser",
+			"pageSize":20
+		},
+		{
 			"_actName":"newsTask",
 			"_class":"com.k99k.testcenter.NewsTask"
+		},
+		{
+			"_actName":"tTaskTask",
+			"_class":"com.k99k.testcenter.TTaskTask"
 		},
 		{
 			"_actName":"upload",

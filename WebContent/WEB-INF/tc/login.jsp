@@ -33,8 +33,7 @@ $('#consoleLogin').validate({
     rules: {
         uName: {
             required:true,
-            stringCheck:true,
-            rangelength:[4,15]
+            rangelength:[2,15]
         },
         uPwd:{
             required:true,
