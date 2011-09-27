@@ -78,6 +78,11 @@
 			"pageSize":20
 		},
 		{
+			"_actName":"gamefile",
+			"_class":"com.k99k.testcenter.GameFile",
+			"pageSize":30
+		},
+		{
 			"_actName":"newsTask",
 			"_class":"com.k99k.testcenter.NewsTask"
 		},

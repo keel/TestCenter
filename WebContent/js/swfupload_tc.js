@@ -46,6 +46,7 @@ function swfreset(){
 function fileQueue(file){
 	var f_enc = encodeURIComponent(file.name);
 	swfu.addPostParam("f",f_enc);
+	if(swfu.newfile){swfu.addPostParam("n",swfu.newfile(file));}
 }
 
 function fileQueueError(file, errorCode, message) {

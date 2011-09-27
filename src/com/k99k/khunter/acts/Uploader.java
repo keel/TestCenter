@@ -90,19 +90,26 @@ public class Uploader extends Action {
 	 * @return 上传后的文件名
 	 */
 	public final static String upload(HttpServletRequest request,String savePath,String fileName,boolean saveRandomName){
+		String newName = (saveRandomName)?System.currentTimeMillis()+"__"+fileName:fileName;
+    	//newName = UUID.randomUUID().toString()+"__"+fileName;
+		return upload(request, savePath, fileName, newName);
+	}
+	
+	
+	/**
+	 * 接收上传文件
+	 * @param request HttpServletRequest
+	 * @param savePath 保存文件的路径,注意末尾要加上/符
+	 * @param fileName 原上传文件名
+	 * @param newName 上传后的文件名
+	 * @return 上传后的文件名
+	 */
+	public final static String upload(HttpServletRequest request,String savePath,String fileName,String newName){
 		FileOutputStream fos = null;
         ServletInputStream  sis = null;
 		try {
-//			int po = clientPath.lastIndexOf("/");
-//			po = (po<0)?0:po;
-//	    	String filename = UUID.randomUUID().toString()+"__"+clientPath.substring(po); //UUID.randomUUID().toString()+".jpg";
-	    	if (saveRandomName) {
-	    		//fileName = UUID.randomUUID().toString()+"__"+fileName;
-	    		fileName = System.currentTimeMillis()+"__"+fileName;
-			}
-	    	//System.out.println("filename:"+filename);
 			 sis = request.getInputStream();
-			 String toFile = savePath+fileName;//this.getServletContext().getRealPath("/") + "/images/upload/temppic/"+filename;
+			 String toFile = savePath+newName;
 		 
             fos = new FileOutputStream(new File(toFile));
             
@@ -161,7 +168,7 @@ public class Uploader extends Action {
 	        //System.out.println("basePath+filename:"+basePath+filename); 
 			//out.clear();	
 			//out.print(basePath+"/images/upload/temppic/"+filename);
-			return fileName;
+			return newName;
 		} catch (Exception ex) {
 			log.error("upload Error!", ex);
 			return null;
@@ -173,8 +180,6 @@ public class Uploader extends Action {
             }
         }
 	}
-	
-	
 	
 	/**
 	 * @return the savePath

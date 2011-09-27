@@ -110,6 +110,10 @@ public class TTask extends Action {
 			return;
 		}
 		HashMap<String,Object> json = (HashMap<String, Object>) JSON.read(task_p_json_h);
+		if (Company.dao.findOne(json.get("company").toString()) == null) {
+			JOut.err(403,"E403"+Err.ERR_PARAS+"-company", msg);
+			return;
+		}
 		//创建产品确定PID
 		long pid = -10;
 		if (!json.containsKey("_id")) {
@@ -145,11 +149,17 @@ public class TTask extends Action {
 			JOut.err(500,"E500"+ Err.ERR_ADD_TASK_FAIL, msg);
 			return;
 		}
-		//异步任务
+		//异步任务:任务通知,上传文件处理
 		ActionMsg atask = new ActionMsg("tTaskTask");
 		atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 		atask.addData("taskId", task.getId());
 		atask.addData("operatorId", operator.getId());
+		atask.addData("pid", pid);
+		atask.addData("creatorName", u.getName());
+		atask.addData("act", "add");
+		if (json.containsKey("files")) {
+			atask.addData("files", json.get("files"));
+		}
 		TaskManager.makeNewTask("TTaskTask:"+task.getId(), atask);
 		msg.addData("[print]", task.getId());
 	}
@@ -200,13 +210,29 @@ public class TTask extends Action {
 	 */
 	private void one(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		long id = Long.parseLong(subact);
+		//Task
 		KObject one = dao.findOne(id);
 		if (one== null || one.getState() == -1) {
 			JOut.err(404, msg);
 			return;
 		}
+		//产品
 		long pid = (Long)one.getProp("PID");
 		KObject product = Product.dao.findOne(pid);
+		
+		//根据Task的状态显示不同内容
+		switch (one.getState()) {
+		case 0:
+			//刚创建,显示文件列表
+			break;
+		case 1:
+			//测试中,显示TestUnit列表
+			break;
+
+		default:
+			break;
+		}
+		
 		//查找本Task所属的TestUnit
 		HashMap<String,Object> q = new HashMap<String, Object>(2);
 		q.put("TID", one.getId());

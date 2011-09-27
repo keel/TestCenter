@@ -45,6 +45,8 @@ public class FileUpload extends Action {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
 		HttpServletRequest req = httpmsg.getHttpReq();
 		String file = req.getParameter("f");
+		String newName = req.getParameter("n");
+		String newFileName = (newName==null)?file:newName.trim();
 		if (!StringUtil.isStringWithLen(file, 1)) {
 			JOut.err(400, httpmsg);
 			return super.act(msg);
@@ -56,7 +58,7 @@ public class FileUpload extends Action {
 			return super.act(msg);
 		}
 		//log.info("f:"+file);
-		String re = Uploader.upload(req,this.savePath,file,false);
+		String re = Uploader.upload(req,this.savePath,file,newFileName);
 		//log.info("upload ok :"+re);
 		msg.addData("[print]", re);
 		return super.act(msg);

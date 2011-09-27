@@ -278,11 +278,10 @@ public class KObjColumn {
 		if (dType.equals(KOBJ_COLUMN_TYPES[this.type])) {
 			//验证子字段为HashMap时
 			if (this.type == 2) {
-				if (this.subColMap==null || (kobj.getProp(keyName) == null) || !(kobj.getProp(keyName) instanceof HashMap)) {
+				if (this.subColMap==null) {
 					return false;
 				}
 				HashMap<String,Object> m = (HashMap<String,Object>)columnData;
-				HashMap<Object,Object> koc = (HashMap<Object, Object>) kobj.getProp(keyName);
 				for (Iterator<String> iterator = m.keySet().iterator(); iterator
 						.hasNext();) {
 					String key = iterator.next();
@@ -291,22 +290,25 @@ public class KObjColumn {
 					if (sub == null || !sub.validateColumn(key, val)) {
 						return false;
 					}
-					koc.put(key, val);
+				}
+				if (kobj.getProp(keyName) !=null) {
+					m.putAll((HashMap<String, Object>) kobj.getProp(keyName));
 				}
 			}
 			//子字段为ArrayList时
 			else if (this.type == 3) {
-				if (this.subColForList == null || (kobj.getProp(keyName) == null) || !(kobj.getProp(keyName) instanceof ArrayList)) {
+				if (this.subColForList == null) {
 					return false;
 				}
 				ArrayList<Object> al = (ArrayList<Object>)columnData;
-				ArrayList<Object> koc = (ArrayList<Object>)kobj.getProp(this.keyName);
 				for (Iterator<Object> iterator = al.iterator(); iterator.hasNext();) {
 					Object obj = iterator.next();
 					if (!this.subColForList.validateColumn(obj)) {
 						return false;
 					}
-					koc.add(obj);
+				}
+				if(kobj.getProp(keyName) != null){
+					al.addAll((ArrayList<Object>)kobj.getProp(keyName));
 				}
 			}
 			//非父字段,调用KObjColumnValidate接口

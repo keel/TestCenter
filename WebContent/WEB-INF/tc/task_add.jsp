@@ -12,7 +12,7 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("u");
 Boolean ismy = request.getParameter("ismy")!=null && request.getParameter("ismy").equals("true");
-out.print(JSPOut.out("head0","0","创建新任务"));%>
+out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<%=sPrefix %>/css/jquery.autocomplete.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
@@ -53,8 +53,8 @@ $.validator.dealAjax = {
 			abox("创建任务","<div class='reOk'>创建任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
 		}else{abox("创建任务","<div class='reErr'>创建任务失败! "+data+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
 	},
-	err:function(){
-		abox("创建任务","<div class='reErr'>创建任务失败! &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
+	err:function(xhr){
+		abox("创建任务","<div class='reErr'>创建任务失败! 错误码:"+xhr.responseText+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
 	}
 };
 	//处理radio选择的错误提示d:label,a:element
@@ -106,12 +106,16 @@ var sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
-	if(re.length>=file.name.length){
-	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>适配机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
+	if(re.length>=18){
+	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>适配机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
 	$.hasFileIndex = i;
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
 initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
+swfu.newfile = function(file){
+	return '<%=user.getId()+"_"+System.currentTimeMillis() %>'+"_"+file.index+file.type;
+};
+
 $("#task_company").autocomplete("<%=prefix %>/company/find",
 	{cacheLength:20,matchSubset:1,matchContains:1,minChars:2,
 	formatItem:function(row){return row[1];},
@@ -309,7 +313,7 @@ function pre(i){
 function urlSet(){
 	var v=$("#task_p_url").val();
 	if(!v || $.trim(v).length<=0){alert("请正确填写WAP的入口URL地址");return;}
-	else{pJSON.url=v;$("#task_p_json_h").val($.toJSON(pJSON));
+	else{pJSON.url=v;$("#task_p_json_h").html($.toJSON(pJSON));
 	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
 	$("#urlInput").hide();$("#urlSet .blueBold").text($("#task_p_url").val()).show();
 	$("#taskFS").appendTo("#task_new");
@@ -320,7 +324,7 @@ function filesSet(){
 	//检测是否每个文件都指定了机型组
 	var b = true,tmp = [],i=0;
 	$("#upFiles").find(".file_upload").each(function(){
-		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"file":n,"groups":[]};
+		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"name":n,"fileName":$(this).find(".newname").text(),"size":$(this).find(".size").text(),"groups":[]};
 		if(v.length<=0){b=false;return false;}
 		else{
 			v.each(function(){
@@ -333,7 +337,7 @@ function filesSet(){
 	if(!b){alert("请为所有文件都指定机型组!");return;}
 	if(i==0){alert("请上传文件并指定机型组!");return;}
 	//生成文件json
-	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").val($.toJSON(pJSON));}
+	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").html($.toJSON(pJSON));}
 	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
 	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
@@ -509,7 +513,7 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
 <input type="hidden" id="task_type_h" name="task_type_h" value="" />
-<input type="hidden" id="task_p_json_h" name="task_p_json_h" value="" />
+<textarea rows="1" cols="1" class="hide" name="task_p_json_h" id="task_p_json_h"></textarea>
 </form>
 
 
