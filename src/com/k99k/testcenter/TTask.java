@@ -6,6 +6,7 @@ package com.k99k.testcenter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -97,14 +98,93 @@ public class TTask extends Action {
 	}
 	
 	/**
-	 * 指派任务,确定测试机型,确定执行人,调整等级,说明等
+	 * 指派任务,确定测试机型,生成TestUnit,确定执行人,调整等级,说明等
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
+	@SuppressWarnings("unchecked")
 	private void appoint(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
+		if (Integer.parseInt(u.getType()) < 4) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		//
+		String task_id = req.getParameter("tid");
+		String task_info = req.getParameter("task_info");
+		String task_level = req.getParameter("task_level");
+		String task_operator = req.getParameter("task_operator");
+		String task_tu_json_h = req.getParameter("task_tu_json_h");
+		//验证
+		if(!StringUtil.isDigits(task_id) ||
+			!StringUtil.isStringWithLen(task_info, 1) || 
+			!StringUtil.isDigits(task_level) ||
+			!StringUtil.isStringWithLen(task_operator, 2) || 
+			!StringUtil.isStringWithLen(task_tu_json_h, 3) 
+		){
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tid = Long.parseLong(task_id);
+		KObject task = dao.findOne(tid);
+		if (task==null) {
+			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			return;
+		}
+		KObject operator = TUser.dao.findOne(task_operator);
+		if (operator== null || Integer.parseInt(operator.getType())<1) {
+			JOut.err(403,"E403"+ Err.ERR_ADD_OPERATOR_FAIL, msg);
+			return;
+		}
+		int level = Integer.parseInt(task_level);
+		//生成TestUnit
+		try {
+			ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>) JSON.read(task_tu_json_h);
+			Iterator<HashMap<String,Object>> it = json.iterator();
+			KObject tu = new KObject();
+			tu.setProp("TID", tid);
+			tu.setProp("PID", task.getProp("PID"));
+			tu.setProp("tester", operator);
+			tu.setInfo(task_info);
+			tu.setLevel(level);
+			while (it.hasNext()) {
+				HashMap<String,Object> map = it.next();
+				String gFile = map.get("gFile").toString();
+				ArrayList<String> phList = (ArrayList<String>)map.get("phone");
+				Iterator<String> li = phList.iterator();
+				tu.setProp("gFile", gFile);
+				while (li.hasNext()) {
+					String ph = li.next();
+					tu.setProp("phone", ph);
+					TestUnit.dao.add(tu);
+				}
+			}
+		} catch (Exception e) {
+			JOut.err(403,"E403"+ Err.ERR_ADD_TESTUNIT, msg);
+			return;
+		}
+		//更新任务属性
 		
+		HashMap<String,Object> q = new HashMap<String, Object>(2);
+		q.put("_id", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>();
+		set.put("level", level);
+		set.put("operator", task_operator);
+		HashMap<String,Object> log = new HashMap<String, Object>();
+		log.put("time", System.currentTimeMillis());
+		log.put("user", u.getName());
+		log.put("info", task_info);
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", log);
+		HashMap<String,Object> update = new HashMap<String, Object>();
+		update.put("$set", set);
+		update.put("$push", push);
+		dao.update(q, update, false, false);
+		
+		
+		//清除自己待办任务,指定为一下执行人
 	}
 	
 	/**
@@ -164,7 +244,24 @@ public class TTask extends Action {
 	 * @param msg
 	 */
 	private void del(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
+		if (Integer.parseInt(u.getType()) < 4) {
+			//权限不够
+			JOut.err(401, msg);
+			return;
+		}
+		if (StringUtil.isDigits(req.getParameter("id"))) {
+			long id = Long.parseLong(req.getParameter("id"));
+			if (dao.deleteOne(id) !=null) {
+				ActionMsg atask = new ActionMsg("tTaskTask");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+				atask.addData("taskId", id);
+				atask.addData("act", "del");
+				TaskManager.makeNewTask("TTaskTask:"+id, atask);
+				msg.addData("[print]", "ok");
+				return;
+			}
+		}
+		JOut.err(403, msg);
 	}
 	/**
 	 * 处理任务添加
@@ -332,6 +429,7 @@ public class TTask extends Action {
 	
 	/**
 	 * 查看列表
+	 * FIXME 需要权限验证和分出一个查看自己任务的方法
 	 * @param subact
 	 * @param req
 	 * @param u

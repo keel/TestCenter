@@ -105,18 +105,29 @@ public class Product extends Action {
 	 * @param msg
 	 */
 	private void one(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String pidstr = req.getParameter("pid");
 		String p = req.getParameter("p");
-		//长度少于2直接返回空
-		if (!StringUtil.isStringWithLen(p,2)) {
+		KObject pt = null;
+		if (StringUtil.isDigits(pidstr)) {
+			pt = dao.findOne(Long.parseLong(pidstr));
+		}else if(StringUtil.isStringWithLen(p, 1)){
+			//长度少于2直接返回空
+			if (!StringUtil.isStringWithLen(p,2)) {
+				msg.addData("[print]", "");
+				return ;
+			}
+			try {
+				p = new String(p.trim().getBytes("ISO-8859-1"),"utf-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			pt = dao.findOne(p);
+		}
+		//权限不够
+		if(Integer.parseInt(u.getType())<2 && !pt.getProp("company").equals(u.getProp("company"))){
 			msg.addData("[print]", "");
 			return ;
 		}
-		try {
-			p = new String(p.trim().getBytes("ISO-8859-1"),"utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-		KObject pt = dao.findOne(p);
 		String re = (pt==null)?"":pt.toString();
 		msg.addData("[print]",re);
 		return;
@@ -133,6 +144,11 @@ public class Product extends Action {
 		String c = req.getParameter("c");
 		//长度少于2直接返回空
 		if (!StringUtil.isStringWithLen(q, 2) || !StringUtil.isStringWithLen(c, 2)) {
+			msg.addData("[print]", "");
+			return ;
+		}
+		//权限不够
+		if(Integer.parseInt(u.getType())<2 && !c.equals((String)u.getProp("company"))){
 			msg.addData("[print]", "");
 			return ;
 		}
@@ -153,6 +169,7 @@ public class Product extends Action {
 	
 	/**
 	 * 查看列表
+	 * FIXME 权限未验证
 	 * @param req
 	 * @param u
 	 * @param msg

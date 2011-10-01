@@ -233,7 +233,7 @@ public class News extends Action {
 					return super.act(msg);
 				}
 			}
-			JOut.err(401, httpmsg);
+			JOut.err(403, httpmsg);
 			return super.act(msg);
 		}else if(subact.equals("search")){
 			if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {

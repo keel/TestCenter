@@ -31,7 +31,7 @@ $.isMy = <%=(sub.equals("my"))?"true":"false" %>;
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$("#task_"+id+" a").text()+"]");
 	if (r==true){
-		$.post("<%=prefix %>/tasks/del", "id="+id ,function(data) {
+		$.post("<%=prefix %>/tasks/a_d", "id="+id ,function(data) {
 			if(data=="ok"){alert("删除成功");window.location = window.location;};
 		});
 	}

@@ -22,7 +22,7 @@ public class JOut {
 	 */
 	public static final void err(int errCode,HttpActionMsg httpmsg){
 		httpmsg.getHttpResp().setStatus(errCode);
-		httpmsg.addData("[print]", String.valueOf(errCode));
+		httpmsg.addData("[print]", "E"+String.valueOf(errCode));
 	}
 	
 	/**

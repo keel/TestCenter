@@ -37,11 +37,34 @@ public class TTaskTask extends Action {
 		String act = (String)msg.getData("act");
 		if (act.equals("add")) {
 			this.add(msg);
+		}else if(act.equals("del")){
+			this.del(msg);
 		}
 		
 		
 		
 		return super.act(msg);
+	}
+	
+	/**
+	 * 删除任务,将此任务涉及的未处理用户清空
+	 * @param msg
+	 */
+	private void del(ActionMsg msg){
+		long tid = (Long)msg.getData("taskId");
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("unReadTasks", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull = new HashMap<String, Object>(2);
+		pull.put("unReadTasks", tid);
+		set.put("$pull", pull);
+		HashMap<String,Object> inc = new HashMap<String, Object>(2);
+		inc.put("newTasks", -1);
+		set.put("$inc", inc);
+		boolean re = TUser.dao.update(query, set, false, true);
+		if (!re) {
+			log.error("Del task. - update all users unread tasks failed. task ID:"+tid);
+		}
 	}
 	
 	/**

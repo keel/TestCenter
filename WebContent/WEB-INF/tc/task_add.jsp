@@ -21,6 +21,7 @@ out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.autocomplete.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/tc.add_task.js" type="text/javascript"></script>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.isMy = <%=(ismy)?"true":"false" %>;
@@ -57,7 +58,6 @@ $.validator.dealAjax = {
 		abox("创建任务","<div class='reErr'>创建任务失败! 错误码:"+xhr.responseText+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
 	}
 };
-	//处理radio选择的错误提示d:label,a:element
 //当form的action为""时,调用 $.validator.over()而不提交form
 $.validator.over = function(form){
 	switch (form.id) {
@@ -129,150 +129,17 @@ $("#task_p_search").autocomplete("<%=prefix %>/product/find",
 	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0);};},
 	extraParams:addCompany
 });
+<% //如果指定了pid
+String pidstr = request.getParameter("pid");
+if(StringUtil.isDigits(pidstr)){
+StringBuilder skipP = new StringBuilder();
+skipP.append("pSelect(").append(pidstr).append(");$(\"#p_e\").remove();$('#type2').attr('checked','checked')");
+out.print(skipP);
+}
+%>
 });
 //-------------------------------------
-var pJSON = {};
 
-function addCompany(){
-	return {c:$("#task_company").val()};
-}
-function aSubmit(){
-	var ff = [];
-	$(".files_name").each(function(){
-		ff.push(encodeURIComponent($(this).text()));
-	});
-	//console.log(ff);
-	$("#news_files").val(ff.join(","));
-	$("#add_form").submit();
-};
-function saveP(){$('#productForm').submit();}
-function editP(){
-	var e = ($.t<=1)?$('#productFS1'):$('#productFS2');
-	e.appendTo($("#task_new"));$('#productFS3').appendTo($("#hide"));
-}
-function pSelect(){
-	$.getJSON("<%=prefix %>/product/one?p="+encodeURI($("#task_p_search").val()),function(data){
-		if(!data || data==""){alert("产品不存在!请确认产品名称已正确输入.");return;}
-		else{
-			pJSON = data;
-			$("#task_name_v").text(data.name);
-			$("#task_p_id_v").text(data.productID);
-			$("#task_p_sys_v").text($("#task_p_sys > option[value="+data.sys+"]").text());
-			$("#task_p_type_v").text($("#task_p_type > option[value="+data.type+"]").text());
-			$("#task_p_net_v").text($("label[for='task_p_net"+data.netPort+"']").text());
-			$("#task_p_acc_v").text($("label[for='task_p_acc"+data.netPort+"']").text());
-			$("#task_p_fee_v").text(data.feeInfo);
-			$("#productFS2").appendTo($("#hide"));$("#productFS3").appendTo($("#task_new"));$("#chooseType").hide();
-		}
-		next(1);
-	}).error(function(){alert("查找产品出错!请刷新页面或稍后再试.");});
-}
-function next(i){
-	switch (i) {
-	case 1:
-		$(".prev1,.next1,#p_e").show();
-		gs(false);
-		break;
-	case 2:
-		$(".next1,#p_e").hide();$("#swfBT,.u_ok").show();
-		if($("#task_p_sys_v").text()=="WAP"){$("#fileupload").hide();$("#urlSet").show();}else{$("#urlSet").hide();$("#fileupload").show();};
-		$("#task_new").append($("#uploadFS"));
-		break;
-
-	default:
-		break;
-	}
-}
-function gs(show){
-	if( $("#chooseCompany")[0].need){$("#c_ok").remove();if(show){$("#chooseCompany").show();}else{$("#chooseCompany").hide().after($("<p id='c_ok'>公司:</p>").append(pJSON.company));}};
-}
-function pre(i){
-	switch (i) {
-	case 1:
-		$(".next1,#p_e,#chooseType").show();gs(true);$(".prev1").hide();
-		$("#productFS1,#productFS3").appendTo("#hide");
-		break;
-	case 2:
-		editP();next(1);
-		$("#uploadFS").appendTo($("#hide"));
-		break;
-	case 3:
-		if(pJSON.sys!="2"){
-			$("#swfBT,.u_ok,#fileupload .aButton").show();$("#taskFS").appendTo("#hide");
-		}else{
-			$("#urlInput").show();
-			$("#urlSet .blueBold").text("").hide();
-			$("#taskFS").appendTo("#hide");
-		}
-		break;
-	default:
-		break;
-	}
-}
-function urlSet(){
-	var v=$("#task_p_url").val();
-	if(!v || $.trim(v).length<=0){alert("请正确填写WAP的入口URL地址");return;}
-	else{pJSON.url=v;$("#task_p_json_h").html($.toJSON(pJSON));
-	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
-	$("#urlInput").hide();$("#urlSet .blueBold").text($("#task_p_url").val()).show();
-	$("#taskFS").appendTo("#task_new");
-	}
-}
-
-function filesSet(){
-	//检测是否每个文件都指定了机型组
-	var b = true,tmp = [],i=0;
-	$("#upFiles").find(".file_upload").each(function(){
-		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"name":n,"fileName":$(this).find(".newname").text(),"size":$(this).find(".size").text(),"groups":[]};
-		if(v.length<=0){b=false;return false;}
-		else{
-			v.each(function(){
-				j.groups.push($(this).text());
-			});
-			tmp.push(j);
-		}
-		i++;
-	});
-	if(!b){alert("请为所有文件都指定机型组!");return;}
-	if(i==0){alert("请上传文件并指定机型组!");return;}
-	//生成文件json
-	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").html($.toJSON(pJSON));}
-	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
-	$("#swfBT,.u_ok,#fileupload .aButton").hide();
-	$("#taskFS").appendTo("#task_new");
-}
-function task_company(){
-	$("#task_company_h").val($("#task_company").val());
-}
-//-------------------------
-var phTypes = [["C5900","E329","W239","F839","F339","E379","C7500","其他"],
-                  ["240x320","320x480","480x800","480x854","960x800","其他"]];
-function choosePhType(fu){
-	var pt = pJSON.sys;
-	$("#fu_"+fu).css("background-color","#FFF");
-	if(pt>=0 && pt<=1){
-		if($("#phTypes").length<=0){
-			var tt = $("<div id='phTypes'></div>");
-			for ( var i = 0; i < phTypes[pt].length; i++) {
-				$("<input type='checkbox' class='pht' name='pht' id='pht_"+i+"' value='"+phTypes[pt][i]+"' /><label for='pht_"+i+"'>"+phTypes[pt][i]+"</label> ").appendTo(tt);
-			}
-			tt.append("<br /><a href=\"javascript:phtSet();\" class=\"aButton\">确定<\/a>");
-			tt[0].fu = fu;
-			tt.appendTo($("#fu_"+fu));
-		}else{
-			var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
-			p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
-		}
-	}
-}
-function phtSet(){
-	var ok = $("<div class='sok'></div>");
-	$("#phTypes").find(".pht:checked").each(function(i){
-		$("<span class='txtBox'>"+$(this).val()+"</span>").appendTo(ok);
-	});
-	ok.appendTo($("#fu_"+$("#phTypes")[0].fu));
-	$("#phTypes").appendTo($("#hide"));
-}
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -293,7 +160,7 @@ function phtSet(){
 <p id="chooseType">任务类型：<span class="red">*</span><br />
 <input type="radio" name="task_type" id="type0" value="0" /><label for="type0">新产品测试</label>
 <input type="radio" name="task_type" id="type1" value="1" /><label for="type1">DEMO测试</label>
-<input type="radio" name="task_type" id="type2" value="2" /><label for="type2">修正Bug</label>
+<input type="radio" name="task_type" id="type2" value="2" /><label for="type2">修正后复测</label>
 <input type="radio" name="task_type" id="type3" value="3" /><label for="type3">新机型适配</label>
 <input type="radio" name="task_type" id="type4" value="4" /><label for="type4">指定复测</label>
 <input type="radio" name="task_type" id="type5" value="5" /><label for="type5">拨测</label>

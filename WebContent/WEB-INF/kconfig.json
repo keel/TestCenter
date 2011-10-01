@@ -3,7 +3,7 @@
 	"updates":{
 		"2011-8-8":"始建此文件"
 	},
-	"info":"更改此文件的配置后，请对发生变化的Action执行reload操作",
+	"info":"注意数据库需要增加index:db.TCUser.ensureIndex({"unReadTasks":1})",
 	"classPath": "f:/works/workspace_keel/TestCenter/WebContent/WEB-INF/classes/",
 	"iniPath": "f:/works/workspace_keel/TestCenter/WebContent/WEB-INF/",
 	"dataSources":{

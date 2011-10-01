@@ -18,17 +18,21 @@ ArrayList<KObject> tus = (data.getData("tus")==null)?null:(ArrayList<KObject>)da
 Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").equals("true");
 String myPara = (ismy)?"/my":"";
 int state  =one.getState();
+int userType = Integer.parseInt(user.getType());
 out.print(JSPOut.out("head0","0",one.getName()));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/tc.choose_phone.js" type="text/javascript"></script>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.isMy = <%=(ismy)?"true":"false" %>;
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
-		$.post("<%=prefix %>/tasks/del", "id="+id ,function(data) {
-			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>/news";};
+		$.post("<%=prefix %>/tasks/a_d", "id="+id ,function(data) {
+			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>/tasks"+($.isMy?"/my":"");};
 		});
 	}
 	return;
@@ -44,144 +48,53 @@ $(function(){
 	$("#task_p_acc_v").text(port_type[parseInt($("#task_p_acc_v").text())]);
 	var sys = ["kjava","Android","WAP","Brew","Windows mobile","Windows CE","其他"];
 	$("#task_p_sys_v").text(sys[parseInt($("#task_p_sys_v").text())]);
-	
-	
-	
+	//选择机型
+	$(chooseDiv).appendTo("#hide");
+	$("#choosePhone").data("url","<%=prefix %>/phone/json?s=<%=product.getProp("sys") %>");
+
+	//处理请求
+	$.validator.dealAjax = {
+		bt:$("#submitBT"),
+		loading:function(){abox("创建任务","请稍候...");},
+		ok:function(data){
+			if(!isNaN(data)){
+				var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>";
+				abox("创建任务","<div class='reOk'>创建任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
+			}else{abox("创建任务","<div class='reErr'>创建任务失败! "+data+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
+		},
+		err:function(xhr){
+			abox("创建任务","<div class='reErr'>创建任务失败! 错误码:"+xhr.responseText+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
+		}
+	};
+
+	$('#p_form').validate({
+	    rules: {
+			task_info: {required:true}
+	    }
+	});
 	
 });
-//-----------机型选择-------------------
-var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960"};
-var allPData = [];
-var aaData = [],gMap={};
-var cGroup = 0;
-function selectOK(){
-	var ok = $("<div class='sok'></div>");
-	$("#td_in").find(".phone1").each(function(i){
-		$("<span class='txtBox' id='s"+this.id+"'>"+$(this).text()+"</span>").appendTo(ok);
-	});
-	ok.appendTo($("#fu_"+$("#choosePhone")[0].fu));
-	clearIn();$("#choosePhone").appendTo("#hide");
-}
-function selectPhone(i){
-	$("#fu_"+i).css("background-color","#FFF");
-	if(allPData.length == 0){
-		//abox("Loading...","请稍侯...");
-		$.getJSON("<%=prefix %>/phone/json?s=<%=product.getProp("sys") %>",function(sData){
-			if(sData==""){alert("产品操作系统不正确.请返回上一步重设.");return;}
-			var data = sData.gg;
-			for(var i=1,j=data.length;i<j;i++){
-				var gg = $("<a class=\"aButton phoneCate\" href=\"javascript:showGroup("+data[i].g+");\" id='ga"+data[i].g+"'>"+phoneType[data[i].g]+"<\/a>");
-				$("#phoneCates").after(gg);
-			}
-			allPData = data;
-			aaData = sData.aa;
-			$("#phone_fast").keyup(function(e){scPh(e);});
-			addP2Group(data);
-			addGG(aaData);
-			//aboxClose();
-		});
-	}else{clearIn();
-		$("#fu_"+i).find(".txtBox").each(function(){
-			var a = this.id.split("_");$("#p_"+a[1]+"_"+a[2])[0].io();
-		});
-	$("#fu_"+i).find(".sok").remove();}
-	$("#choosePhone")[0].fu = i;
-	$("#choosePhone").appendTo($("#fu_"+i));
-}
-function addGG(aa){
-	var i = 0;
-	for (p in aa) {
-		var gg = $("<a class=\"aButton phoneCate\" href=\"javascript:aaGroup('"+p+"');\">"+p+"<\/a>");
-		$("#phoneCates").after(gg);
-	}
-}
-function aaGroup(p){
-	$("#g"+cGroup).hide();cGroup = 999;$("#g999").show();
-	for(var i=0,n=aaData[p];i<n.length;i++){
-		for(var c in gMap){
-			if(c == n[i]){
-				$(gMap[c])[0].out();
-			}
+function aSubmit(f){
+	if(f=="#p_form"){
+		if($("#files").length>0){
+			var b = true,tmp = [];
+			$("#files .file_upload").each(function(){
+				var v = $(this).find(".txtBox2"),n = $(this).find(".filename").text(),j={"gFile":n,"phone":[]};
+				if(v.length<=0){b=false;return false;}
+				else{
+					v.each(function(){
+						j.phone.push($(this).text());
+					});
+					tmp.push(j);
+				}
+			});
+			if(!b){alert("请为所有文件都指定测试机型!");return;}
+			//生成文件json
+			if(tmp.length>0){$("#task_tu_json_h").html($.toJSON(tmp));}
 		}
 	}
-}
-function clearIn(){
-	$("#td_in").find(".phone1").each(function(i){
-		this.io();
-	});
-}
-function scPh(e){
-	var k = e.keyCode;
-	if(k==38||k==40||k==9||k==13||k==46||(k>8&&k<32)){return;}
-	var q = $.trim($("#phone_fast").val());
-	if(q==""){showGroup(0);return;}
-	$("#g"+cGroup).hide();
-	cGroup = 999;$("#g999").show();
-	q = q.toLowerCase();
-	for(var c in gMap){
-		var e = $(gMap[c])[0];
-		if(c.toLowerCase().indexOf(q)>=0){
-			e.out();
-		}else if(e.state==2){e.reset();}
-	}
-}
-function clear999(){
-	$("#g999 .phone").each(function(i){
-		this.reset();
-	});
-}
-function io(i,j){
-	$("#p_"+i+"_"+j)[0].io();
-}
-function createPh(i,j,c){
-	var p = $("<a class=\"phone\" href=\"javascript:io("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+c+"<\/a>");
-	p[0].state=1;p[0].i=i;p[0].j=j;p[0].c=c;
-	p[0].io = function(){
-		if(this.state!=0){$(this).addClass("phone1").appendTo("#td_in");this.state=0;}
-		else{$(this).removeClass("phone1").appendTo("#g"+(this.i-1));this.state=1;}
-	};
-	//如果不在in中则移动到当前group,用于search
-	p[0].out = function(){
-		if(this.state!=0){$(this).appendTo("#g"+cGroup);this.state=2;}
-	};
-	p[0].reset = function(){
-		if(this.state==0){this.io();}else if(this.state==2){$(this).appendTo("#g"+(this.i-1));}
-	};
-	gMap[c] = "#p_"+i+"_"+j;
-	return p;
-}
-function createPhg(d){
-	var p = $("<a class=\"phone\" href=\"javascript:io("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+c+"<\/a>");
-	for(var j = 0,k=data[i].d.length;j<k;j++){
-		createPh(i,j,data[i].d[j]).appendTo(gg);
-	}
-	p.click(function(){
-		
-	});
-	return p;	
-}
-function addP2Group(data){
-	for ( var i = 1; i < data.length; i++) {
-		var gg = $("<div id='g"+data[i].g+"'></div>");
-		for(var j = 0,k=data[i].d.length;j<k;j++){
-			createPh(i,j,data[i].d[j]).appendTo(gg);
-		}
-		gg.hide().appendTo($("#td_out"));
-	}
-	showGroup(0);
-}
-function chooseAll(){
-	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");io(a[1],a[2]);});
-}
-function showGroup(i){
-	clear999();
-	if($("#td_out").find("#g"+i).length>0){
-		$("#g"+cGroup).hide();
-		$("#g"+i).show();
-		cGroup = i;
-	}
-}
-//--------------------
+	$(f).submit();
+};
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -197,13 +110,13 @@ function showGroup(i){
 <div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> 
 当前状态: <span id="cState"><%=one.getProp("state") %></span> 
 待办人：<span id="operator" class="blueBold"><%=one.getProp("operator") %></span> 
-<%if(Integer.parseInt(user.getType())>1){ 
+<%if(userType>1){ 
 	StringBuilder sb1 = new StringBuilder("优先级：<span id=\"cLevel\" class=\"");
 	if(one.getLevel()==0){sb1.append("blueBold\">普通");}else{sb1.append("redBold\">").append(one.getLevel());}
 	sb1.append("</span>");out.print(sb1);
 }%>
 </div>
-<%if(Integer.parseInt(user.getType())>10){ 
+<%if(userType>10){ 
 	String ggid = String.valueOf(one.getId());
 	String edit = prefix+"/tasks/"+ggid+"?edit=true";
 %>
@@ -221,11 +134,13 @@ function showGroup(i){
     <div class="inBoxContent">
     	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("productID") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"><%=product.getProp("netPort") %></span></div> 
     	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 计费点描述: <br /><span id="task_p_fee_v" class="blueBold"><%=product.getProp("feeInfo") %></span></div> 
+    	<%if((Integer)product.getProp("sys")==2){%>
+    	<div class="inBoxLine">测试入口URL: <span id="task_p_url_v" class="blueBold"><%=product.getUrl()%></span></div> 
+    	<%} %>
     </div>
 </div>
 
-<%
-if(files != null && !files.isEmpty()){
+<% if(files != null && !files.isEmpty()){
 StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>游戏实体包</div><div class='inBoxContent'>");
 	Iterator<KObject> it = files.iterator();int i = 0;
@@ -268,7 +183,6 @@ StringBuilder sb = new StringBuilder();
     	%>
     </div>
 </div>
-
 <% 
 //已创建
 if(state==0){%>
@@ -280,51 +194,27 @@ if(state==0){%>
 <select name="task_level" id="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
 <p>下一流程处理人：
-<select name="task_operator"><option value="曹雨">曹雨</option></select>
+<select name="task_operator"><option value="王朦朦">王朦朦</option><option value="夏丽惠">夏丽惠</option></select>
 </p>
+<input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(3);" class="aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
+<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(3);" class="aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
 </div>
 
-<%}else if(state==1){%>
+<%//转发TestUnit,或在TestUnit完成后汇总
+}else if(state==1){%>
 
-<%}else if(state==2){%>
+<%//已执行结束,查看TestUnit
+}else if(state==2 || state == 4){%>
 
-<%}else if(state==3){%>
-
-<%}else if(state==4){%>
+<%//待反馈,由厂家
+}else if(state==3){%>
 
 <%}%>
 </div>
-<div id="hide" class="hide">
 
-
-<div id="choosePhone" class="inBox" style="width:95%;">
-	<div style="padding:10px;">
-	<div id="selectedPhones">
-		<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
-		<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
-			<table width="100%">
-			<tr><td id="td_in"></td>
-			<td style="width:90px;"><a class="aButton" href="javascript:selectOK();" style="width:70px;text-align:center;">确定所选</a></td></tr>
-			</table>
-			
-		</div>
-	</div>
-	<div id="phones">
-		<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在<span class="black bold">该类系统所有机型</span>中筛选)</span></div><span class="aButton phoneCate"><label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
-		<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
-			<table width="100%">
-			<tr><td id="td_out"><div id="g999"></div></td>
-			<td style="width:60px;"><a class="aButton" href="javascript:chooseAll();">全选</a></td></tr>
-			</table>
-		</div>
-	</div>
-	</div>
-</div>
-</div>
-
+<div id="hide" class="hide"></div>
 </div>
 		<div class="clear"></div>
 		</div>
