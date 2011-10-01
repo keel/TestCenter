@@ -64,3 +64,4 @@ function aboxUpdate(title,html){
 	if (html) { $("#aboxDiv").find(".aboxContent").html(html); };
 	if (title) { $("#aboxDiv").find(".aboxTitle").html(title); };
 };
+function aboxClose(){$.fancybox.close();};

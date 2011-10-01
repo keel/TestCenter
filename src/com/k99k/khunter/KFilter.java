@@ -140,6 +140,10 @@ public final class KFilter implements Filter {
 			//msg.addData("[prefix]", staticPrefix);
 			//执行action
 			msg = action.act(msg);
+			//不处理
+			if (msg.getData("[none]")!=null) {
+				return;
+			}
 			//是否打印
 			if (msg.getData("[print]") != null) {
 				resp.getWriter().print(msg.getData("[print]"));

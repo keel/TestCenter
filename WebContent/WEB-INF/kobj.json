@@ -225,7 +225,7 @@
 				},
 				{
 					"col":"name",
-					"unique":true,
+					"unique":false,
 					"asc":false,
 					"type":"type",
 					"intro":"文件名"
@@ -276,7 +276,7 @@
 					"col":"TID",
 					"def":0,
 					"len":0,
-					"required":false,
+					"required":true,
 					"type":4,
 					"intro":"所属任务ID"
 				},
@@ -998,7 +998,7 @@
 					"len":0,
 					"required":true,
 					"type":1,
-					"intro":"机型组"
+					"intro":"机型组,根据系统自定义"
 				}
 			],
 			"intro":"终端"
@@ -1223,7 +1223,7 @@
 			"indexes":[
 				{
 					"col":"name",
-					"unique":true,
+					"unique":false,
 					"asc":false,
 					"type":"type",
 					"intro":"机型组名称"

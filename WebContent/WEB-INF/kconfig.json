@@ -80,7 +80,7 @@
 		{
 			"_actName":"gamefile",
 			"_class":"com.k99k.testcenter.GameFile",
-			"pageSize":30
+			"path":"F:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
 			"_actName":"newsTask",
@@ -93,7 +93,7 @@
 		{
 			"_actName":"upload",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"F:/works/workspace_keel/TestCenter/WebContent/file/"
+			"savePath":"F:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
 			"_actName":"download",

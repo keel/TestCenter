@@ -67,6 +67,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .gray{color:#999;}
 .orangeBold{color:#ff8040;font-weight: bold;}
 .blueBold{color:#8080ff;font-weight: bold;}
+.redBold{color:red;font-weight: bold;}
 .blue{color:#8080ff;}
 .greenBold{color:#25ac1e;font-weight: bold;}
 .purpleBold{color:#e316e3;font-weight: bold;}
@@ -84,6 +85,7 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 /*fontsize set to 13px fix NOT in line on IE*/
 .phoneCate{line-height: 30px;padding:3px 7px;vertical-align:top;font-size:13px;background-color:#eee;color:#1F5982;margin:0;border: 1px solid #1F5982;border-left:none;}
 .txtBox{display: inline-block;background-color:#eee;color:#1F5982;padding:3px;margin:3px 3px 0 0;border: 1px solid #1F5982;}
+.txtBox2{display: inline-block;background-color:#fef8ab;color:#1F5982;padding:3px;margin:3px 3px 0 0;}
 .sok{padding:10px 0;}
 .okBT{width:60px;text-align: center;}
 

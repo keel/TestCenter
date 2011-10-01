@@ -74,10 +74,20 @@ public class TTask extends Action {
 			this.one(subact, req, u, httpmsg);
 		}else if(subact.equals("a_a")){
 			this.add(req, u, httpmsg);
+		}else if(subact.equals("a_p")){
+			this.appoint(req, u, httpmsg);
+		}else if(subact.equals("a_exec")){
+			this.exec(req, u, httpmsg);
+		}else if(subact.equals("a_send")){
+			this.send(req, u, httpmsg);
+		}else if(subact.equals("a_comm")){
+			this.comm(req, u, httpmsg);
 		}else if(subact.equals("a_u")){
-			
+			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
-			
+			this.del(req, u, httpmsg);
+		}else if(subact.equals("a_confirm")){
+			this.confirm(req, u, httpmsg);
 		}else if(subact.equals("a_s")){
 			this.search(subact,req, u, httpmsg);
 		}else{
@@ -86,6 +96,76 @@ public class TTask extends Action {
 		return super.act(msg);
 	}
 	
+	/**
+	 * 指派任务,确定测试机型,确定执行人,调整等级,说明等
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void appoint(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		
+	}
+	
+	/**
+	 * 转发任务,确定执行人,增加说明
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void send(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
+	
+	/**
+	 * 执行任务,测试项给结果,给评价,问题归总
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
+	
+	/**
+	 * 任务讨论,注意一个产品对应一个主题
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
+	
+	/**
+	 * 任务确认,退回或确认结果并通知任务创建者
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void confirm(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
+	
+	/**
+	 * 更新任务,改变状态(删除,暂停,取消等),调整执行人,增加说明,修改TestUnit
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void update(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
+	
+	/**
+	 * 删除任务
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void del(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//
+	}
 	/**
 	 * 处理任务添加
 	 * @param req
@@ -142,8 +222,9 @@ public class TTask extends Action {
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
 		log.put("user", u.getName());
-		log.put("info", "创建任务");
-		task.setProp("log", log);
+		log.put("info", "创建任务  说明："+task_info);
+		Object[] logs = new Object[]{log};
+		task.setProp("log", logs);
 		task.setId(dao.getIdm().nextId());
 		if(!dao.save(task)){
 			JOut.err(500,"E500"+ Err.ERR_ADD_TASK_FAIL, msg);
@@ -219,28 +300,27 @@ public class TTask extends Action {
 		//产品
 		long pid = (Long)one.getProp("PID");
 		KObject product = Product.dao.findOne(pid);
-		
-		//根据Task的状态显示不同内容
-		switch (one.getState()) {
-		case 0:
-			//刚创建,显示文件列表
-			break;
-		case 1:
-			//测试中,显示TestUnit列表
-			break;
-
-		default:
-			break;
-		}
-		
-		//查找本Task所属的TestUnit
-		HashMap<String,Object> q = new HashMap<String, Object>(2);
-		q.put("TID", one.getId());
-		ArrayList<KObject> tus = TestUnit.dao.queryKObj(q, null, MongoDao.prop_id_desc, 0, 0, null);
 		msg.addData("u", u);
 		msg.addData("one", one);
 		msg.addData("product", product);
-		msg.addData("tus", tus);
+		//Task的状态处于待分配(已创建)
+		if (one.getState()==0) {
+			//显示待分配的文件或URL
+			int sys = (Integer)product.getProp("sys");
+			if (sys!=2) {
+				HashMap<String,Object> q = new HashMap<String, Object>();
+				q.put("TID", one.getId());
+				ArrayList<KObject> files = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+				msg.addData("files", files);
+			}
+		}else {
+			//查找本Task所属的TestUnit
+			HashMap<String,Object> q = new HashMap<String, Object>(2);
+			q.put("TID", one.getId());
+			ArrayList<KObject> tus = TestUnit.dao.queryKObj(q, null, MongoDao.prop_id_desc, 0, 0, null);
+			msg.addData("tus", tus);
+		}
+		
 		//转到编辑时判断权限:是否为任务创建者或type>=4
 		if (req.getParameter("edit")!=null && (u.getName().equals(one.getCreatorName()) || Integer.parseInt(u.getType())>=4)) {
 			msg.addData("[jsp]", "/WEB-INF/tc/task_edit.jsp");

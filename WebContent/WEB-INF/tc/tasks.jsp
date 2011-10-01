@@ -102,7 +102,11 @@ else{
 			continue;
 		}
 		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");
-		sb.append(prefix).append("/tasks/").append(gg.getId()).append("' class='fullA");
+		sb.append(prefix).append("/tasks/").append(gg.getId());
+		if(sub.equals("my")){
+			sb.append("?my=true");
+		}
+		sb.append("' class='fullA");
 		if(gg.getLevel()>0){
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}

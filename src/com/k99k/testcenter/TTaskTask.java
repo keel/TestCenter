@@ -81,8 +81,7 @@ public class TTaskTask extends Action {
 					f.put("state", 0);
 					f.put("creatorName", creatorName);
 					KObject kobj = new KObject();
-					if(GameFile.schema.setPropFromMapForCreate(f, kobj)){
-						GameFile.dao.add(kobj);
+					if(GameFile.schema.setPropFromMapForCreate(f, kobj) && GameFile.dao.add(kobj)){
 					}else{
 						log.error("GameFile add failed:"+JSON.write(f));
 					}

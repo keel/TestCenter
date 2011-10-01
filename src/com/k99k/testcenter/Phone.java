@@ -113,7 +113,7 @@ public class Phone extends Action {
 		}
 		HashMap<String,Object> query = new HashMap<String, Object>(2);
 		query.put("type", Integer.parseInt(s));
-		String re = StaticDao.queryGroupJson(dao, query, 0, 0, null);
+		String re = StaticDao.queryPhoneGroupJson(query, 0, 0, null);
 		msg.addData("[print]",re);
 		return;
 	}

@@ -92,7 +92,7 @@ $('#productForm').validate({
 });
 $('#add_form').validate({
     rules: {
-		task_level: {required:true}
+		task_info: {required:true}
     }
 });
 
@@ -132,108 +132,7 @@ $("#task_p_search").autocomplete("<%=prefix %>/product/find",
 });
 //-------------------------------------
 var pJSON = {};
-//-----------机型选择-------------------
-var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960",11:"代表机型",12:"其他"};
-var allPData = [];
-var cGroup = 0;
-function selectOK(){
-	var ok = $("<div class='sok'></div>");
-	$("#td_in").find(".phone1").each(function(i){
-		$("<span class='txtBox' id='s"+this.id+"'>"+$(this).text()+"</span>").appendTo(ok);
-	});
-	ok.appendTo($("#fu_"+$("#choosePhone")[0].fu));
-	clearIn();$("#choosePhone").appendTo("#hide");
-}
-function selectPhone(i){
-	$("#fu_"+i).css("background-color","#FFF");
-	if(allPData.length == 0){
-		$.getJSON("<%=prefix %>/phone/json?s="+pJSON.sys,function(data){
-			if(data==""){alert("产品操作系统不正确.请返回上一步重设.");return;}
-			for(var i=1,j=data.length;i<j;i++){
-				var gg = $("<a class=\"aButton phoneCate\" href=\"javascript:showGroup("+data[i].g+");\" id='"+data[i].g+"'>"+phoneType[data[i].g]+"<\/a>");
-				$("#phoneCates").after(gg);
-			}
-			allPData = data;
-			$("#phone_fast").keyup(function(e){scPh(e);});
-			addP2Group(data);
-		});
-	}else{clearIn();
-		$("#fu_"+i).find(".txtBox").each(function(){
-			var a = this.id.split("_");$("#p_"+a[1]+"_"+a[2])[0].io();
-		});
-	$("#fu_"+i).find(".sok").remove();}
-	$("#choosePhone")[0].fu = i;
-	$("#choosePhone").appendTo($("#fu_"+i));
-}
-function clearIn(){
-	$("#td_in").find(".phone1").each(function(i){
-		this.io();
-	});
-}
-function scPh(e){
-	var k = e.keyCode;
-	if(k==38||k==40||k==9||k==13||k==46||(k>8&&k<32)){return;}
-	var q = $.trim($("#phone_fast").val());
-	if(q==""){resetPh();return;}
-	$("#g"+cGroup).hide();
-	cGroup = 999;
-	var gg=$("#g999");gg.show();
-	q = q.toLowerCase();
-	for ( var i = 1; i < allPData.length; i++) {
-		for ( var j = 0; j < allPData[i].d.length; j++) {
-			var e = $("#p_"+i+"_"+j)[0];
-			if(allPData[i].d[j].toLowerCase().indexOf(q)>=0){
-				e.out();
-			}else if(e.state==2){e.reset();}
-		}
-	}
-}
-function io(i,j){
-	$("#p_"+i+"_"+j)[0].io();
-}
-function createPh(i,j,c){
-	var p = $("<a class=\"phone\" href=\"javascript:io("+i+","+j+");\" id='p_"+i+"_"+j+"'>"+c+"<\/a>");
-	p[0].state=1;p[0].i=i;p[0].j=j;p[0].c=c;
-	p[0].io = function(){
-		if(this.state!=0){$(this).addClass("phone1").appendTo("#td_in");this.state=0;}
-		else{$(this).removeClass("phone1").appendTo("#g"+(this.i-1));this.state=1;}
-	};
-	//如果不在in中则移动到当前group,用于search
-	p[0].out = function(){
-		if(this.state!=0){$(this).appendTo("#g"+cGroup);this.state=2;}
-	};
-	p[0].reset = function(){
-		if(this.state==0){this.io();}else if(this.state==2){$(this).appendTo("#g"+(this.i-1));}
-	};
-	return p;
-}
-function resetPh(){
-	$("#g999").find(".phone").each(function(i){
-		this.reset();
-	});
-	showGroup(0);
-}
-function addP2Group(data){
-	for ( var i = 1; i < data.length; i++) {
-		var gg = $("<div id='g"+data[i].g+"'></div>");
-		for(var j = 0,k=data[i].d.length;j<k;j++){
-			createPh(i,j,data[i].d[j]).appendTo(gg);
-		}
-		gg.hide().appendTo($("#td_out"));
-	}
-	showGroup(0);
-}
-function chooseAll(){
-	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");io(a[1],a[2]);});
-}
-function showGroup(i){
-	if($("#td_out").find("#g"+i).length>0){
-		$("#g"+cGroup).hide();
-		$("#g"+i).show();
-		cGroup = i;
-	}
-}
-//--------------------
+
 function addCompany(){
 	return {c:$("#task_company").val()};
 }
@@ -459,30 +358,6 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
     </div>
 </div>
  
-<div id="choosePhone" class="inBox" style="width:95%;">
-	<div style="padding:10px;">
-	<div id="selectedPhones">
-		<div class="inBoxTitle">已选中机型：<span class="gray normal">(点击删除)</span>	</div>
-		<div class="inBoxContent" style="border-bottom: 1px dotted #aaa;background-color:#FFF;">
-			<table width="100%">
-			<tr><td id="td_in"></td>
-			<td style="width:90px;"><a class="aButton" href="javascript:selectOK();" style="width:70px;text-align:center;">确定所选</a></td></tr>
-			</table>
-			
-		</div>
-	</div>
-	<div id="phones">
-		<div id="phoneCates" class="inBoxTitle">备选机型组：<span class="gray normal">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在<span class="black bold">该类系统所有机型</span>中筛选)</span></div><span class="aButton phoneCate"><label for="phone_fast">搜索:</label><input style="padding:3px 5px;margin:0;width:100px;" type="text" name="phone_fast" id="phone_fast" /></span>
-		<div class="inBoxContent" style="border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;">
-			<table width="100%">
-			<tr><td id="td_out"><div id="g999"></div></td>
-			<td style="width:60px;"><a class="aButton" href="javascript:chooseAll();">全选</a></td></tr>
-			</table>
-		</div>
-	</div>
-	</div>
-</div>
-
 <div class="inBox" id="uploadFS">
     <div class="inBoxTitle">游戏实体包上传或URL设置</div> 
     <div class="inBoxContent">
