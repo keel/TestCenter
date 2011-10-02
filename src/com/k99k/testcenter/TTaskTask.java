@@ -39,6 +39,8 @@ public class TTaskTask extends Action {
 			this.add(msg);
 		}else if(act.equals("del")){
 			this.del(msg);
+		}else if(act.equals("appoint")){
+			this.appoint(msg);
 		}
 		
 		
@@ -46,6 +48,29 @@ public class TTaskTask extends Action {
 		return super.act(msg);
 	}
 	
+	private void appoint(ActionMsg msg){
+		long userid = (Long)msg.getData("uid");
+		long operatorId = (Long)msg.getData("oid");
+		long tid = (Long)msg.getData("tid");
+		//处理已办
+		HashMap<String,Object> query = new HashMap<String, Object>(2);
+		query.put("_id", userid);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull = new HashMap<String, Object>(2);
+		pull.put("unReadTasks", tid);
+		HashMap<String,Object> inc = new HashMap<String, Object>(2);
+		inc.put("newTasks", -1);
+		set.put("$pull", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
+		//更新待办人
+		query.put("_id", operatorId);
+		inc.put("newTasks", 1);
+		set.remove("$pull");
+		set.put("$push", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
+	}
 	/**
 	 * 删除任务,将此任务涉及的未处理用户清空
 	 * @param msg

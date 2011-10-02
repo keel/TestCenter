@@ -88,6 +88,11 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .txtBox2{display: inline-block;background-color:#fef8ab;color:#1F5982;padding:3px;margin:3px 3px 0 0;}
 .sok{padding:10px 0;}
 .okBT{width:60px;text-align: center;}
+.tu0{display: inline-block;background-color:#fef8ab;color:#1F5982;padding:3px;margin:3px 3px 0 0;}
+.tu2{display: inline-block;background-color:#28cc1c;color:#fff;padding:3px;margin:3px 3px 0 0;}
+.tu3{display: inline-block;background-color:#183dba;color:#fff;padding:3px;margin:3px 3px 0 0;}
+.tu4{display: inline-block;background-color:#00aaaa;color:#fff;padding:3px;margin:3px 3px 0 0;}
+.tu9{display: inline-block;background-color:#e80000;color:#fff;padding:3px;margin:3px 3px 0 0;}
 
 .sideON{color:#8080ff;font-weight: bold;}
 .search{padding:5px;}

@@ -146,19 +146,25 @@ public class TTask extends Action {
 			KObject tu = new KObject();
 			tu.setProp("TID", tid);
 			tu.setProp("PID", task.getProp("PID"));
-			tu.setProp("tester", operator);
+			tu.setProp("tester", operator.getName());
 			tu.setInfo(task_info);
 			tu.setLevel(level);
+			tu.setCreatorName(u.getName());
 			while (it.hasNext()) {
 				HashMap<String,Object> map = it.next();
 				String gFile = map.get("gFile").toString();
+				long fileId = Long.parseLong(map.get("fileId").toString());
 				ArrayList<String> phList = (ArrayList<String>)map.get("phone");
 				Iterator<String> li = phList.iterator();
 				tu.setProp("gFile", gFile);
+				tu.setProp("fileId", fileId);
 				while (li.hasNext()) {
 					String ph = li.next();
 					tu.setProp("phone", ph);
-					TestUnit.dao.add(tu);
+					if(!TestUnit.dao.add(tu)){
+						JOut.err(500,"E500"+ Err.ERR_DB_UPDATE, msg);
+						return;
+					}
 				}
 			}
 		} catch (Exception e) {
@@ -172,23 +178,37 @@ public class TTask extends Action {
 		HashMap<String,Object> set = new HashMap<String, Object>();
 		set.put("level", level);
 		set.put("operator", task_operator);
-		HashMap<String,Object> log = new HashMap<String, Object>();
-		log.put("time", System.currentTimeMillis());
-		log.put("user", u.getName());
-		log.put("info", task_info);
+		set.put("state", 1);
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "分配任务 - "+task_info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
-		push.put("log", log);
+		push.put("log", logmsg);
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		update.put("$set", set);
 		update.put("$push", push);
-		dao.update(q, update, false, false);
+		if(dao.update(q, update, false, false)){
+			//清除自己待办任务,指定为一下执行人
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("oid", operator.getId());
+			atask.addData("uid", u.getId());
+			atask.addData("act", "appoint");
+			TaskManager.makeNewTask("TTaskTask:"+tid, atask);
+			msg.addData("[print]", task.getId());
+		}else{
+			log.error("appoint task faild:"+tid);
+			JOut.err(500,"E500"+ Err.ERR_DB_UPDATE, msg);
+			return;
+		}
 		
 		
-		//清除自己待办任务,指定为一下执行人
 	}
 	
 	/**
-	 * 转发任务,确定执行人,增加说明
+	 * 转发TestUnit,增加说明
 	 * @param req
 	 * @param u
 	 * @param msg
@@ -319,7 +339,7 @@ public class TTask extends Action {
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
 		log.put("user", u.getName());
-		log.put("info", "创建任务  说明："+task_info);
+		log.put("info", "创建任务 - "+task_info);
 		Object[] logs = new Object[]{log};
 		task.setProp("log", logs);
 		task.setId(dao.getIdm().nextId());
@@ -403,7 +423,7 @@ public class TTask extends Action {
 		//Task的状态处于待分配(已创建)
 		if (one.getState()==0) {
 			//显示待分配的文件或URL
-			int sys = (Integer)product.getProp("sys");
+			int sys = Integer.parseInt(product.getProp("sys").toString());
 			if (sys!=2) {
 				HashMap<String,Object> q = new HashMap<String, Object>();
 				q.put("TID", one.getId());

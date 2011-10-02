@@ -124,6 +124,10 @@
 			"pageSize":20
 		},
 		{
+			"_actName":"tcase",
+			"_class":"com.k99k.testcenter.TestCase"
+		},
+		{
 			"_actName":"end",
 			"_class":"com.k99k.testcenter.End"
 		}

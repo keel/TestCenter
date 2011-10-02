@@ -186,7 +186,15 @@
 					"len":0,
 					"required":true,
 					"type":1,
-					"intro":"测试类型,java,android等,待定"
+					"intro":"0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other"
+				},
+				{
+					"col":"caseId",
+					"def":0,
+					"len":0,
+					"required":true,
+					"type":1,
+					"intro":"case id用于定位case,每个type的caseId唯一"
 				}
 			],
 			"intro":"测试项目"
@@ -320,6 +328,13 @@
 				}
 			},
 			"indexes":[
+				{
+					"col":"groupID",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"groupID"
+				},
 				{
 					"col":"company",
 					"unique":false,
@@ -1587,14 +1602,6 @@
 					"intro":"机型name"
 				},
 				{
-					"col":"gFile",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"测试的文件名"
-				},
-				{
 					"col":"url",
 					"def":"",
 					"len":0,
@@ -1641,6 +1648,74 @@
 					"required":false,
 					"type":4,
 					"intro":"实际完成时间(ms)"
+				},
+				{
+					"col":"fileId",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"测试文件的id"
+				},
+				{
+					"col":"re",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"testUnit结果集合"
+				},
+				{
+					"col":"re.*",
+					"def":{
+						
+					},
+					"len":0,
+					"required":false,
+					"type":2,
+					"intro":"testCase"
+				},
+				{
+					"col":"re.*.caseId",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"testCase id"
+				},
+				{
+					"col":"re.*.attach",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"testCase 附件(如图片等)"
+				},
+				{
+					"col":"re.*.re",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"testCase 结果,0未测,2通过,4部分通过,9不通过"
+				},
+				{
+					"col":"re.*.info",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"testCase 说明"
+				},
+				{
+					"col":"gFile",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"测试文件名"
 				}
 			],
 			"intro":"测试单元"
