@@ -27,7 +27,7 @@ out.print(JSPOut.out("head0","0",one.getName()));%>
 <script src="<%=sPrefix %>/js/tc.choose_phone.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/drag.js" type="text/javascript"></script>
 <script type="text/javascript">
-$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
+$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>;
 $.isMy = <%=(ismy)?"true":"false" %>;
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
@@ -121,7 +121,6 @@ function tuDrag(tar){
 	tar.easydrag();
 	tar.mousedown(function(){
 		cTU=$(this).parent().parent()[0].id;
-		console.log(cTU);
 	});
 	tar.ondrop(function(e,el){
 		dropTU($(el));
@@ -147,7 +146,21 @@ function selectTU(){
 	}).error(function(){alert("获取测试组成员失败!");});
 }
 function saveTU(){
-	
+	var j=[];
+	$("#sendT .st").each(function(){
+		var t={};t.n=$(this).find(".bold").text();t.us=[];
+		$(this).find(".tu0").each(function(){t.us.push(this.id.split("_")[1]);});
+		if(t.us.length>0){j.push(t);};
+	});
+	if(j.length==0){alert("任务已全部执行,无法再分配.");return;}
+	else{
+		$("#task_tu_json_h").html($.toJSON(j));
+		abox("保存任务分配","处理中,请稍候……");
+		var close= "<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a>";
+		$.post($.prefix+"/tasks/a_send", $("#s_form").serialize() ,function(data) {
+			if(data=="ok"){abox("任务分配","<div class='reOk'>任务分配成功！ &nbsp;"+close+"</div>");}else{abox("任务分配","<div class='reErr'>任务分配保存失败. &nbsp;"+close+"</div>");};
+		}).error(function(){abox("任务分配","<div class='reErr'>任务分配保存失败. &nbsp;"+close+"</div>");});
+	}
 }
 function confirmTU(){
 	
@@ -279,7 +292,7 @@ if(state==0){%>
 			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
 		}
 	}
-	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>测试单元分配</div></div><div id='selectTUBT'></div></div></div>");
+	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div></div></div>");
 	out.print(sb);
 %>
 <div id="send">

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.JOut;
 import com.k99k.khunter.KObject;
 import com.k99k.tools.JSON;
 
@@ -41,11 +42,54 @@ public class TTaskTask extends Action {
 			this.del(msg);
 		}else if(act.equals("appoint")){
 			this.appoint(msg);
+		}else if(act.equals("send")){
+			this.send(msg);
 		}
 		
 		
 		
 		return super.act(msg);
+	}
+	
+	/**
+	 * 处理TestUnit执行人变更
+	 * @param msg
+	 */
+	@SuppressWarnings("unchecked")
+	private void send(ActionMsg msg){
+		long tid = (Long)msg.getData("tid");
+		ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>)msg.getData("json");
+		HashMap<String,Object> logmsg = (HashMap<String,Object>)msg.getData("logmsg");
+		//处理已办
+		if (json==null || json.isEmpty()) {
+			return;
+		}
+		//
+		Iterator<HashMap<String,Object>> it = json.iterator();
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> inc = new HashMap<String, Object>(4);
+		inc.put("newTasks", 1);
+		set.put("$inc", inc);
+		HashMap<String,Object> push = new HashMap<String, Object>(4);
+		push.put("unReadTasks", tid);
+		set.put("$push", push);
+		while (it.hasNext()) {
+			HashMap<String,Object> m = it.next();
+			String tester = (String)m.get("n");
+			q.put("name", tester);
+			HashMap<String,Object> ne = new HashMap<String, Object>(2);
+			ne.put("$ne", tid);
+			q.put("unReadTasks", ne);
+			TUser.dao.updateOne(q, set);
+		}
+		q = new HashMap<String, Object>(2);
+		set = new HashMap<String, Object>(4);
+		push = new HashMap<String, Object>(4);
+		push.put("log", logmsg);
+		set.put("$push", push);
+		q.put("_id", tid);
+		TTask.dao.updateOne(q, set);
 	}
 	
 	private void appoint(ActionMsg msg){

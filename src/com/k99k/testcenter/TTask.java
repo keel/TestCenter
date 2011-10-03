@@ -142,6 +142,10 @@ public class TTask extends Action {
 		//生成TestUnit
 		try {
 			ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>) JSON.read(task_tu_json_h);
+			if (json==null || json.isEmpty()) {
+				JOut.err(403,"E403"+ Err.ERR_JSON, msg);
+				return;
+			}
 			Iterator<HashMap<String,Object>> it = json.iterator();
 			KObject tu = new KObject();
 			tu.setProp("TID", tid);
@@ -208,13 +212,65 @@ public class TTask extends Action {
 	}
 	
 	/**
-	 * 转发TestUnit,增加说明
+	 * 转发TestUnit
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
+	@SuppressWarnings("unchecked")
 	private void send(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
+		String t_id = req.getParameter("tid");
+		String t_json = req.getParameter("task_tu_json_h");
+		if (!StringUtil.isDigits(t_id) || !StringUtil.isStringWithLen(t_json, 2)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		try {
+			ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>) JSON.read(t_json);
+			if (json==null || json.isEmpty()) {
+				JOut.err(403,"E403"+ Err.ERR_JSON, msg);
+				return;
+			}
+			Iterator<HashMap<String,Object>> it = json.iterator();
+			HashMap<String,Object> q = new HashMap<String, Object>(4);
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> sett = new HashMap<String, Object>(4);
+			boolean re = true;
+			while (it.hasNext()) {
+				HashMap<String,Object> m = it.next();
+				String tester = (String)m.get("n");
+				ArrayList<String> tus = (ArrayList<String>)m.get("us");
+				Iterator<String> itr = tus.iterator();
+				while (itr.hasNext()) {
+					long uid = Long.parseLong(itr.next());
+					q.put("_id", uid);
+					sett.put("tester", tester);
+					set.put("$set", sett);
+					re = TestUnit.dao.updateOne(q, set);
+				}
+			}
+			if (re) {
+				ActionMsg atask = new ActionMsg("tTaskTask");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+				atask.addData("tid", Long.parseLong(t_id));
+				atask.addData("json", json);
+				atask.addData("act", "send");
+				HashMap<String,Object> logmsg = new HashMap<String, Object>();
+				logmsg.put("time", System.currentTimeMillis());
+				logmsg.put("user", u.getName());
+				logmsg.put("info", "更新任务分配");
+				atask.addData("logmsg",logmsg);
+				TaskManager.makeNewTask("TTaskTask:"+t_id, atask);
+				msg.addData("[print]", "ok");
+			}else{
+				JOut.err(500,"E500"+Err.ERR_SEND_TESTUNIT, msg);
+				return;
+			}
+		} catch (Exception e) {
+			JOut.err(403,"E403"+Err.ERR_SEND_TESTUNIT, msg);
+			return;
+		}
+		
 	}
 	
 	/**
