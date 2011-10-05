@@ -42,7 +42,7 @@ public class TestCase extends Action {
 	/**
 	 * 测试项缓存(内容为KObject),长度为50,下标为系统数字：0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other
 	 */
-	private static KObject[][] cases = new KObject[100][100];
+	private static KObject[][] cases = new KObject[50][50];
 	/**
 	 * 缓存内容为Json String
 	 */
@@ -87,7 +87,10 @@ public class TestCase extends Action {
 			if (cases[i] != null) {
 				ArrayList<HashMap<String,Object>> tmp = new ArrayList<HashMap<String,Object>>();
 				for (int j = 0; j < cases[i].length; j++) {
-					tmp.add(cases[i][j].getPropMap());
+					if(cases[i][j]!=null){
+						tmp.add(cases[i][j].getPropMap());
+					}
+					
 				}
 				casesJson[i] = JSON.write(tmp);
 			}
@@ -159,10 +162,10 @@ public class TestCase extends Action {
 		boolean hasEnd=false;
 		ls.add(0,endRE);
 		while (it.hasNext()) {
-			if (it.next() == null) {
+			HashMap<java.lang.String, java.lang.Object> jm = it.next();
+			if (jm == null) {
 				i++;continue;
 			}
-			HashMap<java.lang.String, java.lang.Object> jm = it.next();
 			KObject aCase = ca[i];
 			if (aCase==null) {
 				return null;

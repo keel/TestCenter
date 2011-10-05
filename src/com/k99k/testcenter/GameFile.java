@@ -79,7 +79,7 @@ public class GameFile extends Action {
 			return super.act(msg);
 		}
 		String file = g.getName();
-		if (!(Integer.parseInt(u.getType())>2 || u.getCreatorName().equals(g.getCreatorName()))) {
+		if (!(Integer.parseInt(u.getType())>1 || u.getName().equals(g.getCreatorName()))) {
 			log.error("Gamefile auth failed. fileId:"+fileId+" userid:"+u.getId());
 			JOut.err(404,"无权限", httpmsg);
 			return super.act(msg);
