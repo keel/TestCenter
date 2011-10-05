@@ -83,6 +83,7 @@ public class TestUnit extends Action {
 		msg.addData("one", one);
 		msg.addData("product", product);
 		msg.addData("task", task);
+		msg.addData("cases", TestCase.findCaseList(Integer.parseInt(product.getProp("sys").toString())));
 		msg.addData("[jsp]", "/WEB-INF/tc/testunit.jsp");
 	}
 	

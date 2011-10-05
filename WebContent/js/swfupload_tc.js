@@ -1,7 +1,7 @@
 var swfu;
-function initUpload(uName,sucFn,f_types,f_types_say,f_size){
+function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url){
  swfu= new SWFUpload({
-	upload_url : $.prefix+"/upload",
+	upload_url : (f_url)?f_url:$.prefix+"/upload",
 	flash_url : $.sPrefix+"/js/swfupload.swf",
 	post_params: {"uName":uName},
 	use_query_string:true, 

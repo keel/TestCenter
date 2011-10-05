@@ -27,6 +27,7 @@ public class Err {
 	public static final int ERR_ADD_TASK_FAIL = 203;
 	public static final int ERR_ADD_TESTUNIT = 204;
 	public static final int ERR_SEND_TESTUNIT = 205;
+	public static final int ERR_EXEC_TESTUNIT = 206;
 	
 
 }

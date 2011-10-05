@@ -96,6 +96,11 @@
 			"savePath":"F:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
+			"_actName":"upload2",
+			"_class":"com.k99k.testcenter.FileUpload",
+			"savePath":"F:/works/workspace_keel/TestCenter/WebContent/file/"
+		},
+		{
 			"_actName":"download",
 			"_class":"com.k99k.testcenter.Download",
 			"downPath":"F:/works/workspace_keel/TestCenter/WebContent/file/"

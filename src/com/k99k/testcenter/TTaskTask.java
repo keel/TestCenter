@@ -13,6 +13,7 @@ import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 
 /**
@@ -44,11 +45,53 @@ public class TTaskTask extends Action {
 			this.appoint(msg);
 		}else if(act.equals("send")){
 			this.send(msg);
+		}else if(act.equals("exec")){
+			this.exec(msg);
 		}
 		
 		
 		
+		
 		return super.act(msg);
+	}
+	
+	/**
+	 * 处理TestUnit执行完成后的更新
+	 * @param msg
+	 */
+	private void exec(ActionMsg msg){
+		long tuid = (Long)msg.getData("tuid");
+		String tester = (String)msg.getData("tester");
+		
+		KObject tu = TestUnit.dao.findOne(tuid);
+		if (tu==null) {
+			log.error("exec tuid not found. tuid:"+tuid+" tester:"+tester);
+			return;
+		}
+		long tid = Long.parseLong(tu.getProp("TID").toString());
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		q.put("tester", tester);
+		q.put("TID", tid);
+		int size = TestUnit.dao.count(q);
+		if (size == 1) {
+			HashMap<String,Object> _tu = TestUnit.dao.findOneMap(q, StaticDao.prop_id);
+			if ((Long)(_tu.get("_id")) == tuid) {
+				//更新tester的待办任务
+				q = new HashMap<String, Object>(4);
+				HashMap<String,Object> set = new HashMap<String, Object>(4);
+				HashMap<String,Object> inc = new HashMap<String, Object>(4);
+				inc.put("newTasks", -1);
+				set.put("$inc", inc);
+				q.put("name", tester);
+				q.put("unReadTasks", tid);
+				HashMap<String,Object> pull = new HashMap<String, Object>(4);
+				pull.put("unReadTasks", tid);
+				set.put("$pull", pull);
+				TUser.dao.updateOne(q, set);
+			}
+		}
+		
+		
 	}
 	
 	/**

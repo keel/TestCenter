@@ -93,7 +93,8 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .tu3{display: inline-block;background-color:#183dba;color:#fff;padding:3px;margin:3px 3px 0 0;}
 .tu4{display: inline-block;background-color:#00aaaa;color:#fff;padding:3px;margin:3px 3px 0 0;}
 .tu9{display: inline-block;background-color:#e80000;color:#fff;padding:3px;margin:3px 3px 0 0;}
-
+.tume{border: 2px dotted #000;font-weight: bold;}
+.whiteBG{background-color:#FFF;}
 .sideON{color:#8080ff;font-weight: bold;}
 .search{padding:5px;}
 .table_list td{text-align: center;}

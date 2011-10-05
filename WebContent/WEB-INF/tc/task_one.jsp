@@ -29,6 +29,8 @@ out.print(JSPOut.out("head0","0",one.getName()));%>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>;
 $.isMy = <%=(ismy)?"true":"false" %>;
+$.me="<%=user.getName() %>";
+$.userType="<%=userType %>";
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
@@ -128,6 +130,17 @@ function tuDrag(tar){
 }
 //显示分配任务
 function selectTU(){
+	if($.userType==2){
+		var st=$("<div class='file_upload st' id='st_0' style='background-color:#FFF;'><div class='bold'>"+$.me+"</div><div class='tuu'></div></div>");
+		$("#sendT").append(st);
+		$("#showTUS .tu0").each(function(){
+			var un=$(this).attr("rel");
+			if(un==$.me){
+				$(this).addClass("tume");
+			st.find(".tuu").append("<a target='_blank' href='"+$.prefix+"/testUnit/"+this.id.split("_")[1]+"' class='tu0' id='u"+this.id+"'>"+$(this).text()+"</a>");
+			}
+		});
+	}else if($.userType>2){
 	var gUsers = {};
 	//获取组员列表,分别将
 	$.getJSON($.prefix+"/user/tester",function(data){
@@ -139,11 +152,12 @@ function selectTU(){
 			$("#sendT").append(st);
 		}
 		$("#showTUS .tu0").each(function(){
-			var un=$(this).attr("rel");
+			var un=$(this).attr("rel");if(un==$.me){$(this).addClass("tume");};
 			gUsers[un].find(".tuu").append("<span class='tu0' id='u"+this.id+"'>"+$(this).text()+"</span>");
 		});
 		tuDrag($("#sendT .tu0"));
 	}).error(function(){alert("获取测试组成员失败!");});
+	}
 }
 function saveTU(){
 	var j=[];
@@ -238,7 +252,7 @@ StringBuilder sb = new StringBuilder();
     	<%
     	Object logO = one.getProp("log");
     	if(logO!=null){
-    		ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String,Object>>)one.getProp("log"); 
+    		ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String,Object>>)logO; 
     		if(!logs.isEmpty()){
     			StringBuilder sb2 = new StringBuilder();
     	    	
@@ -255,8 +269,13 @@ StringBuilder sb = new StringBuilder();
     </div>
 </div>
 <% 
+//测试人员
+if(state==1 && userType < 2){%>
+
+
+<% 
 //已创建
-if(state==0){%>
+}else if(state==0 && userType > 3){%>
 <div id="appoint">
 <form action="<%=prefix%>/tasks/a_p" method="post" id="p_form">
 <p><label for="task_info">任务附加说明：</label><br />
@@ -274,7 +293,7 @@ if(state==0){%>
 </div>
 
 <%//转发TestUnit,或在TestUnit完成后汇总
-}else if(state==1 && tus !=null && !tus.isEmpty()){
+}else if(state==1 && tus !=null && !tus.isEmpty() && userType >= 2){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu3'>待反馈</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
@@ -306,12 +325,20 @@ if(state==0){%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
 }else if(state==2 || state == 4){%>
+TestUnit 问题汇总
 
-<%//待反馈,由厂家
-}else if(state==3){%>
+
+<%//待反馈情况,非厂家查看
+}else if(state==3 && userType>1){%>
+
+<%//厂家需要反馈的情况
+}else if(state==3 && user.getProp("company").equals(one.getProp("company"))){%>
+
+
+<%//厂家或访客查看情况,state<2的情况下
+}else {%>
 
 <%}%>
-
 </div>
 
 

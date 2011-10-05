@@ -219,6 +219,12 @@ public class TTask extends Action {
 	 */
 	@SuppressWarnings("unchecked")
 	private void send(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		if (Integer.parseInt(u.getType()) < 2) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
 		String t_id = req.getParameter("tid");
 		String t_json = req.getParameter("task_tu_json_h");
 		if (!StringUtil.isDigits(t_id) || !StringUtil.isStringWithLen(t_json, 2)) {
@@ -244,6 +250,8 @@ public class TTask extends Action {
 				while (itr.hasNext()) {
 					long uid = Long.parseLong(itr.next());
 					q.put("_id", uid);
+					//必须是待测状态
+					q.put("state", 0);
 					sett.put("tester", tester);
 					set.put("$set", sett);
 					re = TestUnit.dao.updateOne(q, set);
@@ -274,13 +282,63 @@ public class TTask extends Action {
 	}
 	
 	/**
-	 * 执行任务,测试项给结果,给评价,问题归总
+	 * 执行TestUnit,测试项给结果,给评价,问题归总
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
+	@SuppressWarnings("unchecked")
 	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
+		//验证权限
+		if (Integer.parseInt(u.getType()) < 2) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String tu_id = req.getParameter("tu_id");
+		String u_json = req.getParameter("json");
+		String u_rank = req.getParameter("rank");
+		String u_sys = req.getParameter("sys");
+		if (!StringUtil.isDigits(tu_id) || !StringUtil.isDigits(u_sys) || !StringUtil.isStringWithLen(u_json, 2) || !StringUtil.isDigits(u_rank) ) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tuid=Long.parseLong(tu_id);
+		int rank=Integer.parseInt(u_rank);
+		int sys = Integer.parseInt(u_sys);
+		try {
+			ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>) JSON.read(u_json);
+			if (json==null || json.isEmpty()) {
+				JOut.err(403,"E403"+ Err.ERR_JSON, msg);
+				return;
+			}
+			ArrayList<HashMap<String,Object>> res = TestCase.checkJson(sys, json);
+			HashMap<String,Object> result = res.remove(0);
+			int state = (Integer)result.get("re");
+			
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> sett = new HashMap<String, Object>();
+			q.put("_id", tuid);
+			sett.put("state", state);
+			sett.put("re", res);
+			sett.put("rank", rank);
+			set.put("$set", sett);
+			if(TestUnit.dao.updateOne(q, set)){
+				ActionMsg atask = new ActionMsg("tTaskTask");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+				atask.addData("tuid", tuid);
+				atask.addData("tester", u.getName());
+				atask.addData("act", "exec");
+				msg.addData("[print]", "ok");
+			}else{
+				JOut.err(500,"E500"+Err.ERR_EXEC_TESTUNIT, msg);
+			}
+		} catch (Exception e) {
+			JOut.err(403,"E403"+Err.ERR_EXEC_TESTUNIT, msg);
+			return;
+		}
+		
 	}
 	
 	/**
