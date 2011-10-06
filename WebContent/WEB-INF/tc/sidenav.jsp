@@ -22,7 +22,7 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <%if(tt>0){ %><span id="newTasks" class="bold red">(<%=tt %>)</span><%} %>
 </a></li>
 <%
-if(type>=4){
+if(type>=2){
 %>
 <li id="side_task"><a href="<%=prefix %>/tasks" >任务管理</a></li>
 <%

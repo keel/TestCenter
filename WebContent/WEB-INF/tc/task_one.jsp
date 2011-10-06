@@ -27,7 +27,8 @@ out.print(JSPOut.out("head0","0",one.getName()));%>
 <script src="<%=sPrefix %>/js/tc.choose_phone.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/drag.js" type="text/javascript"></script>
 <script type="text/javascript">
-$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>;
+<!--
+$.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>,$.sys=<%=product.getProp("sys") %>;
 $.isMy = <%=(ismy)?"true":"false" %>;
 $.me="<%=user.getName() %>";
 $.userType="<%=userType %>";
@@ -51,7 +52,7 @@ $(function(){
 	$("#task_p_acc_v").text(port_type[parseInt($("#task_p_acc_v").text())]);
 	var sys = ["kjava","Android","WAP","Brew","Windows mobile","Windows CE","其他"];
 	$("#task_p_sys_v").text(sys[parseInt($("#task_p_sys_v").text())]);
-	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","已上线"];
+	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中"];
 	$("#cState").text(cState[parseInt($("#cState").text())]);
 	//选择机型
 	$(chooseDiv).appendTo("#hide");
@@ -65,10 +66,10 @@ $(function(){
 			if(!isNaN(data)){
 				var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>";
 				abox("处理任务","<div class='reOk'>处理任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
-			}else{abox("处理任务","<div class='reErr'>处理任务失败! "+data+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
+			}else{abox("处理任务","<div class='reErr'>处理任务失败! "+data+" &nbsp;"+close+"</div>");};
 		},
 		err:function(xhr){
-			abox("处理任务","<div class='reErr'>处理任务失败! 错误码:"+xhr.responseText+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");
+			abox("处理任务","<div class='reErr'>处理任务失败! 错误码:"+xhr.responseText+" &nbsp;"+close+"</div>");
 		}
 	};
 
@@ -79,7 +80,15 @@ $(function(){
 	});
 	//显示任务分配
 	selectTU();
-	
+	//隐藏按钮
+	$("#bt_confirm").hide();
+<% //显示summary
+if(state==6 && userType>1){%>
+	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
+	if(data != ''){
+		showSummary(data);
+	}else{$("#fCases").html("未发现测试问题.");}
+<%}%>
 });
 function aSubmit(f){
 	if(f=="#p_form"){
@@ -102,6 +111,7 @@ function aSubmit(f){
 	}
 	$(f).submit();
 };
+var close= "<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a>";
 var cTU = "";
 function dropTU(tu){
 	var p=tu.offset();
@@ -170,15 +180,49 @@ function saveTU(){
 	else{
 		$("#task_tu_json_h").html($.toJSON(j));
 		abox("保存任务分配","处理中,请稍候……");
-		var close= "<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a>";
 		$.post($.prefix+"/tasks/a_send", $("#s_form").serialize() ,function(data) {
 			if(data=="ok"){abox("任务分配","<div class='reOk'>任务分配成功！ &nbsp;"+close+"</div>");}else{abox("任务分配","<div class='reErr'>任务分配保存失败. &nbsp;"+close+"</div>");};
 		}).error(function(){abox("任务分配","<div class='reErr'>任务分配保存失败. &nbsp;"+close+"</div>");});
 	}
 }
+function summary(){
+	if($("#sendT .tu0").length>0){
+		var c=confirm("还有未完成的测试单元,现在就汇总结果吗？");
+		if(!c){return;}
+	}
+	abox("汇总任务问题","处理中,请稍候……");
+	$.getJSON($.prefix+"/tasks/a_summary",{tid:$.tid,sys:$.sys},function(data){
+		showSummary(data);
+		$("#bt_summary,#bt_saveTU,#sendT").hide();
+		$("#failCases,#bt_confirm,#finisher").show(10,function(){location.href="#ffcc";$.fancybox.close();});
+	}).error(function(){abox("汇总任务问题","<div class='reErr'>汇总任务问题失败! &nbsp;"+close+"</div>");});
+}
+function showSummary(data){
+	if(!data || data=="" || data.length==0){abox("汇总任务问题","处理完成,未发现任何问题. &nbsp;"+close);return;}
+	for ( var i in data) {
+		var c=data[i][0];
+		var h=$("<div class='file_upload' style='background-color:#FFF;' id='qc_"+i+"'><div>"+i+". "+c.name
+				+"</div><div class='blue' style='font-size:12px;padding:5px;'>"+c.info+"</div></div>");
+		for ( var j = 1; j < data[i].length; j++) {
+			var q=data[i][j];
+			var h2=$("<div><span class='tu"+q.re+"'>"+q.phone+"</span> "+q.info+"</div>");
+			h2.appendTo(h);
+		}
+		h.appendTo("#fCases");
+	}
+}
 function confirmTU(){
+	abox("测试结果提交","处理中,请稍候……");
+	$.post($.prefix+"/tasks/a_confirm", {tid:$.tid,sys:$.sys,task_operator:$("#task_operator").val()},function(data) {
+		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
+		if(data=="ok"){abox("测试结果提交","<div class='reOk'>测试结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		else{abox("测试结果提交","<div class='reErr'>测试结果提交失败. &nbsp;"+close+"</div>");};
+	}).error(function(){abox("测试结果提交","<div class='reErr'>测试结果提交失败. &nbsp;"+close+"</div>");});
+}
+function finish(){
 	
 }
+-->
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -202,9 +246,7 @@ function confirmTU(){
 </div>
 <%if(userType>10){ 
 	String ggid = String.valueOf(one.getId());
-	String edit = prefix+"/tasks/"+ggid+"?edit=true";
 %>
-<a href="<%=edit%>" class="aButton">暂停</a>
 <a href="javascript:del(<%=ggid%>);" class="aButton">删除</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
@@ -232,7 +274,11 @@ StringBuilder sb = new StringBuilder();
 	while(it.hasNext()){
 		KObject f=it.next();
 		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
-		sb.append("'><a rel='").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a><span class=\"u_ok\"> [ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span><div class=\"groups\">");
+		sb.append("'><a rel='").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+		if(userType>=3){
+			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
+		}
+		sb.append("<div class=\"groups\">");
 		ArrayList<String> gps = (ArrayList<String>)f.getProp("groups");
 		Iterator<String> itr = gps.iterator();
 		while(itr.hasNext()){
@@ -245,6 +291,7 @@ StringBuilder sb = new StringBuilder();
 	sb.append("</div></div>");
 	out.print(sb);
 }
+if(userType>1){
 %>
 <div class="inBox" id="infos">
     <div class="inBoxTitle">任务流程及说明</div> 
@@ -268,14 +315,9 @@ StringBuilder sb = new StringBuilder();
     	%>
     </div>
 </div>
-<% 
-//测试人员
-if(state==1 && userType < 2){%>
-
-
-<% 
+<%  }
 //已创建
-}else if(state==0 && userType > 3){%>
+if(state==0 && userType > 3){%>
 <div id="appoint">
 <form action="<%=prefix%>/tasks/a_p" method="post" id="p_form">
 <p><label for="task_info">任务附加说明：</label><br />
@@ -314,25 +356,47 @@ if(state==1 && userType < 2){%>
 	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div></div></div>");
 	out.print(sb);
 %>
+<div class="inBox hide" id="failCases">
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxContent" id="fCases">
+    
+    </div>
+</div>
 <div id="send">
 <form action="<%=prefix%>/tasks/a_send" method="post" id="s_form">
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
 <p>
-<a href='javascript:saveTU();' class='aButton tx_center' style='width:60px;'>保存分配</a>
-<a href='javascript:confirmTU();' class='aButton tx_center' >测试结果确认</a>
+<span id="finisher" class="hide">下一执行人:<select id="task_operator" name="task_operator"><option value="曹雨">曹雨</option></select><br /></span>
+<a href='javascript:saveTU();' class='aButton tx_center' style='width:60px;' id="bt_saveTU">保存分配</a>
+<a href='javascript:summary();' class='aButton tx_center' id="bt_summary">汇总测试结果</a>
+<a href='javascript:confirmTU();' class='aButton tx_center' id="bt_confirm">测试结果提交</a>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
-}else if(state==2 || state == 4){%>
-TestUnit 问题汇总
+}else if(state==6 && userType>1){%>
+<div class="inBox" id="failCases">
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxContent" id="fCases">
+    
+    </div>
+</div>
+<br />
+<div id="finish">
+<%if(userType==4 || userType==99){ %>
+<form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
+<label for="tu_re">确认测试结果：</label>
+<select name="tu_re" id="tu_re"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-2">放弃</option></select>
+<br /><label for="task_info">附加说明：</label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
+<input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
+</form>
+<a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果并通知厂家</a>
+<%} %>
+<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 
-
-<%//待反馈情况,非厂家查看
-}else if(state==3 && userType>1){%>
-
-<%//厂家需要反馈的情况
-}else if(state==3 && user.getProp("company").equals(one.getProp("company"))){%>
+<%//待反馈情况,厂家查看
+}else if(state==3 && userType>0 && user.getProp("company").equals(one.getProp("company"))){%>
 
 
 <%//厂家或访客查看情况,state<2的情况下
@@ -343,7 +407,9 @@ TestUnit 问题汇总
 
 
 
-<div id="hide" class="hide"></div>
+<div id="hide" class="hide">
+
+</div>
 </div>
 		<div class="clear"></div>
 		</div>

@@ -20,7 +20,7 @@ Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").eq
 String myPara = (ismy)?"/my":"";
 int userType = Integer.parseInt(user.getType());
 int sys = Integer.parseInt(product.getProp("sys").toString());
-boolean canSave = (userType>1 && userType<=4 && user.getName().equals(one.getProp("tester"))) || (userType==99);
+boolean canSave = (task.getState() == 1 && userType>1 && userType<=4 && user.getName().equals(one.getProp("tester"))) || (userType==99);
 out.print(JSPOut.out("head0","0",product.getName()));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
@@ -29,6 +29,7 @@ out.print(JSPOut.out("head0","0",product.getName()));%>
 <script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script type="text/javascript">
+<!--
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>;
 $.isMy = <%=(ismy)?"true":"false" %>;
 function showHtml(s) {
@@ -48,12 +49,12 @@ $(function(){
 	$("#task_p_acc_v").text(port_type[parseInt($("#task_p_acc_v").text())]);
 	var sys = ["kjava","Android","WAP","Brew","Windows mobile","Windows CE","其他"];
 	$("#task_p_sys_v").text(sys[parseInt($("#task_p_sys_v").text())]);
-	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","已上线"];
+	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中"];
 	$("#cState").text(cState[parseInt($("#cState").text())]);
 
 	//初始化已测的结果
 	initRE($.parseJSON("<%=(res==null || res.isEmpty())?"[]":JSON.write(res).replaceAll("\"","\\\\\"")%>"));
-	if(<%=canSave%> && <%=(one.getProp("rank")==null)%>){
+	if(<%=canSave%> && <%=(one.getProp("rank")!=null)%>){
 		$("#tu_rank").val(<%=one.getProp("rank")%>);
 	}else{
 		var cRank = ["暂无","差","较差","一般","较好","优秀"];
@@ -105,17 +106,35 @@ function exec(){
 	$("#execCase").appendTo("#hide");
 	updateRes();
 }
+function allPass(){
+	$("#testCases .file_upload").each(function(){
+		var cid = this.id.split("_")[1];
+		if(res[cid]){
+			res[cid].re=2;
+		}else{res[cid]={caseId:cid,re:2,info:"",attach:""};}
+	});
+	updateRes();
+}
+function allWait(){
+	$("#testCases .file_upload").each(function(){
+		var cid = this.id.split("_")[1];
+		if(res[cid]){
+			res[cid].re=0;
+		}else{res[cid]={caseId:cid,re:0,info:"",attach:""};}
+	});
+	updateRes();
+}
 function saveRE(){
 	//保存res
 	abox("保存测试结果","处理中,请稍候……");
 	var close= "<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a>",err=function(){abox("保存测试结果","<div class='reErr'>保存测试结果失败！ &nbsp;"+close+"</div>");};
-	console.log("res json:"+$.toJSON(res));
 	$.post($.prefix+"/tasks/a_exec",{"sys":<%=sys%>,"tu_id":<%=one.getId() %>,"json":$.toJSON(res),"rank":$("#tu_rank").val()},function(data){
 		if(data=="ok"){
 			abox("保存测试结果","<div class='reOk'>保存测试结果成功！ &nbsp;"+close+"</div>");
 		}else{err();}
 	}).error(function(){err();});
 }
+-->
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -158,6 +177,7 @@ function saveRE(){
     	<%} %>
     </div>
 </div>
+<%if(userType>1){%>
 <div class="inBox" id="infos">
     <div class="inBoxTitle">任务流程及说明</div> 
     <div class="inBoxContent">
@@ -179,7 +199,7 @@ function saveRE(){
     	%>
     </div>
 </div>
-<%
+<%} 
 StringBuilder sb = new StringBuilder();
 sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu3'>待反馈</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div class='file_upload' style='background-color:#FFF;'><span class='tu");
 sb.append(one.getState()).append("'>").append(one.getProp("phone")).append("</span> ");
@@ -196,7 +216,7 @@ sb.append("</div></div></div>");
 out.print(sb);
 %>
 <div class="inBox" id="testCases">
-    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div> 
+    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)  <%if(canSave){%><span><a href="javascript:allPass();" class="aButton">全部预设为通过</a> <a href="javascript:allWait();" class="aButton">全部预设为未测</a></span><%}%></span></div> 
     <div class="inBoxContent">
     <%
     StringBuilder s = new StringBuilder();

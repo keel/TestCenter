@@ -174,20 +174,43 @@ public class TestCase extends Action {
 				int re = Integer.parseInt(jm.get("re").toString());
 				//判断是否通过标准为关键点必须全部通过
 				if (!hasEnd) {
-					//如果关键点不为通过则直接认为不通过
-					if (aCase.getLevel()>=10 && re != 2) {
-						end=9;
-						hasEnd=true;
-					}
-					//次关键点要求部分通过
-					else if(aCase.getLevel()>=5){
-						if (re > 4 || re==0) {
+//					//如果关键点不为通过则直接认为不通过
+//					if (aCase.getLevel()>=10 && re != 2) {
+//						end=9;
+//						hasEnd=true;
+//					}
+//					//次关键点要求部分通过
+//					else if(aCase.getLevel()>=5){
+//						if (re > 4 || re==0) {
+//							end=4;
+//						}
+//					}
+//					if (re>=end) {
+//						end=re;
+//					}
+					switch (re) {
+					case 9:
+						//如果关键点不为通过则直接认为不通过
+						if (aCase.getLevel()>=5) {
 							end=9;
 							hasEnd=true;
+							break;
 						}
-					}
-					if (re>=end) {
-						end=re;
+						break;
+					case 4:
+						//次关键点要求部分通过
+						if (aCase.getLevel()>=5) {
+							end=4;
+						}else if (re>=end) {
+							end=re;
+						}
+						break;
+					//case 2:
+					//case 0:
+					default:
+						if (re>=end) {
+							end=re;
+						}
 					}
 				}
 				ls.add(jm);
@@ -209,7 +232,6 @@ public class TestCase extends Action {
 	 * @param sys
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static KObject[] findCaseList(int sys){
 		if (cases.length<=sys || cases[sys] == null) {
 			return null;
@@ -217,6 +239,23 @@ public class TestCase extends Action {
 		return cases[sys];
 	}
 	
-	
+	/**
+	 * 查找某个case
+	 * @param sys
+	 * @param caseId
+	 * @return
+	 */
+	public static HashMap<String,Object> findCase(int sys,int caseId){
+		if (cases.length<=sys || cases[sys] == null || cases[sys][caseId] == null) {
+			return null;
+		}
+		KObject kobj = cases[sys][caseId];
+		HashMap<String,Object> m = new HashMap<String, Object>(8);
+		m.put("caseId", kobj.getProp("caseId"));
+		m.put("name", kobj.getName());
+		m.put("level",kobj.getLevel());
+		m.put("info", kobj.getInfo());
+		return m;
+	}
 	
 }

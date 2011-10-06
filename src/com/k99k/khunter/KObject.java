@@ -264,7 +264,7 @@ public class KObject {
 	 * @return the info
 	 */
 	public final String getInfo() {
-		return getStringByName("level");
+		return getStringByName("info");
 	}
 
 	/**

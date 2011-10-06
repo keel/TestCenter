@@ -64,7 +64,7 @@ public class TTask extends Action {
 		}else if (subact.equals("my")) {
 			String subact2 = KFilter.actPath(msg, 3, "");
 			if (subact2.equals("")) {
-				this.list(subact,req, u, httpmsg);
+				this.listMy(subact,req, u, httpmsg);
 			}else if(subact2.equals("a_s")){
 				this.search(subact,req, u, httpmsg);
 			}
@@ -83,6 +83,10 @@ public class TTask extends Action {
 			this.send(req, u, httpmsg);
 		}else if(subact.equals("a_comm")){
 			this.comm(req, u, httpmsg);
+		}else if(subact.equals("a_summary")){
+			this.summary(req, u, httpmsg);
+		}else if(subact.equals("a_finish")){
+			this.finish(req, u, httpmsg);
 		}else if(subact.equals("a_u")){
 			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
@@ -162,6 +166,7 @@ public class TTask extends Action {
 				Iterator<String> li = phList.iterator();
 				tu.setProp("gFile", gFile);
 				tu.setProp("fileId", fileId);
+				tu.setProp("level", task.getLevel());
 				while (li.hasNext()) {
 					String ph = li.next();
 					tu.setProp("phone", ph);
@@ -200,7 +205,7 @@ public class TTask extends Action {
 			atask.addData("oid", operator.getId());
 			atask.addData("uid", u.getId());
 			atask.addData("act", "appoint");
-			TaskManager.makeNewTask("TTaskTask:"+tid, atask);
+			TaskManager.makeNewTask("TTaskTask-appoint:"+tid, atask);
 			msg.addData("[print]", task.getId());
 		}else{
 			log.error("appoint task faild:"+tid);
@@ -268,7 +273,7 @@ public class TTask extends Action {
 				logmsg.put("user", u.getName());
 				logmsg.put("info", "更新任务分配");
 				atask.addData("logmsg",logmsg);
-				TaskManager.makeNewTask("TTaskTask:"+t_id, atask);
+				TaskManager.makeNewTask("TTaskTask-send:"+t_id, atask);
 				msg.addData("[print]", "ok");
 			}else{
 				JOut.err(500,"E500"+Err.ERR_SEND_TESTUNIT, msg);
@@ -290,11 +295,13 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 2) {
+		int userType = Integer.parseInt(u.getType());
+		if (userType < 2 || (userType >4 && userType !=99)) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
+		
 		String tu_id = req.getParameter("tu_id");
 		String u_json = req.getParameter("json");
 		String u_rank = req.getParameter("rank");
@@ -306,6 +313,13 @@ public class TTask extends Action {
 		long tuid=Long.parseLong(tu_id);
 		int rank=Integer.parseInt(u_rank);
 		int sys = Integer.parseInt(u_sys);
+		KObject tu = TestUnit.dao.findOne(tuid);
+		KObject task = dao.findOne((Long)tu.getProp("TID"));
+		if (task.getState() != 1 || (userType==2 && !tu.getProp("tester").equals(u.getName()))) {
+			//非测试人员自己的任务或非测试中的任务
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
 		try {
 			ArrayList<HashMap<String,Object>> json = (ArrayList<HashMap<String,Object>>) JSON.read(u_json);
 			if (json==null || json.isEmpty()) {
@@ -330,6 +344,7 @@ public class TTask extends Action {
 				atask.addData("tuid", tuid);
 				atask.addData("tester", u.getName());
 				atask.addData("act", "exec");
+				TaskManager.makeNewTask("TTaskTask-exec-tuid:"+tuid, atask);
 				msg.addData("[print]", "ok");
 			}else{
 				JOut.err(500,"E500"+Err.ERR_EXEC_TESTUNIT, msg);
@@ -340,6 +355,86 @@ public class TTask extends Action {
 		}
 		
 	}
+	
+	
+	/**
+	 * 汇总某一任务的所有TestUnit问题,json输出,要求组长及以上权限
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void summary(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		if (Integer.parseInt(u.getType()) < 3) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String t_id = req.getParameter("tid");
+		String u_sys = req.getParameter("sys");
+		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(u_sys)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tid = Long.parseLong(t_id);
+		int sys = Integer.parseInt(u_sys);
+		String r = this.taskSummary(tid,sys);
+		if (r!=null) {
+			msg.addData("[print]", r);
+			return;
+		}
+		JOut.err(500,"E500"+Err.ERR_SUMMARY_TAST, msg);
+	}
+	
+	/**
+	 * 汇总某一任务的所有TestUnit问题,json输出
+	 * @param tid
+	 * @param sys
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private final String taskSummary(long tid,int sys){
+		HashMap<String,Object> q = new HashMap<String, Object>();
+		q.put("TID", tid);
+		HashMap<String,Object> state = new HashMap<String, Object>(4);
+		state.put("$gte", 0);
+		q.put("state", state);
+		HashMap<String, Object> res = new HashMap<String,Object>();
+		try {
+			ArrayList<KObject> tus = TestUnit.dao.queryKObj(q, null, null, 0, 0, null);
+			Iterator<KObject> it = tus.iterator();
+			while (it.hasNext()) {
+				KObject tu = (KObject) it.next();
+				//未通过或部分通过的TU
+				if (tu.getState()>2) {
+					//取得re中的原因
+					ArrayList<HashMap<String,Object>> reList = (ArrayList<HashMap<String,Object>>) tu.getProp("re");
+					Iterator<HashMap<String,Object>> itr = reList.iterator();
+					while (itr.hasNext()) {
+						HashMap<String,Object> re = itr.next();
+						if (Integer.parseInt(re.get("re").toString())>2) {
+							String caseId = re.get("caseId").toString();
+							ArrayList<HashMap<String,Object>> old = (ArrayList<HashMap<String, Object>>) res.get(caseId);
+							if (old==null) {
+								//在第一个位置加入case的信息
+								old = new ArrayList<HashMap<String,Object>>();
+								old.add(TestCase.findCase(sys, Integer.parseInt(caseId)));
+							}
+							re.put("phone", tu.getProp("phone"));
+							old.add(re);
+							res.put(caseId, old);
+						}
+					}
+				}
+			}
+			String reStr = (res.isEmpty())?"":JSON.write(res);
+			return reStr;
+		} catch (Exception e) {
+			log.error("E500"+Err.ERR_SUMMARY_TAST,e);
+		}
+		return null;
+	}
+	
 	
 	/**
 	 * 任务讨论,注意一个产品对应一个主题
@@ -352,13 +447,68 @@ public class TTask extends Action {
 	}
 	
 	/**
-	 * 任务确认,退回或确认结果并通知任务创建者
+	 * 退回或确认结果并通知任务创建者
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void finish(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		
+	}
+	
+	/**
+	 * 任务问题定版(state置为6),提交权限为4或以上人员确认
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
 	private void confirm(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
+		//验证权限
+		if (Integer.parseInt(u.getType()) < 3) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String t_id = req.getParameter("tid");
+		String u_sys = req.getParameter("sys");
+		String task_operator = req.getParameter("task_operator");
+		
+		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(u_sys) || !StringUtil.isStringWithLen(task_operator, 1)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tid = Long.parseLong(t_id);
+		int sys = Integer.parseInt(u_sys);
+		//重新汇总
+		String reJson = this.taskSummary(tid, sys);
+		//更新任务属性
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> sett = new HashMap<String, Object>();
+		q.put("_id", tid);
+		sett.put("state", 6);
+		sett.put("result", reJson);
+		sett.put("operator", task_operator);
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "汇总结果");
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", logmsg);
+		set.put("$push", push);
+		set.put("$set", sett);
+		if(dao.updateOne(q, set)){
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("operator", task_operator);
+			atask.addData("uid", u.getId());
+			atask.addData("act", "confirm");
+			TaskManager.makeNewTask("TTaskTask-confirm:"+tid, atask);
+			msg.addData("[print]", "ok");
+			return;
+		}
+		JOut.err(500,"E500"+Err.ERR_CONFIRM_TASK, msg);
 	}
 	
 	/**
@@ -390,7 +540,7 @@ public class TTask extends Action {
 				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 				atask.addData("taskId", id);
 				atask.addData("act", "del");
-				TaskManager.makeNewTask("TTaskTask:"+id, atask);
+				TaskManager.makeNewTask("TTaskTask-del:"+id, atask);
 				msg.addData("[print]", "ok");
 				return;
 			}
@@ -472,7 +622,7 @@ public class TTask extends Action {
 		if (json.containsKey("files")) {
 			atask.addData("files", json.get("files"));
 		}
-		TaskManager.makeNewTask("TTaskTask:"+task.getId(), atask);
+		TaskManager.makeNewTask("TTaskTask-add:"+task.getId(), atask);
 		msg.addData("[print]", task.getId());
 	}
 	
@@ -562,15 +712,64 @@ public class TTask extends Action {
 	
 	
 	/**
-	 * 查看列表
-	 * FIXME 需要权限验证和分出一个查看自己任务的方法
+	 * 查看所有任务列表,要求权限为测试员及其以上
 	 * @param subact
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
 	private void list(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		if (Integer.parseInt(u.getType()) < 2) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
 		this.queryPage(StaticDao.prop_state_normal,subact, req, u, msg);
+	}
+	
+	/**
+	 * 查看我的任务列表
+	 * @param subact
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	@SuppressWarnings("unchecked")
+	private void listMy(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String p_str = req.getParameter("p");
+		String pz_str = req.getParameter("pz");
+		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
+		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
+		int userType = Integer.parseInt(u.getType());
+		
+		ArrayList<KObject> list = null;
+		//测试组看到的是自己的待处理任务
+		if (userType>=2 || userType<=4) {
+			ArrayList<Long> taskIds = (ArrayList<Long>) u.getProp("unReadTasks");
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			HashMap<String,Object> state = new HashMap<String, Object>(4);
+			state.put("$gte", 0);
+			q.put("state", state);
+			HashMap<String,Object> in = new HashMap<String, Object>(4);
+			in.put("$in", taskIds);
+			q.put("_id", in);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+		}else{
+		//其他看到的是自己创建的任务
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			HashMap<String,Object> state = new HashMap<String, Object>(6);
+			state.put("$gte", 0);
+			q.put("state", state);
+			q.put("creatorName", u.getName());
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+		}
+		msg.addData("u", u);
+		msg.addData("list", list);
+		msg.addData("pz", pz);
+		msg.addData("p", page);
+		msg.addData("sub", subact);
+		msg.addData("[jsp]", "/WEB-INF/tc/tasks.jsp");
 	}
 	
 	/**

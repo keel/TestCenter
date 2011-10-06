@@ -92,9 +92,10 @@ String ismy = (sub.equals("my")) ? "?ismy=true" : "";
 <th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">创建时间</th><th style="width:80px;">状态</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
-if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td><td></td>");}
+if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");}}
 else{
 	StringBuilder sb = new StringBuilder();
+	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中"};
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
@@ -111,10 +112,9 @@ else{
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
-		sb.append("</td><td>").append(gg.getState()).append("</td>");
+		sb.append("</td><td>").append(states[gg.getState()]).append("</td>");
 		if(canEdit){
-			sb.append("<td><a href='").append(prefix).append("/tasks/").append(gg.getId());
-			sb.append("?edit=true' class='aButton'>编辑</a><a href='javascript:del(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
+			sb.append("<td><a href='javascript:del(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
 		}
 		sb.append("</tr>\n");
 	}
