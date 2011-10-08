@@ -69,13 +69,13 @@ public class SendMail implements Runnable {
 	 */
 	private boolean runFlag = false;
 
-	public static void main(String[] args) {
-		SendMail mail = new SendMail();
-		mail.init("smtp.126.com", "keelsike@126.com", 25, "xxx", "xxx");
-		Thread t = new Thread(mail);
-		t.start();
-		mail.addTask("keel.sike@gmail.com", "这就是just for me", "内容文本, http://www.163.com");
-	}
+//	public static void main(String[] args) {
+//		SendMail mail = new SendMail();
+//		mail.init("smtp.126.com", "keelsike@126.com", 25, "xxx", "xxx");
+//		Thread t = new Thread(mail);
+//		t.start();
+//		mail.addTask("keel.sike@gmail.com", "这就是just for me", "内容文本, http://www.163.com");
+//	}
 	
 	/**
 	 * 初始化,发送方的相关信息
@@ -179,6 +179,7 @@ public class SendMail implements Runnable {
 			try {
 				Thread.sleep(sleep);
 			} catch (InterruptedException e) {
+				runFlag = false;
 			}
 		}
 	}
