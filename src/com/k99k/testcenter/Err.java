@@ -30,6 +30,8 @@ public class Err {
 	public static final int ERR_EXEC_TESTUNIT = 206;
 	public static final int ERR_SUMMARY_TAST = 207;
 	public static final int ERR_CONFIRM_TASK = 208;
+	public static final int ERR_FINISH_TASK = 209;
+	public static final int ERR_ONLINE_TASK = 210;
 	
 
 }

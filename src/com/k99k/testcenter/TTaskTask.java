@@ -13,6 +13,7 @@ import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.KObject;
 import com.k99k.tools.JSON;
+import com.k99k.tools.StringUtil;
 
 /**
  * 处理TTask时的异步任务
@@ -49,6 +50,8 @@ public class TTaskTask extends Action {
 			this.confirm(msg);
 		}else if(act.equals("finish")){
 			this.finish(msg);
+		}else if(act.equals("online")){
+			this.online(msg);
 		}
 		
 		
@@ -61,13 +64,17 @@ public class TTaskTask extends Action {
 	 * 汇总结果后的更新
 	 * @param msg
 	 */
-	private void finish(ActionMsg msg){
+	private void online(ActionMsg msg){
 		//long userid = (Long)msg.getData("uid");
 		String operator = (String)msg.getData("operator");
 		long tid = (Long)msg.getData("tid");
-		//处理已办,更新所有未测的TestUnit所涉及的测试人员,将待办任务去除
+//		int re = (Integer)msg.getData("re");
+		long uid = (Long)msg.getData("uid");
+//		if (re == -3) {
+//			
+//		}
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		//query.put("_id", userid);
+		query.put("_id", uid);
 		query.put("unReadTasks", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> pull = new HashMap<String, Object>(2);
@@ -76,7 +83,7 @@ public class TTaskTask extends Action {
 		inc.put("newTasks", -1);
 		set.put("$pull", pull);
 		set.put("$inc", inc);
-		TUser.dao.update(query, set,false,true);
+		TUser.dao.updateOne(query, set);
 		//更新待办人
 		query = new HashMap<String, Object>(2);
 		query.put("name", operator);
@@ -85,6 +92,65 @@ public class TTaskTask extends Action {
 		set.put("$push", pull);
 		set.put("$inc", inc);
 		TUser.dao.updateOne(query, set);
+	}
+	
+	/**
+	 * 汇总结果后的更新
+	 * @param msg
+	 */
+	private void finish(ActionMsg msg){
+		//long userid = (Long)msg.getData("uid");
+		String operator = (String)msg.getData("operator");
+		if (!StringUtil.isDigits(msg.getData("re")) || !StringUtil.isStringWithLen(operator, 1)) {
+			log.error("finish para error. t_re:"+msg.getData("re")+" operator:"+operator);
+			return;
+		}
+		long tid = (Long)msg.getData("tid");
+		int re = (Integer)msg.getData("re");
+		long uid = (Long)msg.getData("uid");
+		if (re != -3) {
+			//处理已办,更新所有未测的TestUnit所涉及的测试人员,将待办任务去除
+			HashMap<String,Object> query = new HashMap<String, Object>(4);
+			//query.put("_id", userid);
+			query.put("unReadTasks", tid);
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> pull = new HashMap<String, Object>(2);
+			pull.put("unReadTasks", tid);
+			HashMap<String,Object> inc = new HashMap<String, Object>(2);
+			inc.put("newTasks", -1);
+			set.put("$pull", pull);
+			set.put("$inc", inc);
+			TUser.dao.update(query, set,false,true);
+			//更新待办人
+			query = new HashMap<String, Object>(2);
+			query.put("name", operator);
+			inc.put("newTasks", 1);
+			set.remove("$pull");
+			set.put("$push", pull);
+			set.put("$inc", inc);
+			TUser.dao.updateOne(query, set);
+		}else{
+			HashMap<String,Object> query = new HashMap<String, Object>(4);
+			query.put("_id", uid);
+			query.put("unReadTasks", tid);
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> pull = new HashMap<String, Object>(2);
+			pull.put("unReadTasks", tid);
+			HashMap<String,Object> inc = new HashMap<String, Object>(2);
+			inc.put("newTasks", -1);
+			set.put("$pull", pull);
+			set.put("$inc", inc);
+			TUser.dao.updateOne(query, set);
+			//更新待办人
+			query = new HashMap<String, Object>(2);
+			query.put("name", operator);
+			inc.put("newTasks", 1);
+			set.remove("$pull");
+			set.put("$push", pull);
+			set.put("$inc", inc);
+			TUser.dao.updateOne(query, set);
+		}
+		
 		//发出邮件和短信通知
 		
 		

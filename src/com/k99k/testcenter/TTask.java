@@ -87,6 +87,8 @@ public class TTask extends Action {
 			this.summary(req, u, httpmsg);
 		}else if(subact.equals("a_finish")){
 			this.finish(req, u, httpmsg);
+		}else if(subact.equals("a_online")){
+			this.online(req, u, httpmsg);
 		}else if(subact.equals("a_u")){
 			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
@@ -452,8 +454,173 @@ public class TTask extends Action {
 	 * @param u
 	 * @param msg
 	 */
+	@SuppressWarnings("unchecked")
 	private void finish(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		
+		//验证权限
+		int userType = Integer.parseInt(u.getType());
+		if (userType != 4 && userType != 99) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String t_id = req.getParameter("tid");
+		String tu_re = req.getParameter("tu_re");
+		String task_info = req.getParameter("task_info");
+		String task_operator = req.getParameter("task_operator");
+		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re) 
+				|| !StringUtil.isStringWithLen(task_operator, 1)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		if(task_info==null){task_info="";}
+		long tid = Long.parseLong(t_id);
+		int tuRE = Integer.parseInt(tu_re);
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> update = new HashMap<String, Object>();
+		q.put("_id", tid);
+		if (tuRE == 2 || tuRE == 4) {
+			//通过或部分通过
+			update.put("operator", task_operator);
+			update.put("isOnline", 1);
+		}else if(tuRE==9){
+			//不通过,状态置为待反馈
+			update.put("state", 3);
+			long pid = (Long)(dao.findOne(tid).getProp("PID"));
+			KObject product = Product.dao.findOne(pid);
+			task_operator = Company.dao.findOne(product.getProp("company").toString()).getProp("mainUser").toString();
+			update.put("operator", task_operator);
+			
+		}else if(tuRE==-3){
+			//退回
+			HashMap<String,Object> slice = new HashMap<String, Object>();
+			slice.put("_id", 1);
+			slice.put("creatorName", 1);
+			HashMap<String,Object> last = new HashMap<String, Object>(2);
+			last.put("log", -1);
+			slice.put("$slice", last);
+			HashMap<String,Object> lastLog = dao.query(q, slice, null, 0, 0, null).get(0);
+			if (lastLog != null) {
+				ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String, Object>>) lastLog.get("log");
+				if (logs != null &&  !logs.isEmpty()) {
+					task_operator = logs.get(0).get("user").toString();
+				}else{
+					task_operator = lastLog.get("creatorName").toString();
+				}
+			}
+			update.put("operator", task_operator);
+		}else if(tuRE==-2){
+			//放弃
+			update.put("state", -2);
+		}else{
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "确认完成 - "+task_info);
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", logmsg);
+		set.put("$push", push);
+		set.put("$set", update);
+		if(dao.updateOne(q, set)){
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("re", tuRE);
+			atask.addData("operator", task_operator);
+			atask.addData("uid", u.getId());
+			atask.addData("act", "finish");
+			TaskManager.makeNewTask("TTaskTask-finish:"+tid, atask);
+			msg.addData("[print]", "ok");
+			return;
+		}
+		JOut.err(500,"E500"+Err.ERR_FINISH_TASK, msg);
+	}
+	
+	/**
+	 * 上线或退回
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	@SuppressWarnings("unchecked")
+	private void online(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		int userType = Integer.parseInt(u.getType());
+		if (userType != 12 && userType != 99) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String t_id = req.getParameter("tid");
+		String tu_re = req.getParameter("tu_re");
+		String task_info = req.getParameter("task_info");
+		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		if(task_info==null){task_info="";}
+		long tid = Long.parseLong(t_id);
+		int tuRE = Integer.parseInt(tu_re);
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> update = new HashMap<String, Object>();
+		String task_operator = "曹雨";
+		q.put("_id", tid);
+		if (tuRE == 2|| tuRE == 4) {
+			//通过或部分通过
+			update.put("isOnline", 2);
+			update.put("state", tuRE);
+		}else if(tuRE==-2){
+			//放弃
+			update.put("state", -2);
+		}else if(tuRE==-3){
+			//退回
+			HashMap<String,Object> slice = new HashMap<String, Object>();
+			slice.put("_id", 1);
+			slice.put("creatorName", 1);
+			HashMap<String,Object> last = new HashMap<String, Object>(2);
+			last.put("log", -1);
+			slice.put("$slice", last);
+			HashMap<String,Object> lastLog = dao.query(q, slice, null, 0, 0, null).get(0);
+			if (lastLog != null) {
+				ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String, Object>>) lastLog.get("log");
+				if (logs != null &&  !logs.isEmpty()) {
+					task_operator = logs.get(0).get("user").toString();
+				}else{
+					task_operator = lastLog.get("creatorName").toString();
+				}
+			}
+			update.put("operator", task_operator);
+		}else{
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "上线 - "+task_info);
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", logmsg);
+		set.put("$push", push);
+		set.put("$set", update);
+		if(dao.updateOne(q, set)){
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("uid", u.getId());
+			atask.addData("re", tuRE);
+			if (tuRE==-3) {
+				atask.addData("operator", task_operator);
+			}
+			atask.addData("act", "online");
+			TaskManager.makeNewTask("TTaskTask-online:"+tid, atask);
+			msg.addData("[print]", "ok");
+			return;
+		}
+		JOut.err(500,"E500"+Err.ERR_ONLINE_TASK, msg);
 	}
 	
 	/**

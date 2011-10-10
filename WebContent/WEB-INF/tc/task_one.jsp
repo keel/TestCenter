@@ -220,6 +220,22 @@ function confirmTU(){
 	}).error(function(){abox("测试结果提交","<div class='reErr'>测试结果提交失败. &nbsp;"+close+"</div>");});
 }
 function finish(){
+	abox("确认结果提交","处理中,请稍候……");
+	$.post($.prefix+"/tasks/a_finish", $("#f_form").serialize(),function(data) {
+		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
+		if(data=="ok"){abox("确认结果提交","<div class='reOk'>确认结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		else{abox("确认结果提交","<div class='reErr'>确认结果提交失败. &nbsp;"+close+"</div>");};
+	}).error(function(){abox("确认结果提交","<div class='reErr'>确认结果提交失败. &nbsp;"+close+"</div>");});
+}
+function online(){
+	abox("上线","处理中,请稍候……");
+	$.post($.prefix+"/tasks/a_online", $("#o_form").serialize(),function(data) {
+		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
+		if(data=="ok"){abox("上线","<div class='reOk'>上线成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		else{abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");};
+	}).error(function(){abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");});
+}
+function back(i){
 	
 }
 -->
@@ -383,15 +399,28 @@ if(state==0 && userType > 3){%>
 </div>
 <br />
 <div id="finish">
-<%if(userType==4 || userType==99){ %>
+<%//由权限为4的人确认到准备上线状态
+int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
+if(isOnline==0 && (userType==4 || userType==99)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
 <label for="tu_re">确认测试结果：</label>
-<select name="tu_re" id="tu_re"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-2">放弃</option></select>
-<br /><label for="task_info">附加说明：</label><br />
+<select name="tu_re" id="tu_re"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
+下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><br />
+<label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
-<a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果并通知厂家</a>
+<a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果(不通过则通知厂家)</a>
+<%}//由管理员操作上线
+else { %>
+<form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
+<label for="tu_re">确认上线：</label>
+<select name="tu_re" id="tu_re"><option value="2">上线</option><option value="4">上线部分通过</option><option value="-3">退回</option><option value="-2">放弃</option></select><br />
+<label for="task_info">附加说明：</label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
+<input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
+</form>
+<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认已上线</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 
