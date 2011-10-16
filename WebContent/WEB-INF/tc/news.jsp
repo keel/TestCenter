@@ -75,7 +75,7 @@ $(function(){
 <div class="search">
 查询:<select><option value="title">标题</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
 <%
-int usertype = Integer.parseInt(user.getType());
+int usertype = user.getType();
 if(usertype>=4){%><span style="padding-left:20px;"><a href="<%=prefix%>/news/new" class="aButton">创建新公告</a></span><%} %>
 </div>
 
@@ -91,7 +91,7 @@ else{
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
-		if(usertype<Integer.parseInt(gg.getType())){
+		if(usertype<gg.getType()){
 			continue;
 		}
 		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='news_").append(gg.getId()).append("'><a href='");

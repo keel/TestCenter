@@ -34,7 +34,7 @@ public class CnToSpell {
 
 	// 获取一个字符串的拼音首个字母
 	public static final String getLetter(String str) {
-		//String str = oriStr.toLowerCase();
+		str = str.toLowerCase();
 		StringBuilder buffer = new StringBuilder();
 		char ch;
 		char[] temp;

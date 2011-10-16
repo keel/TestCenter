@@ -74,7 +74,7 @@ public class News extends Action {
 			return super.act(msg);
 		}else if (subact.equals("new")) {
 			msg.addData("u", u);
-			if (Integer.parseInt(u.getType()) < 10 || u.getLevel()<1) {
+			if (u.getType() < 10 || u.getLevel()<1) {
 				//权限不够
 				JOut.err(401, httpmsg);
 				return super.act(msg);
@@ -89,8 +89,8 @@ public class News extends Action {
 				JOut.err(404, httpmsg);
 				return super.act(msg);
 			}
-			int type = Integer.parseInt(news_one.getType());
-			int userType = Integer.parseInt(u.getType());
+			int type = news_one.getType();
+			int userType = u.getType();
 			if (type > userType) {
 				//阅读权限不够
 				JOut.err(403, httpmsg);
@@ -107,7 +107,7 @@ public class News extends Action {
 			}
 			return super.act(msg);
 		}else if(subact.equals("add")){
-			if (Integer.parseInt(u.getType()) < 4) {
+			if (u.getType() < 4) {
 				//权限不够
 				JOut.err(401, httpmsg);
 				return super.act(msg);
@@ -116,7 +116,7 @@ public class News extends Action {
 			String text = req.getParameter("news_text");
 			String files = req.getParameter("news_files");
 			int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
-			String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
+			int type = (StringUtil.isDigits(req.getParameter("news_type")))?Integer.parseInt(req.getParameter("news_type").trim()):0;
 			if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
 				KObject kobj = schema.createEmptyKObj();
 				kobj.setName(StringUtil.repstr1(name.trim()));
@@ -161,7 +161,7 @@ public class News extends Action {
 			JOut.err(401, httpmsg);
 			return super.act(msg);
 		}else if(subact.equals("update")){
-			if (Integer.parseInt(u.getType()) < 4) {
+			if (u.getType() < 4) {
 				//权限不够
 				JOut.err(401, httpmsg);
 				return super.act(msg);
@@ -172,7 +172,7 @@ public class News extends Action {
 				String text = req.getParameter("news_text");
 				String files = req.getParameter("news_files");
 				int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
-				String type = (StringUtil.isDigits(req.getParameter("news_type")))?req.getParameter("news_type"):"0";
+				int type = (StringUtil.isDigits(req.getParameter("news_type")))?Integer.parseInt(req.getParameter("news_type")):0;
 				if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
 					KObject kobj = dao.findOne(id);
 					kobj.setName(StringUtil.repstr1(name.trim()));
@@ -220,7 +220,7 @@ public class News extends Action {
 			JOut.err(401, httpmsg);
 			return super.act(msg);
 		}else if(subact.equals("del")){
-			if (Integer.parseInt(u.getType()) < 4) {
+			if (u.getType() < 4) {
 				//权限不够
 				JOut.err(401, httpmsg);
 				return super.act(msg);

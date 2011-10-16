@@ -82,7 +82,7 @@ public class Company extends Action {
 			msg.addData("[print]", "");
 			return ;
 		}
-		Pattern p = Pattern.compile(q.trim());
+		Pattern p = Pattern.compile(q.trim().toLowerCase());
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
 		query.put("shortName", p);
 		query.put("state", 0);

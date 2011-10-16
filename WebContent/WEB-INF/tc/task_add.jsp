@@ -11,6 +11,7 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("u");
+int userType = user.getType();
 Boolean ismy = request.getParameter("ismy")!=null && request.getParameter("ismy").equals("true");
 out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
@@ -25,13 +26,13 @@ out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.isMy = <%=(ismy)?"true":"false" %>;
-$.userType = <%=user.getType() %>;
+$.userType = <%=userType %>;
 $.company = "<%=user.getProp("company") %>";
 $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
 	$(tar).addClass("sideON");
 	//是否显示选择公司
-	if($.userType>=4){$("#chooseCompany")[0].need = true;gs(true);}
+	if($.userType>=2){$("#chooseCompany")[0].need = true;gs(true);}else{$("#task_company").val($.company);}
 	$(".prev1").hide();
 	//任务类型
 	$("input[name='task_type']").click(function(){
@@ -144,7 +145,7 @@ out.print(skipP);
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
-  <jsp:param name="type" value="<%=user.getType() %>" /> 
+  <jsp:param name="type" value="<%=userType %>" /> 
   <jsp:param name="gg" value='<%=user.getProp("newNews").toString() %>' /> 
   <jsp:param name="tt" value='<%=user.getProp("newTasks").toString() %>' /> 
 </jsp:include>
@@ -246,11 +247,13 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 
 <div id="taskFS">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
-<p><label for="task_info">任务说明：</label><br />
+<p><label for="task_info">任务说明：<span class="gray">请填入测试需要注意的要点,如果是修改后提交请说明具体的修改之处</span></label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
+<% if(userType>1){ %>
 <p>任务优先级：
 <select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
+<% }%>
 <p>下一流程处理人：
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>

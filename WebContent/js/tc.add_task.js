@@ -4,12 +4,6 @@ function addCompany(){
 	return {c:$("#task_company").val()};
 }
 function aSubmit(){
-	var ff = [];
-	$(".files_name").each(function(){
-		ff.push(encodeURIComponent($(this).text()));
-	});
-	//console.log(ff);
-	$("#news_files").val(ff.join(","));
 	$("#add_form").submit();
 };
 function saveP(){$('#productForm').submit();}

@@ -18,7 +18,7 @@ KObject[] cases = (data.getData("cases")==null)?null:(KObject[])data.getData("ca
 ArrayList<HashMap<String,Object>> res = (ArrayList<HashMap<String,Object>>)one.getProp("re");
 Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").equals("true");
 String myPara = (ismy)?"/my":"";
-int userType = Integer.parseInt(user.getType());
+int userType = user.getType();
 int sys = Integer.parseInt(product.getProp("sys").toString());
 boolean canSave = (task.getState() == 1 && userType>1 && userType<=4 && user.getName().equals(one.getProp("tester"))) || (userType==99);
 out.print(JSPOut.out("head0","0",product.getName()));%>

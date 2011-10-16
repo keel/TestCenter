@@ -87,6 +87,8 @@ public class TTask extends Action {
 			this.summary(req, u, httpmsg);
 		}else if(subact.equals("a_finish")){
 			this.finish(req, u, httpmsg);
+		}else if(subact.equals("a_back")){
+			this.back(req, u, httpmsg);
 		}else if(subact.equals("a_online")){
 			this.online(req, u, httpmsg);
 		}else if(subact.equals("a_u")){
@@ -104,6 +106,35 @@ public class TTask extends Action {
 	}
 	
 	/**
+	 * 退回厂家,实际上是将任务放弃,厂家需要重新创建
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void back(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		if (u.getType() < 4) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		String task_id = req.getParameter("tid");
+		if(!StringUtil.isDigits(task_id) ){
+			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tid = Integer.parseInt(task_id);
+		KObject task = dao.findOne(tid);
+		if (task==null) {
+			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			return;
+		}
+		//将状态置为驳回状态，不可修改，由厂家新建
+		
+		
+	}
+	
+	/**
 	 * 指派任务,确定测试机型,生成TestUnit,确定执行人,调整等级,说明等
 	 * @param req
 	 * @param u
@@ -112,7 +143,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void appoint(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 4) {
+		if (u.getType() < 4) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -140,7 +171,7 @@ public class TTask extends Action {
 			return;
 		}
 		KObject operator = TUser.dao.findOne(task_operator);
-		if (operator== null || Integer.parseInt(operator.getType())<1) {
+		if (operator== null || operator.getType()<1) {
 			JOut.err(403,"E403"+ Err.ERR_ADD_OPERATOR_FAIL, msg);
 			return;
 		}
@@ -205,7 +236,7 @@ public class TTask extends Action {
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
 			atask.addData("oid", operator.getId());
-			atask.addData("uid", u.getId());
+			atask.addData("uName", task.getProp("operator").toString());
 			atask.addData("act", "appoint");
 			TaskManager.makeNewTask("TTaskTask-appoint:"+tid, atask);
 			msg.addData("[print]", task.getId());
@@ -227,7 +258,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void send(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 2) {
+		if (u.getType() < 2) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -297,7 +328,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		int userType = Integer.parseInt(u.getType());
+		int userType = u.getType();
 		if (userType < 2 || (userType >4 && userType !=99)) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
@@ -367,7 +398,7 @@ public class TTask extends Action {
 	 */
 	private void summary(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 3) {
+		if (u.getType() < 3) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -457,7 +488,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void finish(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		int userType = Integer.parseInt(u.getType());
+		int userType = u.getType();
 		if (userType != 4 && userType != 99) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
@@ -486,9 +517,9 @@ public class TTask extends Action {
 		}else if(tuRE==9){
 			//不通过,状态置为待反馈
 			update.put("state", 3);
-			long pid = (Long)(dao.findOne(tid).getProp("PID"));
-			KObject product = Product.dao.findOne(pid);
-			task_operator = Company.dao.findOne(product.getProp("company").toString()).getProp("mainUser").toString();
+			//long pid = (Long)(dao.findOne(tid).getProp("PID"));
+			KObject task = dao.findOne(tid);
+			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
 			
 		}else if(tuRE==-3){
@@ -529,6 +560,7 @@ public class TTask extends Action {
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
 			atask.addData("re", tuRE);
+			atask.addData("info", task_info);
 			atask.addData("operator", task_operator);
 			atask.addData("uid", u.getId());
 			atask.addData("act", "finish");
@@ -548,7 +580,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void online(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		int userType = Integer.parseInt(u.getType());
+		int userType = u.getType();
 		if (userType != 12 && userType != 99) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
@@ -631,7 +663,7 @@ public class TTask extends Action {
 	 */
 	private void confirm(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 3) {
+		if (u.getType() < 3) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -695,7 +727,7 @@ public class TTask extends Action {
 	 * @param msg
 	 */
 	private void del(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		if (Integer.parseInt(u.getType()) < 4) {
+		if (u.getType() < 4) {
 			//权限不够
 			JOut.err(401, msg);
 			return;
@@ -729,7 +761,6 @@ public class TTask extends Action {
 		String task_type_h = req.getParameter("task_type_h");
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
-			!StringUtil.isDigits(task_level) ||
 			!StringUtil.isDigits(task_type_h) ||
 			!StringUtil.isStringWithLen(task_operator, 2) || 
 			!StringUtil.isStringWithLen(task_p_json_h, 5) 
@@ -737,6 +768,15 @@ public class TTask extends Action {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
+		int taskLevel = StringUtil.isDigits(task_level)&& (u.getType()>1)?Integer.parseInt(task_level):0;
+		task_info = StringUtil.repstr(task_info);
+//		try {
+//			task_p_json_h = URLDecoder.decode(task_p_json_h, "utf-8");
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//			JOut.err(403,"E403"+Err.ERR_PARAS+"-decode", msg);
+//			return;
+//		}
 		HashMap<String,Object> json = (HashMap<String, Object>) JSON.read(task_p_json_h);
 		if (Company.dao.findOne(json.get("company").toString()) == null) {
 			JOut.err(403,"E403"+Err.ERR_PARAS+"-company", msg);
@@ -755,7 +795,7 @@ public class TTask extends Action {
 		}
 		//创建任务
 		KObject operator = TUser.dao.findOne(task_operator);
-		if (operator== null || Integer.parseInt(operator.getType())<1) {
+		if (operator== null || operator.getType()<1) {
 			JOut.err(403,"E403"+ Err.ERR_ADD_OPERATOR_FAIL, msg);
 			return;
 		}
@@ -764,9 +804,10 @@ public class TTask extends Action {
 		task.setCreatorName(u.getName());
 		task.setInfo(task_info);
 		task.setProp("operator", task_operator);
-		task.setLevel(Integer.parseInt(task_level));
+		task.setLevel(taskLevel);
 		task.setProp("PID", pid);
-		task.setType(task_type_h);
+		task.setProp("company", json.get("company").toString());
+		task.setType(Integer.parseInt(task_type_h));
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
 		log.put("user", u.getName());
@@ -782,6 +823,7 @@ public class TTask extends Action {
 		ActionMsg atask = new ActionMsg("tTaskTask");
 		atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 		atask.addData("taskId", task.getId());
+		atask.addData("tType", task.getType());
 		atask.addData("operatorId", operator.getId());
 		atask.addData("pid", pid);
 		atask.addData("creatorName", u.getName());
@@ -821,7 +863,7 @@ public class TTask extends Action {
 	 * @param msg
 	 */
 	private void toAdd(KObject u,HttpActionMsg msg){
-		if (Integer.parseInt(u.getType()) < 1) {
+		if (u.getType() < 1) {
 			//权限不够
 			JOut.err(401, msg);
 			return;
@@ -852,7 +894,7 @@ public class TTask extends Action {
 		msg.addData("one", one);
 		msg.addData("product", product);
 		//Task的状态处于待分配(已创建)
-		if (one.getState()==0) {
+		if (one.getState()==0 || (u.getType() == 1 && one.getState()==1)) {
 			//显示待分配的文件或URL
 			int sys = Integer.parseInt(product.getProp("sys").toString());
 			if (sys!=2) {
@@ -870,7 +912,7 @@ public class TTask extends Action {
 		}
 		
 		//转到编辑时判断权限:是否为任务创建者或type>=4
-		if (req.getParameter("edit")!=null && (u.getName().equals(one.getCreatorName()) || Integer.parseInt(u.getType())>=4)) {
+		if (req.getParameter("edit")!=null && (u.getName().equals(one.getCreatorName()) || u.getType()>=4)) {
 			msg.addData("[jsp]", "/WEB-INF/tc/task_edit.jsp");
 		}else{
 			msg.addData("[jsp]", "/WEB-INF/tc/task_one.jsp");
@@ -887,7 +929,7 @@ public class TTask extends Action {
 	 */
 	private void list(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (Integer.parseInt(u.getType()) < 2) {
+		if (u.getType() < 2) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -908,11 +950,11 @@ public class TTask extends Action {
 		String pz_str = req.getParameter("pz");
 		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-		int userType = Integer.parseInt(u.getType());
+		int userType = u.getType();
 		
 		ArrayList<KObject> list = null;
 		//测试组看到的是自己的待处理任务
-		if (userType>=2 || userType<=4) {
+		if (userType>=2 && userType<=4) {
 			ArrayList<Long> taskIds = (ArrayList<Long>) u.getProp("unReadTasks");
 			HashMap<String,Object> q = new HashMap<String, Object>();
 			HashMap<String,Object> state = new HashMap<String, Object>(4);
@@ -925,7 +967,7 @@ public class TTask extends Action {
 		}else{
 		//其他看到的是自己创建的任务
 			HashMap<String,Object> q = new HashMap<String, Object>();
-			HashMap<String,Object> state = new HashMap<String, Object>(6);
+			HashMap<String,Object> state = new HashMap<String, Object>(2);
 			state.put("$gte", 0);
 			q.put("state", state);
 			q.put("creatorName", u.getName());

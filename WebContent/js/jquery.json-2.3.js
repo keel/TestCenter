@@ -36,11 +36,11 @@
 	 * If an object has a toJSON prototype, that will be used to get the representation.
 	 * Non-integer/string keys are skipped in the object, as are keys that point to a
 	 * function.
-	 *
-	 */
-	$.toJSON = typeof JSON === 'object' && JSON.stringify
+	 *	内建stringify有问题，原文为：$.toJSON = typeof JSON === 'object' && JSON.stringify
 		? JSON.stringify
 		: function( o ) {
+	 */
+	$.toJSON = function( o ) {
 
 		if ( o === null ) {
 			return 'null';

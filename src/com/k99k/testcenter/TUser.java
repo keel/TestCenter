@@ -72,13 +72,14 @@ public class TUser extends Action  {
 	private void tester(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		int gid = Integer.parseInt(u.getProp("groupID").toString());
 		//groupID不能为0，且要求user类型为组长以上级别
-		if (gid==0 || Integer.parseInt(u.getType().toString())<3) {
+		if (gid==0 || u.getType()<3) {
 			msg.addData("[print]", "");
 			return;
 		}
 		HashMap<String,Object> q = new HashMap<String, Object>(4);
 		q.put("groupID", gid);
 		q.put("state", 0);
+		//TODO 注意将type>=10的去掉
 		HashMap<String,Object> fields = new HashMap<String, Object>(4);
 		fields.put("_id", 1);
 		fields.put("name", 1);

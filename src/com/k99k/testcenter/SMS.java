@@ -33,7 +33,7 @@ public class SMS extends Action {
 	public ActionMsg act(ActionMsg msg) {
 		String[] dests = (String[])msg.getData("dests");
 		String content = msg.getData("content").toString();
-		if (dests == null || dests.length==0 || StringUtil.isStringWithLen(content, 1)) {
+		if (dests == null || dests.length==0 || !StringUtil.isStringWithLen(content, 1)) {
 			log.error("SMS paras error. dests:"+dests+" content:"+content);
 			return super.act(msg);
 		}

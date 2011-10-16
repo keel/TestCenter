@@ -39,11 +39,11 @@ function del(id){
 }
 function search(){
 	var k = $("#search_key").val();
+	var lo = "<%=prefix %>/tasks/";
+	if($.isMy){lo+="my";};
 	if(k!=null && $.trim(k).length>1){
-		var lo = "<%=prefix %>/tasks/";
-		if($.isMy){lo+="/my/";};
-		window.location=lo+"search?k="+k;
-	}else{window.location="<%=prefix %>/tasks";}
+		window.location=lo+"/a_s?k="+k;
+	}else{window.location=lo;}
 }
 $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
@@ -80,7 +80,7 @@ $(function(){
 <div class="search">
 查询:<select><option value="title">任务名</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
 <%
-int usertype = Integer.parseInt(user.getType());
+int usertype = user.getType();
 boolean canEdit = (usertype>=4);
 String ismy = (sub.equals("my")) ? "?ismy=true" : "";
 %><span style="padding-left:20px;"><a href="<%=prefix%>/tasks/add<%=ismy%>" class="aButton">创建新任务</a></span>
@@ -99,7 +99,7 @@ else{
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
-		if(usertype<Integer.parseInt(gg.getType())){
+		if(usertype<gg.getType()){
 			continue;
 		}
 		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");

@@ -50,7 +50,7 @@ $(function(){
 <div class="abox">
 <div class="aboxTitle"><div><%=news_one.getName() %></div> </div>
 <div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=news_one.getCreatorName() %> &nbsp; 发布于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",news_one.getCreateTime()) %>  </div>
-<%if(Integer.parseInt(user.getType())>10){ 
+<%if(user.getType()>10){ 
 	String ggid = String.valueOf(news_one.getId());
 	String edit = prefix+"/news/"+ggid+"?edit=true";
 %>

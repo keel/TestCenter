@@ -22,6 +22,7 @@ import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.dao.StaticDao;
+import com.k99k.tools.CnToSpell;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -87,6 +88,11 @@ public class Product extends Action {
 		if(!StringUtil.isDigits(syso)){return -1;}
 		int sys = Integer.parseInt(String.valueOf(syso));
 		if(sys==2 && !StringUtil.isStringWithLen(p.get("url"), 3)){return -2;}
+		Object name = p.get("name");
+		if(!StringUtil.isStringWithLen(name, 2)){
+			return -4;
+		}
+		p.put("shortName", CnToSpell.getLetter(name.toString()));
 		KObject kobj = new KObject();
 		if(schema.setPropFromMapForCreate(p,kobj)){
 			return -3;
@@ -124,7 +130,7 @@ public class Product extends Action {
 			pt = dao.findOne(p);
 		}
 		//权限不够
-		if(Integer.parseInt(u.getType())<2 && !pt.getProp("company").equals(u.getProp("company"))){
+		if(u.getType()<2 && !pt.getProp("company").equals(u.getProp("company"))){
 			msg.addData("[print]", "");
 			return ;
 		}
@@ -147,17 +153,20 @@ public class Product extends Action {
 			msg.addData("[print]", "");
 			return ;
 		}
-		//权限不够
-		if(Integer.parseInt(u.getType())<2 && !c.equals((String)u.getProp("company"))){
+		try {
+			q = new String(q.getBytes("ISO-8859-1"),"utf-8").trim();
+			c = new String(c.getBytes("ISO-8859-1"),"utf-8").trim();
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
 			msg.addData("[print]", "");
 			return ;
 		}
-		try {
-			c = new String(c.trim().getBytes("ISO-8859-1"),"utf-8");
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+		//权限不够
+		if(u.getType()<2 && !c.equals((String)u.getProp("company"))){
+			msg.addData("[print]", "");
+			return ;
 		}
-		Pattern p = Pattern.compile(q.trim());
+		Pattern p = Pattern.compile(q.toLowerCase());
 		HashMap<String,Object> query = new HashMap<String, Object>(6);
 		query.put("company", c);
 		query.put("state", 0);

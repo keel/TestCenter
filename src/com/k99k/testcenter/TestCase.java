@@ -69,7 +69,7 @@ public class TestCase extends Action {
 		while (it.hasNext()) {
 			KObject kobj = it.next();
 			//type表示系统：0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other
-			int type = Integer.parseInt(kobj.getType());
+			int type = kobj.getType();
 			if (cases[type] == null) {
 				caseKeys[type] = ks;
 				cases[type] = new KObject[100];

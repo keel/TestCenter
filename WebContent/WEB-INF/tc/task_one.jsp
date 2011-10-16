@@ -18,7 +18,7 @@ ArrayList<KObject> tus = (data.getData("tus")==null)?null:(ArrayList<KObject>)da
 Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").equals("true");
 String myPara = (ismy)?"/my":"";
 int state  =one.getState();
-int userType = Integer.parseInt(user.getType());
+int userType = user.getType();
 out.print(JSPOut.out("head0","0",one.getName()));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
@@ -78,17 +78,19 @@ $(function(){
 			task_info: {required:true}
 	    }
 	});
-	//显示任务分配
+
 	selectTU();
+	
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if(state==6 && userType>1){%>
+if((state==6 && userType>1) || state==3){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);
 	}else{$("#fCases").html("未发现测试问题.");}
 <%}%>
+
 });
 function aSubmit(f){
 	if(f=="#p_form"){
@@ -150,11 +152,11 @@ function selectTU(){
 			st.find(".tuu").append("<a target='_blank' href='"+$.prefix+"/testUnit/"+this.id.split("_")[1]+"' class='tu0' id='u"+this.id+"'>"+$(this).text()+"</a>");
 			}
 		});
-	}else if($.userType>2){
+	}else if($.userType>=3){
 	var gUsers = {};
 	//获取组员列表,分别将
 	$.getJSON($.prefix+"/user/tester",function(data){
-		if(!data || data=="" || data.length==0){alert("获取测试组成员失败!");return;}
+		if(!data || data=="" || data.length==0){return;}
 		for ( var i = 0; i < data.length; i++) {
 			var u = data[i].name;
 			var st=$("<div class='file_upload st' id='st_"+i+"' style='background-color:#FFF;'><div class='bold'>"+u+"</div><div class='tuu'></div></div>");
@@ -354,7 +356,7 @@ if(state==0 && userType > 3){%>
 }else if(state==1 && tus !=null && !tus.isEmpty() && userType >= 2){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu3'>待反馈</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
+	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
 	Iterator<KObject> it = tus.iterator();
 	while(it.hasNext()){
 		KObject tu = it.next();
@@ -412,7 +414,7 @@ if(isOnline==0 && (userType==4 || userType==99)){ %>
 </form>
 <a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果(不通过则通知厂家)</a>
 <%}//由管理员操作上线
-else { %>
+else if(userType==99) { %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
 <label for="tu_re">确认上线：</label>
 <select name="tu_re" id="tu_re"><option value="2">上线</option><option value="4">上线部分通过</option><option value="-3">退回</option><option value="-2">放弃</option></select><br />
@@ -425,9 +427,20 @@ else { %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 
 <%//待反馈情况,厂家查看
-}else if(state==3 && userType>0 && user.getProp("company").equals(one.getProp("company"))){%>
-
-
+}else if((state==3 && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
+<div class="inBox" id="failCases">
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxContent" id="fCases">
+    
+    </div>
+</div>
+<br />
+<div id="feedback">
+<%if(userType == 1 || userType ==99){ %>
+<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&ismy=true":"")%>" class="aButton">反馈并发起修改后的测试</a>
+<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">对此任务发起回复讨论</a>
+<%} %>
+<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <%//厂家或访客查看情况,state<2的情况下
 }else {%>
 
@@ -436,9 +449,7 @@ else { %>
 
 
 
-<div id="hide" class="hide">
-
-</div>
+<div id="hide" class="hide"></div>
 </div>
 		<div class="clear"></div>
 		</div>

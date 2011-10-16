@@ -206,7 +206,7 @@ public final class StringUtil {
 		return sdf.format(new java.util.Date(date));
 	}
 	/**
-	 * 把字符串中的HTML代码转换成页面显示的代码
+	 * 把字符串中的HTML代码转换成页面显示的代码,(" " 换成"&amp;nbsp;"，\n换成&lt;br /&gt;，  < 换成 &amp;lt; ，> 换成 &amp;gt;， " 换成 &amp;quot;)
 	 * @param 字符串 str
 	 * @return String 替换后的字符传
 	 */
@@ -221,7 +221,7 @@ public final class StringUtil {
 	}
 	
 	/**
-	 * 把页面的HTML代码转换成页面显示的代码,如<换成&lt;
+	 * 把页面的HTML代码转换成页面显示的代码,(< 换成 &amp;lt; ，> 换成 &amp;gt;， " 换成 &amp;quot;)
 	 * @param String 替换前的字符串
 	 * @return String 替换后的字符串
 	 */
@@ -234,7 +234,7 @@ public final class StringUtil {
 	}
 	
 	/**
-	 * 把页面显示的代码替换成HTML代码
+	 * 把页面显示的代码替换成HTML代码,repstr1方法的反向方法
 	 * @param String 替换前的字符串
 	 * @return String 替换后的字符串
 	 */

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.TaskManager;
 import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
@@ -61,7 +62,7 @@ public class TTaskTask extends Action {
 	}
 	
 	/**
-	 * 汇总结果后的更新
+	 * 上线后的更新
 	 * @param msg
 	 */
 	private void online(ActionMsg msg){
@@ -108,6 +109,7 @@ public class TTaskTask extends Action {
 		long tid = (Long)msg.getData("tid");
 		int re = (Integer)msg.getData("re");
 		long uid = (Long)msg.getData("uid");
+		String info = msg.getData("info").toString();
 		if (re != -3) {
 			//处理已办,更新所有未测的TestUnit所涉及的测试人员,将待办任务去除
 			HashMap<String,Object> query = new HashMap<String, Object>(4);
@@ -129,6 +131,8 @@ public class TTaskTask extends Action {
 			set.put("$push", pull);
 			set.put("$inc", inc);
 			TUser.dao.updateOne(query, set);
+			
+			
 		}else{
 			HashMap<String,Object> query = new HashMap<String, Object>(4);
 			query.put("_id", uid);
@@ -149,9 +153,47 @@ public class TTaskTask extends Action {
 			set.put("$push", pull);
 			set.put("$inc", inc);
 			TUser.dao.updateOne(query, set);
+			
 		}
 		
-		//发出邮件和短信通知
+		if (re == 9) {
+			//发出邮件和短信通知
+			KObject task = TTask.dao.findOne(tid);
+			HashMap<String,Object> q = new HashMap<String, Object>(2);
+			q.put("company", task.getProp("company").toString());
+			HashMap<String,Object> f = new HashMap<String, Object>(4);
+			f.put("phoneNumber", 1);
+			f.put("email", 1);
+			ArrayList<HashMap<String,Object>> us = TUser.dao.query(q, f, null, 0, 0, null);
+			int len = us.size();
+			if (len > 0) {
+				String[] dests_phone = new String[len];
+				String[] dests_email = new String[len];
+				Iterator<HashMap<String,Object>> it = us.iterator();
+				int i = 0;
+				while (it.hasNext()) {
+					HashMap<java.lang.String, java.lang.Object> m = it.next();
+					dests_phone[i] = m.get("phoneNumber").toString();
+					dests_email[i] = m.get("email").toString();
+					i++;
+				}
+				
+				ActionMsg atask = new ActionMsg("sms");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+				atask.addData("dests", dests_phone);
+				atask.addData("content", info);
+				TaskManager.makeNewTask("sms Task:"+tid+System.currentTimeMillis(), atask);
+				
+				ActionMsg atask1 = new ActionMsg("email");
+				atask1.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+				atask1.addData("dests", dests_email);
+				atask1.addData("content", info);
+				atask1.addData("subject", "[中国电信游戏运营中心]请反馈产品问题:"+task.getName());
+				TaskManager.makeNewTask("email Task:"+tid+System.currentTimeMillis(), atask1);
+				
+			}
+			
+		}
 		
 		
 	}
@@ -264,12 +306,12 @@ public class TTaskTask extends Action {
 	}
 	
 	private void appoint(ActionMsg msg){
-		long userid = (Long)msg.getData("uid");
+		String userName = (String)msg.getData("uName");
 		long operatorId = (Long)msg.getData("oid");
 		long tid = (Long)msg.getData("tid");
 		//处理已办
 		HashMap<String,Object> query = new HashMap<String, Object>(2);
-		query.put("_id", userid);
+		query.put("name", userName);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> pull = new HashMap<String, Object>(2);
 		pull.put("unReadTasks", tid);
@@ -280,6 +322,7 @@ public class TTaskTask extends Action {
 		TUser.dao.updateOne(query, set);
 		//更新待办人
 		query.put("_id", operatorId);
+		query.remove("name");
 		inc.put("newTasks", 1);
 		set.remove("$pull");
 		set.put("$push", pull);
@@ -351,6 +394,36 @@ public class TTaskTask extends Action {
 				}
 			} catch (Exception e) {
 				log.error("deal upload files failed. task ID:"+tid);
+			}
+		}
+		//如果非首次创建的产品(type==2)，更新待反馈状态
+		int type = StringUtil.isDigits(msg.getData("tType"))?Integer.parseInt(msg.getData("tType").toString()):0;
+		if (type == 2 && pid>0) {
+			//先找到之前待反馈任务
+			query = new HashMap<String, Object>(4);
+			set = new HashMap<String, Object>(4);
+			query.put("PID", pid);
+			query.put("state", 3);
+			ArrayList<KObject> ts = TTask.dao.queryKObj(query, null, null, 0, 0, null);
+			Iterator<KObject> it = ts.iterator();
+			HashMap<String, Object> q = new HashMap<String, Object>(2);
+			while (it.hasNext()) {
+				KObject ta = it.next();
+				HashMap<String,Object> updateTask = new HashMap<String, Object>(2);
+				updateTask.put("state", 9);
+				set.put("$set", updateTask);
+				q.put("_id", ta.getId());
+				TTask.dao.update(query, set, false, true);
+				//消除待办人
+				query = new HashMap<String, Object>(4);
+				query.put("unReadTasks", ta.getId());
+				HashMap<String,Object> pull = new HashMap<String, Object>(2);
+				pull.put("unReadTasks", ta.getId());
+				set.put("$pull", pull);
+				inc = new HashMap<String, Object>(2);
+				inc.put("newTasks", -1);
+				set.put("$inc", inc);
+				TUser.dao.update(query, set, false, true);
 			}
 		}
 	}

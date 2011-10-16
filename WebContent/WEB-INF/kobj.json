@@ -362,6 +362,20 @@
 					"asc":false,
 					"type":"type",
 					"intro":"task name"
+				},
+				{
+					"col":"company",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"company"
+				},
+				{
+					"col":"state",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"state"
 				}
 			],
 			"columns":[
@@ -403,7 +417,7 @@
 					"len":0,
 					"required":false,
 					"type":1,
-					"intro":"0已创建,1测试中,2通过,4部分通过,3待反馈,-2已放弃,-1删除;5暂停;6待确认结果"
+					"intro":"0已创建,1测试中,2通过,4部分通过,3待反馈,-2已放弃,-1删除;5暂停;6待确认结果;8已反馈"
 				},
 				{
 					"col":"operator",
@@ -488,6 +502,14 @@
 					"required":false,
 					"type":1,
 					"intro":"0为未上,1为准备上线,2为已上线"
+				},
+				{
+					"col":"company",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"公司(与product中的一致)"
 				}
 			],
 			"intro":"测试任务"
