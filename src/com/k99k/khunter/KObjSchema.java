@@ -48,7 +48,7 @@ public class KObjSchema {
 	private final HashMap<String,String> requiredColMap = new HashMap<String, String>();
 	
 	private int columnSize = 0;
-	
+
 	/**
 	 * 必要字段的总数
 	 */
@@ -655,6 +655,50 @@ public class KObjSchema {
 			KObjColumn kc = iterator.next();
 			String col = kc.getCol();
 			kobj.setProp(col, kc.getDef());
+		}
+		return kobj;
+	}
+	
+	/**
+	 * 创建一个具有所有默认属性的对象，id为1,包含子对象
+	 * @return
+	 */
+	public KObject createDefaultKObj(){
+		KObject kobj = new KObject();
+		kobj.setId(1);
+		for (Iterator<KObjColumn> iterator = this.columnList.iterator(); iterator.hasNext();) {
+			KObjColumn kc = iterator.next();
+			if (kc.getType() == 2) {
+				HashMap<String,Object> m = new HashMap<String, Object>();
+				ArrayList<KObjColumn> subs = kc.getSubColumns();
+				for (Iterator<KObjColumn> it2 = subs.iterator(); it2.hasNext();) {
+					KObjColumn subkc =  it2.next();
+					m.put(subkc.getKeyName(), subkc.getDef());
+				}
+				kobj.setProp(kc.getCol(), m);
+			}else if(kc.getType() == 3){
+				ArrayList<Object> l = new ArrayList<Object>();
+				ArrayList<KObjColumn> subs = kc.getSubColumns();
+				for (Iterator<KObjColumn> it2 = subs.iterator(); it2.hasNext();) {
+					KObjColumn subkc =  it2.next();
+					if (subkc.getType()==2) {
+						HashMap<String,Object> m = new HashMap<String, Object>();
+						ArrayList<KObjColumn> sub2 = subkc.getSubColumns();
+						for (Iterator<KObjColumn> it3 = sub2.iterator(); it3.hasNext();) {
+							KObjColumn subkc2 =  it3.next();
+							m.put(subkc2.getKeyName(), subkc2.getDef());
+						}
+						l.add(m);
+					}else{
+						l.add(subkc.getDef());
+					}
+				}
+				kobj.setProp(kc.getCol(), l);
+			}else{
+				String col = kc.getCol();
+				kobj.setProp(col, kc.getDef());
+			}
+			
 		}
 		return kobj;
 	}

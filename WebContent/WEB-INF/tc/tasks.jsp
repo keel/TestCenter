@@ -89,7 +89,7 @@ String ismy = (sub.equals("my")) ? "?ismy=true" : "";
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">创建时间</th><th style="width:80px;">状态</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>任务名</th><th style="width:80px;">待办人</th><th style="width:80px;">状态</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
 if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");}}
@@ -111,8 +111,8 @@ else{
 		if(gg.getLevel()>0){
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}
-		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
-		sb.append("</td><td>").append(states[gg.getState()]).append("</td>");
+		sb.append(gg.getName()).append("</a></td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getProp("operator")).append("'>").append(gg.getProp("operator"));
+		sb.append("</a></td><td>").append(states[gg.getState()]).append("</td>");
 		if(canEdit){
 			sb.append("<td><a href='javascript:del(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
 		}

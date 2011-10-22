@@ -62,6 +62,8 @@ public final class ErrorCode {
 		errArr[8][23] = "KObjManager-init KObjConfig.newInstance initSchema error:";
 		errArr[8][24] = "KObjManager-init KObjConfig.newInstance setDaoConfig error:";
 		errArr[8][25] = "KObjSchema-setIndex dao.updateIndex error. ";
+		errArr[8][26] = "KObjManager-buildNewData error. ";
+		errArr[8][27] = "KObjManager-reBuildNewData error. ";
 		
 		//KIoc
 		errArr[9][10] = "KIoc-saveJsonToFile ini not found.";

@@ -150,6 +150,38 @@ public class ConsoleReloadAction extends Action {
 				re = "failed";
 			}
 		}
+		//新数据库生成页
+		else if (subact.equals("buildNewDB")) {
+			msg.addData("subact", "buildNewDB");
+			return super.act(msg);
+		}
+		//新数据库表重新生成页
+		else if (subact.equals("buildDBTable")) {
+			msg.addData("subact", "buildDBTable");
+			return super.act(msg);
+		}
+		//生成新的数据库结构
+		else if (subact.equals("newdb")) {
+			String ds = httpmsg.getHttpReq().getParameter("ds");
+			re = "failed";
+			if (StringUtil.isStringWithLen(ds, 2)) {
+				boolean res = KObjManager.buildAllNewData(ds);
+				if (res) {
+					re = "ok";
+				}
+			}
+		}
+		//生成新的数据库结构
+		else if (subact.equals("retable")) {
+			String tb = httpmsg.getHttpReq().getParameter("tb");
+			re = "failed";
+			if (StringUtil.isStringWithLen(tb, 2)) {
+				boolean res = KObjManager.reBuildNewData(tb);
+				if (res) {
+					re = "ok";
+				}
+			}
+		}
 		msg.addData("re", re);
 		return super.act(msg);
 	}

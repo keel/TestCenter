@@ -4,20 +4,18 @@
 <ul>
 <li><a href="<%=prefix %>/console/state" >home</a></li>
 <li><a href="<%=prefix %>/console/exit" >logout</a></li>
-<li><a href="<%=prefix %>/console/changePwd" >changPwd</a></li>
 <li><a href="<%=prefix %>/console/reload/show" >reload</a></li>
 <li><a href="<%=prefix %>/console/reload/confirm/?sub=allactions" >reload Actions</a></li>
 <li><a href="<%=prefix %>/console/reload/confirm/?sub=alldaos" >reload Daos</a></li>
 <li><a href="<%=prefix %>/console/reload/confirm/?sub=allkobjs" >reload KObjs</a></li>
 <li><a href="<%=prefix %>/console/editIni" >editIni</a></li>
 <li><a href="<%=prefix %>/console/test" >test</a></li>
+<li><a href="<%=prefix %>/console/reload/buildNewDB" >buildAllDBData</a></li>
+<li><a href="<%=prefix %>/console/reload/buildDBTable" >reBuild Table</a></li>
 </ul>
 <div>Manage</div>
 <ul>
 <li><a href="<%=prefix %>/console/kobj" >KObject</a></li>
-<li><a href="<%=prefix %>/console/actions" >Actions</a></li>
-<li><a href="<%=prefix %>/console/dao" >DAOs</a></li>
-<li><a href="<%=prefix %>/console/ios" >IOs</a></li>
 </ul>
 <div>Config</div>
 <ul>

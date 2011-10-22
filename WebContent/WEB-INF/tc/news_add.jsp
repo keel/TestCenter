@@ -49,7 +49,7 @@ $('#news_form').validate({
         }
     }
 });
-initUpload("<%=user.getName() %>");
+initUpload("<%=user.getName() %>",null,null,null,null,$.prefix+"/upload2");
 });
 function aSubmit(){
 	var ff = [];
@@ -65,7 +65,7 @@ function aSubmit(){
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
-  <jsp:param name="type" value="<%=user.getType() %>" /> 
+  <jsp:param name="type" value='<%=String.valueOf(user.getType()) %>' /> 
   <jsp:param name="gg" value='<%=user.getProp("newNews").toString() %>' /> 
   <jsp:param name="tt" value='<%=user.getProp("newTasks").toString() %>' /> 
 </jsp:include>

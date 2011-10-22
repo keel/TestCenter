@@ -98,7 +98,8 @@ public final class DataSourceManager {
 				int i = 0;
 				for (Iterator<String> iter = dsMap.keySet().iterator(); iter.hasNext();) {
 					String dsName = iter.next();
-					Map<String, ?> m = (Map<String, ?>) dsMap.get(dsName);
+					Map<String, Object> m = (Map<String, Object>) dsMap.get(dsName);
+					m.put("name", dsName);
 					//读取必要的属性，如果少则报错并继续下一个
 					if (m.containsKey("_dbType")) {
 						String _dbType = (String) m.get("_dbType");

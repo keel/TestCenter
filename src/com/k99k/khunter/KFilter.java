@@ -180,7 +180,7 @@ public final class KFilter implements Filter {
 		} catch (Exception e) {
 			log.error("KFilter error!", e);
 			resp.setStatus(404);
-			resp.getWriter().print("500 - System error! please contact administrator.");
+			resp.getWriter().print("500 - Error! please contact 15301588025@189.cn ");
 			return;
 		}
 

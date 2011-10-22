@@ -29,6 +29,24 @@ Reload <%=sub %> <%=re_name %>  ?
 <p><input type="submit" value=" Yes " /> [ <a href="<%=prefix %>/console/reload/show">Cancel</a> ]</p>
 </form>
 <% }
+//确认是否创建新表数据
+else if(subact.equals("buildNewDB")){
+%>
+<form id="newdbForm" action="<%=prefix%>/console/reload/newdb" method="post">
+Rebuild DB data <span class="red bold"> All Data will be deleted!!!</span><br />
+DataSource: <input type="text" name="ds" id="ds" value="" /> 
+<p><input type="submit" value=" Yes " /> </p>
+</form>
+<% }
+//确认是否创建新表数据
+else if(subact.equals("buildDBTable")){
+%>
+<form id="newdbForm" action="<%=prefix%>/console/reload/retable" method="post">
+Rebuild Table data <span class="red bold"> All Data in this table will be deleted!!!</span><br />
+Table: <input type="text" name="tb" id="tb" value="" /> 
+<p><input type="submit" value=" Yes " /> </p>
+</form>
+<% }
 //显示reload菜单
 else{ %>
 <form id="reloadForm" action="<%=prefix%>/console/reload/confirm" method="post">

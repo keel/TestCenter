@@ -3,7 +3,7 @@
 	"updates":{
 		"2011-8-8":"始建此文件"
 	},
-	"info":"注意数据库需要增加index:db.TCUser.ensureIndex({"unReadTasks":1})",
+	"info":"注意数据库需要增加以下index: db.TCUser.ensureIndex({'unReadTasks':1});db.TCTopic.ensureIndex({'tags':1})",
 	"classPath": "f:/works/workspace_keel/TestCenter/WebContent/WEB-INF/classes/",
 	"iniPath": "f:/works/workspace_keel/TestCenter/WebContent/WEB-INF/",
 	"dataSources":{
@@ -12,6 +12,16 @@
 			"ip":"127.0.0.1",
 			"port":27017,
 			"dbName":"tc",
+			"user":"keel",
+			"pwd":"jsGame_1810",
+			"maxWaitTime":5000,
+			"connectionsPerHost":30
+		},
+		"tc2":{
+			"_dbType":"mongodb",
+			"ip":"127.0.0.1",
+			"port":27017,
+			"dbName":"tc2",
 			"user":"keel",
 			"pwd":"jsGame_1810",
 			"maxWaitTime":5000,

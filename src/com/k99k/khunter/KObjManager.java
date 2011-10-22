@@ -255,6 +255,68 @@ public final class KObjManager {
 	}
 	
 	/**
+	 * 创建新的数据库结构,注意此方法仅操作数据库,不写入配置文件,调用前需要手动修改kconfig.json,新增dataSources相关节点数据
+	 * @param newDataSourceName 必须事先创建好
+	 * @param iniFile
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static final boolean buildAllNewData(String newDataSourceName){
+		try {
+			DataSourceInterface ds = DataSourceManager.findDataSource(newDataSourceName.trim());
+			if (ds == null) {
+				log.error("KObjManager.buildNewData error: dataSourceName not exist.");
+				return false;
+			}
+//			String ini = KIoc.readTxtInUTF8(iniFilePath);
+//			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+//			//先定位到json的对应属性
+//			Map<String, ?> mgr = (Map<String, ?>) root.get(getName());
+			Iterator it = kobjMap.entrySet().iterator(); 
+			int i = 0;
+			while (it.hasNext()) {
+				Map.Entry entry = (Map.Entry) it.next(); 
+//				String keyName = (String)entry.getKey();
+//				HashMap<String, Object> m = (HashMap<String, Object>)entry.getValue();
+				KObjConfig kc = (KObjConfig)entry.getValue();
+				if (kc == null) {
+					ErrorCode.logError(log, 8,26, "i:"+i);
+					continue;
+				}
+				//创建数据结构
+				boolean re = ds.buildNewTable(kc);
+				log.info("[CREATE KOBJ DATA] "+kc.getKobjName()+" "+ re);
+				i++;
+			}
+		} catch (Exception e) {
+			log.error("KObjManager.buildNewData error",e);
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * 重建表数据(先drop掉,然后重建)
+	 * @param kcName KObjConfig name
+	 * @return
+	 */
+	public static final boolean reBuildNewData(String kcName){
+		try {
+			KObjConfig kc = (KObjConfig)kobjMap.get(kcName.trim());
+			if (kc == null) {
+				ErrorCode.logError(log, 8,27, "kcName not exsit.");
+			}
+			//创建数据结构
+			boolean re = kc.getDaoConfig().findDao().getDataSource().buildNewTable(kc);
+			log.info("[CREATE KOBJ DATA] "+kcName+" "+ re);
+			return re;
+		} catch (Exception e) {
+			log.error("KObjManager.buildNewData error",e);
+			return false;
+		}
+	}
+	
+	/**
 	 * 初始化KObjManager
 	 * @param iniFile 配置文件路径
 	 * @param classPath class文件所在的路径

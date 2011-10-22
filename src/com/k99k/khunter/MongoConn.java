@@ -4,9 +4,13 @@
 package com.k99k.khunter;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.Mongo;
@@ -33,7 +37,7 @@ public final class MongoConn implements DataSourceInterface{
 	private int threadsAllowedToBlockForConnectionMultiplier = 50;
 	private int maxWaitTime = 5000;
 	
-	private Mongo mongo;
+	static Mongo mongo;
 	private DB db;
 	
 	private String name = "mongodb_local";
@@ -86,7 +90,7 @@ public final class MongoConn implements DataSourceInterface{
 	 * @param colName
 	 * @return DBCollection
 	 */
-	public final DBCollection getColl(String colName){
+	public DBCollection getColl(String colName){
 		try {
 			return db.getCollection(colName);
 		} catch (Exception e) {
@@ -95,18 +99,53 @@ public final class MongoConn implements DataSourceInterface{
 		}
 	}
 	
+	
+	/**
+	 * 创建新表结构,先drop,后创建,同时生成索引 ,最后清除数据
+	 * @param kc KObjConfig
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean buildNewTable(KObjConfig kc){
+		try {
+			DaoInterface dao = kc.getDaoConfig().findDao();
+			DBCollection coll = this.getColl(dao.getTableName());
+			coll.drop();
+			coll = this.getColl(dao.getTableName());
+			KObject kobj = kc.getKobjSchema().createDefaultKObj();
+			coll.save(new MongoWrapper(kobj));
+			//index
+			HashMap<String,KObjIndex> ins = kc.getKobjSchema().getIndexes();
+			Iterator it = ins.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, KObjIndex> entry = (Map.Entry<String, KObjIndex>) it.next();
+				KObjIndex ki = entry.getValue();
+				coll.ensureIndex(new BasicDBObject(ki.getCol(), (ki.isAsc())?1:-1),ki.getCol(), ki.isUnique());
+			}
+			// 再清除
+			coll.remove(new MongoWrapper(kobj));
+		} catch (Exception e) {
+			log.error("buildNewTable error!!", e);
+			return false;
+		}
+		return true;
+	}
+	
+	
 	/**
 	 * 创建DB对象
 	 */
 	public final boolean init(){
 		try {
-			ServerAddress sadd = new ServerAddress(this.ip, this.port);
-			MongoOptions opt = new MongoOptions();
-			opt.autoConnectRetry = false;
-			opt.connectionsPerHost = this.connectionsPerHost;
-			opt.threadsAllowedToBlockForConnectionMultiplier = this.threadsAllowedToBlockForConnectionMultiplier;
-			opt.maxWaitTime = this.maxWaitTime;
-			mongo = new Mongo(sadd,opt);
+			if (mongo == null ) {
+				ServerAddress sadd = new ServerAddress(this.ip, this.port);
+				MongoOptions opt = new MongoOptions();
+				opt.autoConnectRetry = false;
+				opt.connectionsPerHost = this.connectionsPerHost;
+				opt.threadsAllowedToBlockForConnectionMultiplier = this.threadsAllowedToBlockForConnectionMultiplier;
+				opt.maxWaitTime = this.maxWaitTime;
+				mongo = new Mongo(sadd,opt);
+			}
 			db = mongo.getDB(this.dbName);
 			boolean auth = db.authenticate(this.user, this.pwd.toCharArray());
 			if (!auth) {

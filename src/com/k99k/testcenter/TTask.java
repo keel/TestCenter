@@ -91,8 +91,8 @@ public class TTask extends Action {
 			this.back(req, u, httpmsg);
 		}else if(subact.equals("a_online")){
 			this.online(req, u, httpmsg);
-		}else if(subact.equals("a_u")){
-			this.update(req, u, httpmsg);
+//		}else if(subact.equals("a_u")){
+//			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
 			this.del(req, u, httpmsg);
 		}else if(subact.equals("a_confirm")){
@@ -710,15 +710,15 @@ public class TTask extends Action {
 		JOut.err(500,"E500"+Err.ERR_CONFIRM_TASK, msg);
 	}
 	
-	/**
-	 * 更新任务,改变状态(删除,暂停,取消等),调整执行人,增加说明,修改TestUnit
-	 * @param req
-	 * @param u
-	 * @param msg
-	 */
-	private void update(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
-	}
+//	/**
+//	 * 更新任务,改变状态(删除,暂停,取消等),调整执行人,增加说明,修改TestUnit
+//	 * @param req
+//	 * @param u
+//	 * @param msg
+//	 */
+//	private void update(HttpServletRequest req,KObject u,HttpActionMsg msg){
+//		//
+//	}
 	
 	/**
 	 * 删除任务
@@ -845,6 +845,7 @@ public class TTask extends Action {
 				//TODO 针对tomcatURL编码转换
 				key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
 			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
 			}
 			HashMap<String,Object> query = new HashMap<String, Object>(2);
 			Pattern p = Pattern.compile(key);
@@ -963,6 +964,14 @@ public class TTask extends Action {
 			HashMap<String,Object> in = new HashMap<String, Object>(4);
 			in.put("$in", taskIds);
 			q.put("_id", in);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+		}else if (userType==1) {
+		//厂家看到的是company为自己公司的任务
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			HashMap<String,Object> state = new HashMap<String, Object>(2);
+			state.put("$gte", 0);
+			q.put("state", state);
+			q.put("company", u.getProp("company"));
 			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
 		}else{
 		//其他看到的是自己创建的任务

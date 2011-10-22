@@ -473,6 +473,14 @@ public class KObjColumn {
 
 
 	/**
+	 * @return the keyName
+	 */
+	public final String getKeyName() {
+		return keyName;
+	}
+
+
+	/**
 	 * @param col the col to set
 	 */
 	public final void setCol(String col) {

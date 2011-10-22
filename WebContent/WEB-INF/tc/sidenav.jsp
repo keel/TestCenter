@@ -9,8 +9,7 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 %><div id="sideNav">
 <div>用户信息</div>
 <ul>
-<li id="side_pwd"><a href="<%=prefix %>/pwd" >修改密码</a></li>
-<li id="side_contact"><a href="<%=prefix %>/contact" >修改联系信息</a></li>
+<li id="side_pwd"><a href="<%=prefix %>/user/edit" >修改用户信息</a></li>
 <li id="side_logout"><a href="<%=prefix %>/auth/logout" >注销</a></li>
 </ul>
 <div>测试管理</div>
