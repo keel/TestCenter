@@ -23,6 +23,7 @@ String sub = String.valueOf(data.getData("sub"));
 String tag = String.valueOf(data.getData("tag"));
 String t_pid = request.getParameter("pid");
 String t_tid = request.getParameter("tid");
+String pName = (String)data.getData("pName");
 
 out.print(JSPOut.out("head0","0","话题-新建"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
@@ -38,6 +39,12 @@ $(function(){
 	var tar = "#side_topic_"+$.sub;
 	if($.tag!=""){tar=tar+"_"+$.tag;}tar+=" a";
 	$(tar).addClass("sideON");
+<%
+if(StringUtil.isStringWithLen(pName,2)){
+	out.println("$('#t_name').val('"+pName+"').attr('readOnly','true').addClass('gray');");	
+}
+%>
+	
 //处理请求
 $.validator.dealAjax = {
 	bt:$("#submitBT"),
@@ -97,11 +104,13 @@ function aSubmit(){
 
 <p>内容：<span class="red">*</span><br />
 <textarea name="t_text" rows="3" cols="3" style="height:200px;"></textarea></p>
+<% if(user.getType()>10){ %>
 <p>显示级别：
 <select name="t_type"><option value="0">所有人</option><option value="1">厂家</option><option value="2">测试员</option><option value="3">组长</option><option value="4">管理员</option></select>
 置顶级别(数字最大的在顶部)：
 <select name="t_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
 </p>
+<% }%>
 <input type="hidden" id="news_files" name="news_files" value="" />
 <input type="hidden" id="t_cate" name="t_cate" value="<%=cateMap.get(sub)%>" />
 <%if(StringUtil.isDigits(t_tid)){

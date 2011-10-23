@@ -81,7 +81,10 @@ int usertype = user.getType();
 boolean canEdit = (usertype>=4);
 String para = sub;
 if(!tag.equals("")){para=para+"/"+tag;}
-%><span style="padding-left:20px;"><a href="<%=prefix%>/topic/add/<%=para%>" class="aButton">创建新话题</a></span>
+if(sub.equals("pub") || sub.equals("company") || user.getType()>10 ){
+%>
+<span style="padding-left:20px;"><a href="<%=prefix%>/topic/add/<%=para%>" class="aButton">创建新话题</a></span>
+<%} %>
 </div>
 
 <div>

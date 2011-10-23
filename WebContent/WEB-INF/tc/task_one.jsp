@@ -387,9 +387,11 @@ if(state==0 && userType > 3){%>
 </form>
 <p>
 <span id="finisher" class="hide">下一执行人:<select id="task_operator" name="task_operator"><option value="曹雨">曹雨</option></select><br /></span>
+<% if(userType > 2){ %>
 <a href='javascript:saveTU();' class='aButton tx_center' style='width:60px;' id="bt_saveTU">保存分配</a>
 <a href='javascript:summary();' class='aButton tx_center' id="bt_summary">汇总测试结果</a>
 <a href='javascript:confirmTU();' class='aButton tx_center' id="bt_confirm">测试结果提交</a>
+<%}%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
 }else if(state==6 && userType>1){%>
@@ -438,7 +440,7 @@ else if(userType==99) { %>
 <div id="feedback">
 <%if(userType == 1 || userType ==99){ %>
 <a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&ismy=true":"")%>" class="aButton">反馈并发起修改后的测试</a>
-<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">对此任务发起回复讨论</a>
+<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&tid="+one.getId()%>" class="aButton">对此任务发起回复讨论</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <%//厂家或访客查看情况,state<2的情况下

@@ -92,6 +92,12 @@ if(o_f !=null){
 }
 %>
 </div>
+<div id="comms">
+<div class="comm">
+	<div class="commTitle"><a href="/">某某</a>  发表于  <span class="gray">2011-1-22 23:33:22</span> </div>
+	<div><pre class="t_text">asdfadsfadsfasdfsafd</pre></div>
+</div>
+</div>
 <div class="aboxSub2"><a href="<%=lo%>" class="aButton">返回列表</a></div>
 </div>
 		<div class="clear"></div>

@@ -72,7 +72,7 @@ public class TestCase extends Action {
 			int type = kobj.getType();
 			if (cases[type] == null) {
 				caseKeys[type] = ks;
-				cases[type] = new KObject[100];
+				cases[type] = new KObject[50];
 				ks=0;
 			}
 			if (kobj.getLevel()>=10) {

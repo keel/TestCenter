@@ -72,8 +72,6 @@ public class Topic extends Action {
 		}else if(subact.equals("add")){
 			String subsub2 = (pathArr.length <= r+2) ? "" : pathArr[r+2];
 			this.toAdd(subsub,subsub2, u, req, httpmsg);
-//		}else if (StringUtil.isDigits(subact)) {
-//			this.one(subact, req, u, httpmsg);
 		}else if(subact.equals("a_a")){
 			this.add(req, u, httpmsg);
 		}else if(subact.equals("a_comm")){
@@ -163,6 +161,13 @@ public class Topic extends Action {
 		long pid = (StringUtil.isDigits(t_pid))?Long.parseLong(t_pid):0;
 		long tid = (StringUtil.isDigits(t_tid))?Long.parseLong(t_tid):0;
 		String text = StringUtil.repstr1(t_text.trim());
+		if (cate > 1 && u.getType()<10) {
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		if (u.getType()<10) {
+			level = 0;
+		}
 		KObject kobj = schema.createEmptyKObj(dao);
 		kobj.setLevel(level);
 		kobj.setName(name);
@@ -217,6 +222,11 @@ public class Topic extends Action {
 	private void toAdd(String sub,String tag,KObject u,HttpServletRequest req,HttpActionMsg msg){
 		msg.addData("tag", tag);
 		msg.addData("sub", sub);
+		String t_pid = req.getParameter("pid");
+		if (StringUtil.isDigits(t_pid)) {
+			KObject product = Product.dao.findOne(Long.parseLong(t_pid));
+			msg.addData("pName", product.getName());
+		}
 		msg.addData("u", u);
 		msg.addData("[jsp]", "/WEB-INF/tc/topic_add.jsp");
 	}
@@ -261,8 +271,11 @@ public class Topic extends Action {
 	 */
 	private void myCompany(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		msg.addData("title", "公司产品讨论");
-		String company = u.getProp("company").toString();
-		HashMap<String,Object> q = StaticDao.prop_topic_company.append("company", company);
+		HashMap<String,Object> q = StaticDao.prop_topic_company;
+		if (u.getType()<2) {
+			String company = u.getProp("company").toString();
+			q.put("company", company);
+		}
 		this.queryPage(q,subact, req, u, msg);
 	}
 	/**
