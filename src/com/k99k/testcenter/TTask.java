@@ -81,8 +81,8 @@ public class TTask extends Action {
 			this.exec(req, u, httpmsg);
 		}else if(subact.equals("a_send")){
 			this.send(req, u, httpmsg);
-		}else if(subact.equals("a_comm")){
-			this.comm(req, u, httpmsg);
+//		}else if(subact.equals("a_comm")){
+//			this.comm(req, u, httpmsg);
 		}else if(subact.equals("a_summary")){
 			this.summary(req, u, httpmsg);
 		}else if(subact.equals("a_finish")){
@@ -129,7 +129,7 @@ public class TTask extends Action {
 			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
 			return;
 		}
-		//将状态置为驳回状态，不可修改，由厂家新建
+		//FIXME 将状态置为驳回状态，不可修改，由厂家新建
 		
 		
 	}
@@ -769,7 +769,7 @@ public class TTask extends Action {
 			return;
 		}
 		int taskLevel = StringUtil.isDigits(task_level)&& (u.getType()>1)?Integer.parseInt(task_level):0;
-		task_info = StringUtil.repstr(task_info);
+		task_info = StringUtil.repstr1(task_info);
 //		try {
 //			task_p_json_h = URLDecoder.decode(task_p_json_h, "utf-8");
 //		} catch (UnsupportedEncodingException e) {

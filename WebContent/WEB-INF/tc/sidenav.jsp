@@ -32,16 +32,16 @@ if(type>=2){
 
 <div>相关文档</div>
 <ul>
-<li id="side_proc"><a href="<%=prefix %>/proc" >流程说明</a></li>
-<li id="side_handset"><a href="<%=prefix %>/handset" >手机终端信息</a></li>
-<li id="side_faq"><a href="<%=prefix %>/faq" >适配常见问题</a></li>
-<li id="side_api"><a href="<%=prefix %>/api" >电信接口</a></li>
+<li id="side_topic_doc_proc"><a href="<%=prefix %>/topic/doc/proc" >流程说明</a></li>
+<li id="side_topic_doc_handset"><a href="<%=prefix %>/topic/doc/handset" >手机终端信息</a></li>
+<li id="side_topic_doc_faq"><a href="<%=prefix %>/topic/doc/faq" >适配常见问题</a></li>
+<li id="side_topic_doc_api"><a href="<%=prefix %>/topic/doc/api" >电信接口</a></li>
 </ul>
 
 <div>讨论</div>
 <ul>
-<li id="side_topics"><a href="<%=prefix %>/topics" >公共讨论</a></li>
-<li id="side_tags"><a href="<%=prefix %>/topics/tags" >专项问题</a></li>
+<li id="side_topic_pub"><a href="<%=prefix %>/topic/pub" >公共讨论</a></li>
+<li id="side_topic_company"><a href="<%=prefix %>/topic/company" >公司产品讨论</a></li>
 </ul>
 
 <%
@@ -49,7 +49,6 @@ if(type>=4){
 %>
 <div>统计查询</div>
 <ul>
-<li id="side_search"><a href="<%=prefix %>/search" >查询</a></li>
 <li id="side_dayreport"><a href="<%=prefix %>/report/day" >日报表</a></li>
 <li id="side_weekreport"><a href="<%=prefix %>/report/week" >周报表</a></li>
 <li id="side_monthreport"><a href="<%=prefix %>/report/month" >月报表</a></li>
@@ -67,8 +66,8 @@ if(type>=5){
 if(type>=6){
 %>
 <li id="side_admin_doc"><a href="<%=prefix %>/admin/doc" >文档管理</a></li>
-<li id="side_admin_topic"><a href="<%=prefix %>/admin/topic" >话题管理</a></li>
-<li id="side_admin_testunit"><a href="<%=prefix %>/admin/testunit" >测试项</a></li>
+<li id="side_admin_topic"><a href="<%=prefix %>/admin/topic" >讨论管理</a></li>
+<li id="side_admin_testunit"><a href="<%=prefix %>/admin/testunit" >测试项管理</a></li>
 <%} %>
 </ul>
 <%};%>

@@ -143,6 +143,16 @@
 			"_class":"com.k99k.testcenter.TestCase"
 		},
 		{
+			"_actName":"topic",
+			"_class":"com.k99k.testcenter.Topic",
+			"pageSize":30
+		},
+		{
+			"_actName":"comm",
+			"_class":"com.k99k.testcenter.Comm",
+			"pageSize":30
+		},
+		{
 			"_actName":"sms",
 			"_class":"com.k99k.testcenter.SMS"
 		},

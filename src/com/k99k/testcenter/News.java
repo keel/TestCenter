@@ -118,7 +118,7 @@ public class News extends Action {
 			int level = (StringUtil.isDigits(req.getParameter("news_level")))?Integer.parseInt(req.getParameter("news_level")):0;
 			int type = (StringUtil.isDigits(req.getParameter("news_type")))?Integer.parseInt(req.getParameter("news_type").trim()):0;
 			if (StringUtil.isStringWithLen(name, 3) && StringUtil.isStringWithLen(text, 2)) {
-				KObject kobj = schema.createEmptyKObj();
+				KObject kobj = schema.createEmptyKObj(dao);
 				kobj.setName(StringUtil.repstr1(name.trim()));
 				kobj.setProp("text", StringUtil.repstr1(text.trim()));
 				kobj.setLevel(level);

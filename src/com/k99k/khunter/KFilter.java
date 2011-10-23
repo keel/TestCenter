@@ -62,6 +62,10 @@ public final class KFilter implements Filter {
 		HTManager.exit();
 	}
 	
+	public static final int getRootNum(){
+		return rootNum;
+	}
+	
     public static final String getIni(){
     	return ini;
     }

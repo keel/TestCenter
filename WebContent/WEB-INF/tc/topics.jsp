@@ -17,21 +17,25 @@ int pn = 0;
 int pz = Integer.parseInt(String.valueOf(data.getData("pz")));
 int p = Integer.parseInt(String.valueOf(data.getData("p")));
 String sub = String.valueOf(data.getData("sub"));
+String tag = (data.getData("tag")!=null)?String.valueOf(data.getData("tag")):"";
 if(list != null){
 	KObject count = list.remove(0);
 	int cc = Integer.parseInt(count.getId()+"");
 	pn = (cc%pz>0)?(cc/pz+1):cc/pz;
 }
-String title = (sub.equals("my")) ? "我的任务" : "任务管理";
+String title = String.valueOf(data.getData("title"));
 out.print(JSPOut.out("head0","0",title));
 %>
 <script src="<%=sPrefix%>/js/pagenav.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-$.isMy = <%=(sub.equals("my"))?"true":"false" %>;
+$.sub="<%=sub%>";$.tag="<%=tag%>";
+var lo = "<%=prefix %>/topic/"+$.sub;
+if($.tag!=""){lo=lo+"/"+$.tag;}
+$.lo = lo;
 function del(id){
-	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$("#task_"+id+" a").text()+"]");
+	var r=confirm("确认删除此条话题吗？\r\n\r\n["+$("#task_"+id+" a").text()+"]");
 	if (r==true){
-		$.post("<%=prefix %>/tasks/a_d", "id="+id ,function(data) {
+		$.post("<%=prefix %>/topic/a_d", "id="+id ,function(data) {
 			if(data=="ok"){alert("删除成功");window.location = window.location;};
 		});
 	}
@@ -39,14 +43,13 @@ function del(id){
 }
 function search(){
 	var k = $("#search_key").val();
-	var lo = "<%=prefix %>/tasks/";
-	if($.isMy){lo+="my";};
 	if(k!=null && $.trim(k).length>1){
-		window.location=lo+"/a_s?k="+k;
+		window.location="<%=prefix %>/topic/a_s?sub="+$.sub+"&tag="+$.tag+"&k="+k;
 	}else{window.location=lo;}
 }
 $(function(){
-	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
+	var tar = "#side_topic_"+$.sub;
+	if($.tag!=""){tar=tar+"_"+$.tag;};tar+=" a";
 	$(tar).addClass("sideON");
 	$("#search_key").keypress(function(event) {
 		if ( event.which == 13 ) {
@@ -55,16 +58,10 @@ $(function(){
 	});
 	pageNav.fn = function(p,pn){
 	    if(p != <%=p%>){
-	    	window.location = "<%=prefix%>/tasks?p="+p+"&pz="+<%=pz%>;
+	    	window.location = $.lo+"?p="+p+"&pz="+<%=pz%>;
 	    }
 	};
 	pageNav.go(<%=p%>,<%=pn%>);
-	var unread = <%=user.getProp("unReadTasks")%>;
-	if(unread && unread.length>0){
-		for(var i=0,j=unread.length;i<j;i++){
-			$("#task_"+unread[i]+" a").prepend("(待处理) ").addClass("red");
-		}
-	}
 });
 
 </script>
@@ -78,41 +75,38 @@ $(function(){
 
 		<div id="mainContent">
 <div class="search">
-查询:<select><option value="title">任务名</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
+查询:<select><option value="title">标题</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
 <%
 int usertype = user.getType();
 boolean canEdit = (usertype>=4);
-String ismy = (sub.equals("my")) ? "?ismy=true" : "";
-%><span style="padding-left:20px;"><a href="<%=prefix%>/tasks/add<%=ismy%>" class="aButton">创建新任务</a></span>
+String para = sub;
+if(!tag.equals("")){para=para+"/"+tag;}
+%><span style="padding-left:20px;"><a href="<%=prefix%>/topic/add/<%=para%>" class="aButton">创建新话题</a></span>
 </div>
 
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>任务名</th><th style="width:80px;">待办人</th><th style="width:80px;">状态</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">发布时间</th><th style="width:80px;">创建人</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
 if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");}}
 else{
 	StringBuilder sb = new StringBuilder();
-	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","","已反馈"};
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
 		if(usertype<gg.getType()){
 			continue;
 		}
-		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");
-		sb.append(prefix).append("/tasks/").append(gg.getId());
-		if(sub.equals("my")){
-			sb.append("?my=true");
-		}
+		sb.append("<tr><td>").append(gg.getId()).append("<td style='text-align: left;' id='topic_").append(gg.getId()).append("'><a href='");
+		sb.append(prefix).append("/topic/").append(gg.getId());
 		sb.append("' class='fullA");
 		if(gg.getLevel()>0){
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}
-		sb.append(gg.getName()).append("</a></td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getProp("operator")).append("'>").append(gg.getProp("operator"));
-		sb.append("</a></td><td>").append(states[gg.getState()]).append("</td>");
+		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
+		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
 		if(canEdit){
 			sb.append("<td><a href='javascript:del(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
 		}

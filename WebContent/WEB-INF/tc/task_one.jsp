@@ -52,7 +52,7 @@ $(function(){
 	$("#task_p_acc_v").text(port_type[parseInt($("#task_p_acc_v").text())]);
 	var sys = ["kjava","Android","WAP","Brew","Windows mobile","Windows CE","其他"];
 	$("#task_p_sys_v").text(sys[parseInt($("#task_p_sys_v").text())]);
-	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中"];
+	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","","已反馈"];
 	$("#cState").text(cState[parseInt($("#cState").text())]);
 	//选择机型
 	$(chooseDiv).appendTo("#hide");
@@ -84,7 +84,7 @@ $(function(){
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if((state==6 && userType>1) || state==3){%>
+if((state==6 && userType>1) || state==3 || state==8){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);

@@ -200,6 +200,20 @@ public class MongoDao implements DaoInterface{
 	 * {state:{$gte:0}}
 	 */
 	public static final BasicDBObject prop_state_normal = new BasicDBObject("state",new BasicDBObject("$gte",0));
+	
+	/**
+	 * {state:{$gte:0},cate:0}
+	 */
+	public static final BasicDBObject prop_topic_pub = new BasicDBObject("state",new BasicDBObject("$gte",0)).append("cate", 0);
+	/**
+	 * {state:{$gte:0},cate:1}
+	 */
+	public static final BasicDBObject prop_topic_company = new BasicDBObject("state",new BasicDBObject("$gte",0)).append("cate", 1);
+	/**
+	 * {state:{$gte:0},cate:2}
+	 */
+	public static final BasicDBObject prop_topic_doc = new BasicDBObject("state",new BasicDBObject("$gte",0)).append("cate", 2);
+
 	/**
 	 * {}
 	 */

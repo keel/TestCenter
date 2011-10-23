@@ -410,7 +410,7 @@ public class TTaskTask extends Action {
 			while (it.hasNext()) {
 				KObject ta = it.next();
 				HashMap<String,Object> updateTask = new HashMap<String, Object>(2);
-				updateTask.put("state", 9);
+				updateTask.put("state", 8);
 				set.put("$set", updateTask);
 				q.put("_id", ta.getId());
 				TTask.dao.update(query, set, false, true);

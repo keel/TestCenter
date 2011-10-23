@@ -45,6 +45,20 @@
 					"asc":false,
 					"type":"type",
 					"intro":"PID"
+				},
+				{
+					"col":"company",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"company"
+				},
+				{
+					"col":"name",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"name"
 				}
 			],
 			"columns":[
@@ -98,12 +112,12 @@
 				},
 				{
 					"col":"tags",
-					"def":{
+					"def":[
 						
-					},
+					],
 					"len":0,
 					"required":false,
-					"type":2,
+					"type":3,
 					"intro":"tags"
 				},
 				{
@@ -118,9 +132,51 @@
 					"col":"cate",
 					"def":0,
 					"len":0,
-					"required":false,
+					"required":true,
 					"type":1,
 					"intro":"类别或版块标识"
+				},
+				{
+					"col":"company",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"company"
+				},
+				{
+					"col":"name",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"topic标题"
+				},
+				{
+					"col":"type",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":1,
+					"intro":"显示级别,对应user的type"
+				},
+				{
+					"col":"files",
+					"def":[
+						
+					],
+					"len":0,
+					"required":false,
+					"type":3,
+					"intro":"上传的文件名集"
+				},
+				{
+					"col":"files.*",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"上传的文件名"
 				}
 			],
 			"intro":"讨论话题"
@@ -1497,15 +1553,15 @@
 					"len":0,
 					"required":false,
 					"type":3,
-					"intro":"上传的文件id集"
+					"intro":"上传的文件名集"
 				},
 				{
 					"col":"files.*",
-					"def":0,
+					"def":"",
 					"len":0,
 					"required":false,
-					"type":4,
-					"intro":"上传的文件id"
+					"type":0,
+					"intro":"上传的文件名"
 				}
 			],
 			"intro":"公告"

@@ -32,6 +32,7 @@ public class Err {
 	public static final int ERR_CONFIRM_TASK = 208;
 	public static final int ERR_FINISH_TASK = 209;
 	public static final int ERR_ONLINE_TASK = 210;
+	public static final int ERR_TOPIC_ADD = 211;
 	
 
 }
