@@ -223,6 +223,7 @@ public class MongoDao implements DaoInterface{
 	 */
 	public static final BasicDBObject prop_state_del_set = new BasicDBObject("$set",new BasicDBObject("state",-1));
 
+
 	@Override
 	public boolean checkName(String name) {
 		try {

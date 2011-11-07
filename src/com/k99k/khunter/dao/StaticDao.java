@@ -46,6 +46,14 @@ public class StaticDao extends MongoDao {
 	 */
 	public static final BasicDBObject prop_level_id_desc = new BasicDBObject("level",-1).append("_id",-1);
 
+	
+	
+	/**
+	 * {$inc:{commsCount:1}}
+	 */
+	public static final BasicDBObject prop_topic_comm_inc = new BasicDBObject("$inc",new BasicDBObject("commsCount",1));
+
+	
 	public static final void initS(){
 		tcUserDao = DaoManager.findDao("TCUserDao");
 		tcNewsDao = DaoManager.findDao("TCNewsDao");

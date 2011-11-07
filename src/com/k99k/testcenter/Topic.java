@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
+import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
@@ -43,6 +44,8 @@ public class Topic extends Action {
 	static final Logger log = Logger.getLogger(Topic.class);
 	static DaoInterface dao;
 	static KObjSchema schema;
+	static Comm comm;
+	
 	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -74,8 +77,8 @@ public class Topic extends Action {
 			this.toAdd(subsub,subsub2, u, req, httpmsg);
 		}else if(subact.equals("a_a")){
 			this.add(req, u, httpmsg);
-		}else if(subact.equals("a_comm")){
-			this.comm(req, u, httpmsg);
+//		}else if(subact.equals("a_comm")){
+//			this.comm(req, u, httpmsg);
 //		}else if(subact.equals("a_u")){
 //			this.update(req, u, httpmsg);
 //		}else if(subact.equals("a_d")){
@@ -90,16 +93,16 @@ public class Topic extends Action {
 	
 	
 	
-	
-	/**
-	 * 添加评论
-	 * @param req
-	 * @param u
-	 * @param msg
-	 */
-	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		
-	}
+//	
+//	/**
+//	 * 添加评论
+//	 * @param req
+//	 * @param u
+//	 * @param msg
+//	 */
+//	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
+//		
+//	}
 	
 	/**
 	 * 查看单个话题
@@ -152,7 +155,7 @@ public class Topic extends Action {
 		if (!StringUtil.isStringWithLen(t_name, 1) || 
 			!StringUtil.isStringWithLen(t_text, 1) 
 			) {
-			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			JOut.err(403,"E403"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
 		String name = t_name.trim();
@@ -162,7 +165,7 @@ public class Topic extends Action {
 		long tid = (StringUtil.isDigits(t_tid))?Long.parseLong(t_tid):0;
 		String text = StringUtil.repstr1(t_text.trim());
 		if (cate > 1 && u.getType()<10) {
-			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			JOut.err(403,"E403"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
 		if (u.getType()<10) {
@@ -307,6 +310,7 @@ public class Topic extends Action {
 	public void init() {
 		dao = DaoManager.findDao("TCTopicDao");
 		schema = KObjManager.findSchema("TCTopic");
+		comm = (Comm)ActionManager.findAction("comm");
 		super.init();
 	}
 

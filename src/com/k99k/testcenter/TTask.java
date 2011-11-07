@@ -120,13 +120,13 @@ public class TTask extends Action {
 		}
 		String task_id = req.getParameter("tid");
 		if(!StringUtil.isDigits(task_id) ){
-			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
 		long tid = Integer.parseInt(task_id);
 		KObject task = dao.findOne(tid);
 		if (task==null) {
-			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
 		//FIXME 将状态置为驳回状态，不可修改，由厂家新建
@@ -167,7 +167,7 @@ public class TTask extends Action {
 		long tid = Long.parseLong(task_id);
 		KObject task = dao.findOne(tid);
 		if (task==null) {
-			JOut.err(401,"E401"+Err.ERR_PARAS, msg);
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
 		KObject operator = TUser.dao.findOne(task_operator);
@@ -469,15 +469,15 @@ public class TTask extends Action {
 	}
 	
 	
-	/**
-	 * 任务讨论,注意一个产品对应一个主题
-	 * @param req
-	 * @param u
-	 * @param msg
-	 */
-	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
-		//
-	}
+//	/**
+//	 * 任务讨论,注意一个产品对应一个主题
+//	 * @param req
+//	 * @param u
+//	 * @param msg
+//	 */
+//	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
+//		//
+//	}
 	
 	/**
 	 * 退回或确认结果并通知任务创建者

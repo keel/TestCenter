@@ -143,13 +143,13 @@
 			"_class":"com.k99k.testcenter.TestCase"
 		},
 		{
-			"_actName":"topic",
-			"_class":"com.k99k.testcenter.Topic",
+			"_actName":"comm",
+			"_class":"com.k99k.testcenter.Comm",
 			"pageSize":30
 		},
 		{
-			"_actName":"comm",
-			"_class":"com.k99k.testcenter.Comm",
+			"_actName":"topic",
+			"_class":"com.k99k.testcenter.Topic",
 			"pageSize":30
 		},
 		{
