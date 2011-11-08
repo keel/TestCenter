@@ -130,7 +130,9 @@ public class Topic extends Action {
 		msg.addData("u", u);
 		msg.addData("one", one);
 		//TODO 评论列表
-		
+		HashMap<String,Object> query = new HashMap<String, Object>();
+		query.put("TPID", id);
+		comm.queryPage(query, req,msg);
 		
 		msg.addData("[jsp]", "/WEB-INF/tc/topic_one.jsp");
 	}
@@ -149,6 +151,7 @@ public class Topic extends Action {
 		String t_level = req.getParameter("t_level");
 		String t_pid = req.getParameter("t_pid");
 		String t_tid = req.getParameter("t_tid");
+		String t_lock = req.getParameter("t_lock");
 		String files = req.getParameter("news_files");
 		String company = u.getProp("company").toString();
 		
@@ -163,6 +166,7 @@ public class Topic extends Action {
 		int level = (StringUtil.isDigits(t_level) && u.getType()>10)?Integer.parseInt(t_level):0;
 		long pid = (StringUtil.isDigits(t_pid))?Long.parseLong(t_pid):0;
 		long tid = (StringUtil.isDigits(t_tid))?Long.parseLong(t_tid):0;
+		int lock = (StringUtil.isDigits(t_lock))? Integer.parseInt(t_lock):0;
 		String text = StringUtil.repstr1(t_text.trim());
 		if (cate > 1 && u.getType()<10) {
 			JOut.err(403,"E403"+Err.ERR_AUTH_FAIL, msg);
@@ -179,6 +183,7 @@ public class Topic extends Action {
 		kobj.setProp("TID", tid);
 		kobj.setProp("cate", cate);
 		kobj.setProp("company", company);
+		kobj.setProp("lock", lock);
 		kobj.setCreatorName(u.getName());
 		kobj.setCreatorId(u.getId());
 		if (StringUtil.isStringWithLen(t_tags, 1)) {

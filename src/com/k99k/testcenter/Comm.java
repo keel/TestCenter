@@ -78,18 +78,15 @@ public class Comm extends Action {
 		return super.act(msg);
 	}
 	
-	void queryPage(HashMap<String,Object> query,String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
+	void queryPage(HashMap<String,Object> query,HttpServletRequest req,HttpActionMsg msg){
 		String p_str = req.getParameter("p");
 		String pz_str = req.getParameter("pz");
 		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-		ArrayList<KObject> list = dao.queryByPage(page,pageSize,query, null, StaticDao.prop_level_id_desc, null);
-		msg.addData("u", u);
-		msg.addData("list", list);
+		ArrayList<KObject> list = dao.queryByPage(page,pageSize,query, null, StaticDao.prop_id_desc, null);
+		msg.addData("comms", list);
 		msg.addData("pz", pz);
 		msg.addData("p", page);
-		msg.addData("sub", subact);
-		msg.addData("[jsp]", "/WEB-INF/tc/topics.jsp");
 	}
 	
 	/**

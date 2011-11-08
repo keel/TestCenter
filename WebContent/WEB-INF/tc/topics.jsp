@@ -32,15 +32,6 @@ $.sub="<%=sub%>";$.tag="<%=tag%>";
 var lo = "<%=prefix %>/topic/"+$.sub;
 if($.tag!=""){lo=lo+"/"+$.tag;}
 $.lo = lo;
-function del(id){
-	var r=confirm("确认删除此条话题吗？\r\n\r\n["+$("#task_"+id+" a").text()+"]");
-	if (r==true){
-		$.post("<%=prefix %>/topic/a_d", "id="+id ,function(data) {
-			if(data=="ok"){alert("删除成功");window.location = window.location;};
-		});
-	}
-	return;
-}
 function search(){
 	var k = $("#search_key").val();
 	if(k!=null && $.trim(k).length>1){
@@ -90,10 +81,10 @@ if(sub.equals("pub") || sub.equals("company") || user.getType()>10 ){
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">发布时间</th><th style="width:80px;">创建人</th><%if(canEdit){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">发布时间</th><th style="width:80px;">创建人</th><th style="width:60px;">回复数</th>
 </tr>
 <%
-if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");}}
+if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td><td></td>");}
 else{
 	StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = list.iterator();
@@ -110,9 +101,7 @@ else{
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
-		if(canEdit){
-			sb.append("<td><a href='javascript:del(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
-		}
+		sb.append("<td>").append(gg.getProp("commsCount")).append("</td>");
 		sb.append("</tr>\n");
 	}
 	out.print(sb);

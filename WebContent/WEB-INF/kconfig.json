@@ -145,7 +145,7 @@
 		{
 			"_actName":"comm",
 			"_class":"com.k99k.testcenter.Comm",
-			"pageSize":30
+			"pageSize":10
 		},
 		{
 			"_actName":"topic",
