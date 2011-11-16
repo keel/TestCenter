@@ -37,6 +37,8 @@ public class Err {
 	public static final int ERR_COMM_ADD_COUNT = 213;
 	public static final int ERR_COMM_UPDATE = 214;
 	public static final int ERR_COMM_DEL = 215;
+	public static final int ERR_TOPIC_UPDATE = 216;
+	public static final int ERR_TOPIC_DEL = 217;
 	
 
 }

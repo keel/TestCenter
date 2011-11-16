@@ -36,13 +36,13 @@ textarea{background-color: #FFF;color:#000;border: 1px solid #003333;width:90%;h
 #header h1{ color:#FFF; padding:0 25px;display: inline;font-size: 160%;}
 #header a{color:#ccc;}
 #header a:hover { color:#fff;text-decoration:none; }
-#sideNav{width:180px;position: absolute;top:57px;left:0;color:#393939;background-color: #F7F7F7;border-right: 1px solid #C5C5C5;}
+#sideNav{width:180px;float:left;color:#393939;background-color: #F7F7F7;border-right: 1px solid #C5C5C5;}
 #sideNav div{background-color: #eee;}
 #sideNav a{display:block;width:100%;}
 #sideNav a:hover{color:#8080ff;}
 #sideNav div{padding:8px;padding-left: 24px;font-weight: bold;border-bottom: 1px solid #D6D6D6;border-top: 1px solid #FCFDFD;}
 
-#mainContent{padding:10px 20px 0 5px;margin-left:190px;}
+#mainContent{padding:10px 20px 0 190px;}
 
 #footer{background-color: #393939;padding:10px;}
 #copyright{text-align:center;color:#E8E8E8;}

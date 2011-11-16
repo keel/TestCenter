@@ -99,7 +99,7 @@ public class Comm extends Action {
 	private void del(HttpServletRequest req,KObject u,HttpActionMsg msg,long cid){
 		KObject kobj = dao.findOne(cid);
 		if (kobj==null) {
-			JOut.err(404, msg);
+			JOut.err(404,"E404"+Err.ERR_COMM_DEL, msg);
 			return;
 		}
 		if (u.getType() <= 10 && !u.getName().equals(kobj.getCreatorName())) {
@@ -125,7 +125,7 @@ public class Comm extends Action {
 		String c_text = req.getParameter("c_text");
 		String c_state = req.getParameter("c_state");
 		if (!StringUtil.isStringWithLen(c_text, 1)) {
-			JOut.err(401,"E403"+Err.ERR_AUTH_FAIL, msg);
+			JOut.err(403,"E403"+Err.ERR_COMM_UPDATE, msg);
 			return;
 		}
 		c_text =  StringUtil.repstr1(c_text.trim());
@@ -145,7 +145,7 @@ public class Comm extends Action {
 			kobj.setState(Integer.parseInt(c_state));
 		}
 		if (dao.save(kobj)) {
-			msg.addData("[print]", "ok");
+			msg.addData("[print]", kobj.getProp("TPID"));
 			return;
 		}
 		JOut.err(500, "E500"+Err.ERR_COMM_UPDATE, msg);
@@ -167,7 +167,7 @@ public class Comm extends Action {
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
-		msg.addData("comm",kobj);
+		msg.addData("one",kobj);
 		msg.addData("u", u);
 		msg.addData("[jsp]", "/WEB-INF/tc/comm_edit.jsp");
 		

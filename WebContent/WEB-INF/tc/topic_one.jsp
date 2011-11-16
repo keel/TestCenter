@@ -40,12 +40,15 @@ out.print(JSPOut.out("head0","0",one.getName()));%>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.sub="<%=sub%>";$.tag="<%=tag%>";
+var lo = "<%=prefix %>/topic/"+$.sub;
+if($.tag!=""){lo=lo+"/"+$.tag;}
+$.listLo = lo;
 $.lo = "<%=prefix+"/topic/"+one.getId() %>";
 function del(id){
 	var r=confirm("确认删除此条话题吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
-		$.post("<%=prefix %>/news/del", "id="+id ,function(data) {
-			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>/news";};
+		$.post("<%=prefix %>/topic/a_d", "id="+id ,function(data) {
+			if(data=="ok"){alert("删除成功");window.location = $.listLo;}else{alert("删除失败!");};
 		});
 	}
 	return;
@@ -110,7 +113,7 @@ $(function(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle"><div><%=one.getName() %></div> </div>
-<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=one.getCreatorName() %> &nbsp; 发布于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",one.getCreateTime()) %>  </div>
+<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=one.getCreatorName() %> &nbsp; 发表于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",one.getCreateTime()) %>  </div>
 <%if(user.getType()>10){ 
 	String ggid = String.valueOf(one.getId());
 	String edit = prefix+"/topic/"+ggid+"?edit=true";
@@ -147,7 +150,11 @@ if(comms != null && !comms.isEmpty()) {
 		KObject comm = it.next();
 		sb.append("<div class=\"comm\" id=\"c_").append(comm.getId()).append("\"><div class=\"commTitle\"><a href=\"").append(prefix).append("/user/one?u=").append(comm.getCreatorName()).append("\" class=\"sideON\">");
 		sb.append(comm.getCreatorName()).append("</a>  发表于  <span class=\"blue bold\">").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",comm.getCreateTime()));
-		sb.append("</span> </div><div><pre class=\"t_text\">").append(comm.getProp("text"));
+		sb.append("</span> ");
+		if(user.getType()>10 || comm.getCreatorName().equals(user.getName())){
+			sb.append("[<a href='").append(prefix).append("/comm/").append(comm.getId()).append("/update'>编辑</a>]");
+		}
+		sb.append(" </div><div><pre class=\"t_text\">").append(comm.getProp("text"));
 		sb.append("</pre></div></div>\r\n");
 	}
 	sb.append("<div id=\"pageNav\" style=\"padding:5px 20px;\"></div>");

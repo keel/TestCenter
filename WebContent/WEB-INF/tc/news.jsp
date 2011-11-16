@@ -82,10 +82,10 @@ if(usertype>=4){%><span style="padding-left:20px;"><a href="<%=prefix%>/news/new
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">时间</th><th style="width:80px;">发布人</th><%if(usertype>=4){%><th style="width:100px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>标题</th><th style="width:160px;">时间</th><th style="width:80px;">发布人</th><%if(usertype>10){%><th style="width:100px;">操作</th><%} %>
 </tr>
 <%
-if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(usertype>=4){out.print("<td></td>");}}
+if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(usertype>10){out.print("<td></td>");}}
 else{
 	StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = list.iterator();
@@ -101,7 +101,7 @@ else{
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
-		if(usertype>=4){
+		if(usertype>10){
 			sb.append("<td><a href='").append(prefix).append("/news/").append(gg.getId());
 			sb.append("?edit=true' class='aButton'>编辑</a><a href='javascript:delNews(").append(gg.getId()).append(");' class='aButton'>删除</a></td>");
 		}

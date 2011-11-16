@@ -79,10 +79,10 @@ public class Topic extends Action {
 			this.add(req, u, httpmsg);
 //		}else if(subact.equals("a_comm")){
 //			this.comm(req, u, httpmsg);
-//		}else if(subact.equals("a_u")){
-//			this.update(req, u, httpmsg);
-//		}else if(subact.equals("a_d")){
-//			this.del(req, u, httpmsg);
+		}else if(subact.equals("a_u")){
+			this.update(req, u, httpmsg);
+		}else if(subact.equals("a_d")){
+			this.del(req, u, httpmsg);
 //		}else if(subact.equals("a_s")){
 //			this.search(subact,req, u, httpmsg);
 		}else{
@@ -93,16 +93,36 @@ public class Topic extends Action {
 	
 	
 	
-//	
-//	/**
-//	 * 添加评论
-//	 * @param req
-//	 * @param u
-//	 * @param msg
-//	 */
-//	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
-//		
-//	}
+	
+	/**
+	 * 删除话题
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void del(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String topic_id = req.getParameter("id");
+		if (!StringUtil.isDigits(topic_id) ) {
+			JOut.err(403,"E403"+Err.ERR_TOPIC_DEL, msg);
+			return;
+		}
+		long tid = Long.parseLong(topic_id);
+		KObject kobj = dao.findOne(tid);
+		if (kobj==null) {
+			JOut.err(404,"E404"+Err.ERR_TOPIC_DEL, msg);
+			return;
+		}
+		if (u.getType()<=10 && u.getId()!=kobj.getCreatorId()) {
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		if (dao.deleteOne(tid)!=null) {
+			msg.addData("[print]", "ok");
+			return;
+		}
+		JOut.err(500, "E500"+Err.ERR_TOPIC_DEL, msg);
+	}
+	
 	
 	/**
 	 * 查看单个话题
@@ -129,12 +149,85 @@ public class Topic extends Action {
 		}
 		msg.addData("u", u);
 		msg.addData("one", one);
-		//TODO 评论列表
+		Object e = req.getParameter("edit");
+		if (e !=null && e.equals("true")) {
+			if (StringUtil.isDigits(one.getProp("PID"))) {
+				long pid = (Long)one.getProp("PID");
+				if (pid>0) {
+					KObject product = Product.dao.findOne(pid);
+					msg.addData("pName", product.getName());
+				}
+			}
+			msg.addData("[jsp]", "/WEB-INF/tc/topic_edit.jsp");
+			return;
+		}
+		// 评论列表
 		HashMap<String,Object> query = new HashMap<String, Object>();
 		query.put("TPID", id);
 		comm.queryPage(query, req,msg);
 		
 		msg.addData("[jsp]", "/WEB-INF/tc/topic_one.jsp");
+	}
+	
+	
+	/**
+	 * 编辑主贴
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void update(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String t_name = req.getParameter("t_name");
+		String t_text = req.getParameter("t_text");
+		String t_level = req.getParameter("t_level");
+		String t_lock = req.getParameter("t_lock");
+		String files = req.getParameter("news_files");
+		String topic_id = req.getParameter("topic_id");
+		if (!StringUtil.isDigits(topic_id) || 
+			!StringUtil.isStringWithLen(t_name, 1) || 
+			!StringUtil.isStringWithLen(t_text, 1) 
+			) {
+			JOut.err(403,"E403"+Err.ERR_TOPIC_UPDATE, msg);
+			return;
+		}
+		String name = t_name.trim();
+		long tid = Long.parseLong(topic_id);
+		int level = (StringUtil.isDigits(t_level) && u.getType()>10)?Integer.parseInt(t_level):0;
+		int lock = (StringUtil.isDigits(t_lock))? Integer.parseInt(t_lock):0;
+		String text = StringUtil.repstr1(t_text.trim());
+		if (u.getType()<10) {
+			level = 0;
+		}
+		KObject kobj = dao.findOne(tid);
+		if (kobj==null) {
+			JOut.err(404,"E404"+Err.ERR_TOPIC_UPDATE, msg);
+			return;
+		}
+		kobj.setLevel(level);
+		kobj.setName(name);
+		kobj.setProp("text", text);
+		kobj.setProp("lock", lock);
+		if (StringUtil.isStringWithLen(files, 1)) {
+			boolean enc = true;
+			try {
+				files = URLDecoder.decode(files, "utf-8");
+			} catch (UnsupportedEncodingException e) {
+				enc = false;
+			}
+			if (enc) {
+				kobj.setProp("files", files.trim().split(","));
+			}
+		}
+		if (dao.save(kobj)) {
+			String re = String.valueOf(kobj.getId());
+			msg.addData("[print]", re);
+//			ActionMsg task = new ActionMsg("topicTask");
+//			task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+//			task.addData("topicId", kobj.getId());
+//			TaskManager.makeNewTask("TCTopicTask:"+kobj.getId(), task);
+			return;
+		}
+		JOut.err(500, "E500"+Err.ERR_TOPIC_UPDATE, msg);
 	}
 	
 	/**
