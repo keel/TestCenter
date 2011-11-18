@@ -137,7 +137,7 @@ public final class MongoConn implements DataSourceInterface{
 	 */
 	public final boolean init(){
 		try {
-			if (mongo == null ) {
+			if (mongo == null || !mongo.getConnector().isOpen() ) {
 				ServerAddress sadd = new ServerAddress(this.ip, this.port);
 				MongoOptions opt = new MongoOptions();
 				opt.autoConnectRetry = false;
@@ -147,7 +147,12 @@ public final class MongoConn implements DataSourceInterface{
 				mongo = new Mongo(sadd,opt);
 			}
 			db = mongo.getDB(this.dbName);
-			boolean auth = db.authenticate(this.user, this.pwd.toCharArray());
+			boolean auth = false;
+			if (!db.isAuthenticated()) {
+				auth = db.authenticate(this.user, this.pwd.toCharArray());
+			}else{
+				auth = true;
+			}
 			if (!auth) {
 				log.error("auth error! user:"+this.user);
 			}else{

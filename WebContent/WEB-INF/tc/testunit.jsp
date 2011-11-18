@@ -35,7 +35,7 @@ $.isMy = <%=(ismy)?"true":"false" %>;
 function showHtml(s) {
 	s=s.replace(/\x20/g,"&nbsp;");
 	s=s.replace(/\n/g,"<br />") ;
-	s=s.replace( /(http[s]?:\/\/[\w-\/]*(\.[\w-\/]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
+	s=s.replace( /(http[s]?:\/\/[\w-:\/]*(\.[\w-:\/]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
 	return s;
 }
 $(function(){

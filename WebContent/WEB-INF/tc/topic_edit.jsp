@@ -72,6 +72,12 @@ $('#topic_form').validate({
     }
 });
 initUpload("<%=user.getName() %>",null,null,null,null,$.prefix+"/upload2");
+var type = <%=one.getType()%>;
+$("#t_type").val(type);
+var level = <%=one.getLevel()%>;
+$("#t_level").val(level);
+var lock = <%=one.getProp("lock")%>;
+$("#t_lock").val(lock);
 });
 function aSubmit(){
 	var ff = [];
@@ -103,11 +109,11 @@ function aSubmit(){
 <textarea name="t_text" rows="3" cols="3" style="height:200px;"><%= one.getProp("text")%></textarea></p>
 <% if(user.getType()>10){ %>
 <p>显示级别：
-<select name="t_type"><option value="0">所有人</option><option value="1">厂家</option><option value="2">测试员</option><option value="3">组长</option><option value="4">管理员</option></select>
+<select name="t_type" id="t_type"><option value="0">所有人</option><option value="1">厂家</option><option value="2">测试员</option><option value="3">组长</option><option value="4">管理员</option></select>
 置顶级别(数字最大的在顶部)：
-<select name="t_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+<select name="t_level" id="t_level"><option value="0">无</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
 回复：
-<select name="t_lock"><option value="0">允许</option><option value="1">禁止</option></select>
+<select name="t_lock" id="t_lock"><option value="0">允许</option><option value="1">禁止</option></select>
 </p>
 <% }%>
 <input type="hidden" id="news_files" name="news_files" value="" />
