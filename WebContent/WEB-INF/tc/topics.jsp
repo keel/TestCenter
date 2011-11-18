@@ -100,7 +100,7 @@ else{
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
-		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
+		sb.append("</td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getCreatorName()).append("'>").append(gg.getCreatorName()).append("</a></td>");
 		sb.append("<td>").append(gg.getProp("commsCount")).append("</td>");
 		sb.append("</tr>\n");
 	}
