@@ -42,7 +42,7 @@ function search(){
 	var lo = "<%=prefix %>/tasks/";
 	if($.isMy){lo+="my";};
 	if(k!=null && $.trim(k).length>1){
-		window.location=lo+"/a_s?k="+k;
+		window.location=lo+"a_s?k="+k;
 	}else{window.location=lo;}
 }
 $(function(){

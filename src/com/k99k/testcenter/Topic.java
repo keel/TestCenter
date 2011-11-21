@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -45,7 +46,12 @@ public class Topic extends Action {
 	static DaoInterface dao;
 	static KObjSchema schema;
 	static Comm comm;
-	
+	static final HashMap<String,Integer> cateMap = new HashMap<String,Integer>();
+	static{
+		cateMap.put("pub",0);
+		cateMap.put("company",1);
+		cateMap.put("doc",2);
+	}
 	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -77,21 +83,43 @@ public class Topic extends Action {
 			this.toAdd(subsub,subsub2, u, req, httpmsg);
 		}else if(subact.equals("a_a")){
 			this.add(req, u, httpmsg);
-//		}else if(subact.equals("a_comm")){
-//			this.comm(req, u, httpmsg);
 		}else if(subact.equals("a_u")){
 			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
 			this.del(req, u, httpmsg);
-//		}else if(subact.equals("a_s")){
-//			this.search(subact,req, u, httpmsg);
+		}else if(subact.equals("a_s")){
+			this.search(subact,req, u, httpmsg);
 		}else{
 			JOut.err(404, httpmsg);
 		}
 		return super.act(msg);
 	}
 	
-	
+	private void search(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
+		if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
+			String key = null;
+			try {
+				//TODO 针对tomcatURL编码转换
+				key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+			HashMap<String,Object> query = new HashMap<String, Object>(2);
+			Pattern p = Pattern.compile(key);
+			query.put("name", p);
+			if (req.getParameter("sub") != null) {
+				query.put("cate", cateMap.get(req.getParameter("sub").trim()));
+			}
+			if (req.getParameter("tag") != null) {
+				query.put("tags", req.getParameter("tag").trim());
+			}
+			query.putAll(StaticDao.prop_state_normal);
+			this.queryPage(query,subact, req, u, msg);
+			return;
+		}else{
+			JOut.err(401, msg);
+		}
+	}
 	
 	
 	/**
