@@ -107,10 +107,10 @@ public class Topic extends Action {
 			HashMap<String,Object> query = new HashMap<String, Object>(2);
 			Pattern p = Pattern.compile(key);
 			query.put("name", p);
-			if (req.getParameter("sub") != null) {
+			if (StringUtil.isStringWithLen(req.getParameter("sub"),1)) {
 				query.put("cate", cateMap.get(req.getParameter("sub").trim()));
 			}
-			if (req.getParameter("tag") != null) {
+			if (StringUtil.isStringWithLen(req.getParameter("tag"), 1)) {
 				query.put("tags", req.getParameter("tag").trim());
 			}
 			query.putAll(StaticDao.prop_state_normal);
