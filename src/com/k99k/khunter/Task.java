@@ -114,8 +114,8 @@ public class Task implements Runnable{
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("{\"task\":").append(this.name) //.append(",\"id\":").append(this.id)
-		.append(",\"msg\":").append(this.actionMsg.toJson()).append("}");
+		sb.append("{\"task\":\"").append(this.name) //.append(",\"id\":").append(this.id)
+		.append("\",\"msg\":").append(this.actionMsg.toJson()).append("}");
 		return sb.toString();
 	}
 

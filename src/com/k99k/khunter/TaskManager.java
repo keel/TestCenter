@@ -222,6 +222,7 @@ public final class TaskManager {
 	 */
 	public static boolean makeNewTask(String taskName,ActionMsg msg){
 		if (msg == null || taskMap.containsKey(taskName)) {
+			log.error("taskName already exist:"+taskName);
 			return false;
 		}
 		Object o = msg.getData(TASK_TYPE);

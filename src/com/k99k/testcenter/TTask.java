@@ -219,7 +219,7 @@ public class TTask extends Action {
 		q.put("_id", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>();
 		set.put("level", level);
-		set.put("operator", task_operator);
+		set.put("operator", operator.getName());
 		set.put("state", 1);
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
@@ -238,7 +238,7 @@ public class TTask extends Action {
 			atask.addData("oid", operator.getId());
 			atask.addData("uName", task.getProp("operator").toString());
 			atask.addData("act", "appoint");
-			TaskManager.makeNewTask("TTaskTask-appoint:"+tid, atask);
+			TaskManager.makeNewTask("TTaskTask-appoint_"+tid, atask);
 			msg.addData("[print]", task.getId());
 		}else{
 			log.error("appoint task faild:"+tid);
@@ -306,7 +306,7 @@ public class TTask extends Action {
 				logmsg.put("user", u.getName());
 				logmsg.put("info", "更新任务分配");
 				atask.addData("logmsg",logmsg);
-				TaskManager.makeNewTask("TTaskTask-send:"+t_id, atask);
+				TaskManager.makeNewTask("TTaskTask-send_"+t_id, atask);
 				msg.addData("[print]", "ok");
 			}else{
 				JOut.err(500,"E500"+Err.ERR_SEND_TESTUNIT, msg);
@@ -377,7 +377,7 @@ public class TTask extends Action {
 				atask.addData("tuid", tuid);
 				atask.addData("tester", u.getName());
 				atask.addData("act", "exec");
-				TaskManager.makeNewTask("TTaskTask-exec-tuid:"+tuid, atask);
+				TaskManager.makeNewTask("TTaskTask-exec-tuid_"+tuid, atask);
 				msg.addData("[print]", "ok");
 			}else{
 				JOut.err(500,"E500"+Err.ERR_EXEC_TESTUNIT, msg);
@@ -564,7 +564,7 @@ public class TTask extends Action {
 			atask.addData("operator", task_operator);
 			atask.addData("uid", u.getId());
 			atask.addData("act", "finish");
-			TaskManager.makeNewTask("TTaskTask-finish:"+tid, atask);
+			TaskManager.makeNewTask("TTaskTask-finish_"+tid, atask);
 			msg.addData("[print]", "ok");
 			return;
 		}
@@ -648,7 +648,7 @@ public class TTask extends Action {
 				atask.addData("operator", task_operator);
 			}
 			atask.addData("act", "online");
-			TaskManager.makeNewTask("TTaskTask-online:"+tid, atask);
+			TaskManager.makeNewTask("TTaskTask-online_"+tid, atask);
 			msg.addData("[print]", "ok");
 			return;
 		}
@@ -703,7 +703,7 @@ public class TTask extends Action {
 			atask.addData("operator", task_operator);
 			atask.addData("uid", u.getId());
 			atask.addData("act", "confirm");
-			TaskManager.makeNewTask("TTaskTask-confirm:"+tid, atask);
+			TaskManager.makeNewTask("TTaskTask-confirm_"+tid, atask);
 			msg.addData("[print]", "ok");
 			return;
 		}
@@ -739,7 +739,7 @@ public class TTask extends Action {
 				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 				atask.addData("taskId", id);
 				atask.addData("act", "del");
-				TaskManager.makeNewTask("TTaskTask-del:"+id, atask);
+				TaskManager.makeNewTask("TTaskTask-del_"+id, atask);
 				msg.addData("[print]", "ok");
 				return;
 			}
@@ -803,7 +803,7 @@ public class TTask extends Action {
 		task.setName((String)json.get("name"));
 		task.setCreatorName(u.getName());
 		task.setInfo(task_info);
-		task.setProp("operator", task_operator);
+		task.setProp("operator", operator.getName());
 		task.setLevel(taskLevel);
 		task.setProp("PID", pid);
 		task.setProp("company", json.get("company").toString());
@@ -831,7 +831,7 @@ public class TTask extends Action {
 		if (json.containsKey("files")) {
 			atask.addData("files", json.get("files"));
 		}
-		TaskManager.makeNewTask("TTaskTask-add:"+task.getId(), atask);
+		TaskManager.makeNewTask("TTaskTask-add_"+task.getId(), atask);
 		msg.addData("[print]", task.getId());
 	}
 	
@@ -962,7 +962,11 @@ public class TTask extends Action {
 			state.put("$gte", 0);
 			q.put("state", state);
 			HashMap<String,Object> in = new HashMap<String, Object>(4);
-			in.put("$in", taskIds);
+			if (taskIds == null) {
+				in.put("$eq", 0);
+			}else{
+				in.put("$in", taskIds);
+			}
 			q.put("_id", in);
 			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
 		}else if (userType==1) {
