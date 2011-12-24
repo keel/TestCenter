@@ -1,8 +1,8 @@
 //-----------机型选择,要求页面中有#hide和#fu_[i]的实体包列表-------------------
-var phoneType = {0:"240x320",1:"320x480",2:"240x400",3:"480x800",4:"480x854",5:"480x960"};
+var phoneType = {0:"其他",1:"240x320",2:"320x480",3:"480x800",4:"480x854",5:"960x540"};
 var allPData = [];
 var aaData = [],gMap={};
-var cGroup = 0;
+var cGroup = 1;
 var chooseDiv = "<div id=\"choosePhone\" class=\"inBox\" style=\"width:95%;\"> <div style=\"padding:10px;\"> <div id=\"selectedPhones\"> <div class=\"inBoxTitle\">已选中机型：<span class=\"gray normal\">(点击删除)</span>	</div> <div class=\"inBoxContent\" style=\"border-bottom: 1px dotted #aaa;background-color:#FFF;\"> <table width=\"100%\"> <tr><td id=\"td_in\"></td> <td style=\"width:90px;\"><a class=\"aButton\" href=\"javascript:selectOK();\" style=\"width:70px;text-align:center;\">确定所选</a></td></tr> </table> </div> </div> <div id=\"phones\"> <div id=\"phoneCates\" class=\"inBoxTitle\">备选机型组：<span class=\"gray normal\">(点击组名选择分组,点击机型名或全选进行选择,搜索框可在<span class=\"black bold\">该类系统所有机型</span>中筛选)</span></div><span class=\"aButton phoneCate\"><label for=\"phone_fast\">搜索:</label><input style=\"padding:3px 5px;margin:0;width:100px;\" type=\"text\" name=\"phone_fast\" id=\"phone_fast\" /></span> <div class=\"inBoxContent\" style=\"border-bottom:1px dotted #aaa;border-top:1px dotted #aaa;background-color:#FFF;\"> <table width=\"100%\"> <tr><td id=\"td_out\"><div id=\"g999\"></div></td> <td style=\"width:60px;\"><a class=\"aButton\" href=\"javascript:chooseAll();\">全选</a></td></tr> </table> </div> </div> </div> </div>";
 
 function selectOK(){

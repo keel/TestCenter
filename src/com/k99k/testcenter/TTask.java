@@ -339,6 +339,7 @@ public class TTask extends Action {
 		String u_json = req.getParameter("json");
 		String u_rank = req.getParameter("rank");
 		String u_sys = req.getParameter("sys");
+		String files = req.getParameter("ff");
 		if (!StringUtil.isDigits(tu_id) || !StringUtil.isDigits(u_sys) || !StringUtil.isStringWithLen(u_json, 2) || !StringUtil.isDigits(u_rank) ) {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -361,7 +362,7 @@ public class TTask extends Action {
 			}
 			ArrayList<HashMap<String,Object>> res = TestCase.checkJson(sys, json);
 			HashMap<String,Object> result = res.remove(0);
-			int state = (Integer)result.get("re");
+			int state = Integer.parseInt(result.get("re").toString());
 			
 			HashMap<String,Object> q = new HashMap<String, Object>();
 			HashMap<String,Object> set = new HashMap<String, Object>(4);
@@ -370,6 +371,9 @@ public class TTask extends Action {
 			sett.put("state", state);
 			sett.put("re", res);
 			sett.put("rank", rank);
+			if (StringUtil.isStringWithLen(files, 2)) {
+				sett.put("attachs", files);
+			}
 			set.put("$set", sett);
 			if(TestUnit.dao.updateOne(q, set)){
 				ActionMsg atask = new ActionMsg("tTaskTask");
@@ -383,6 +387,7 @@ public class TTask extends Action {
 				JOut.err(500,"E500"+Err.ERR_EXEC_TESTUNIT, msg);
 			}
 		} catch (Exception e) {
+			log.error("TTask exec error.", e);
 			JOut.err(403,"E403"+Err.ERR_EXEC_TESTUNIT, msg);
 			return;
 		}
@@ -436,6 +441,7 @@ public class TTask extends Action {
 		try {
 			ArrayList<KObject> tus = TestUnit.dao.queryKObj(q, null, null, 0, 0, null);
 			Iterator<KObject> it = tus.iterator();
+			StringBuilder sb = new StringBuilder("");
 			while (it.hasNext()) {
 				KObject tu = (KObject) it.next();
 				//未通过或部分通过的TU
@@ -458,7 +464,13 @@ public class TTask extends Action {
 							res.put(caseId, old);
 						}
 					}
+					if (StringUtil.isStringWithLen(tu.getProp("attachs"), 2)) {
+						sb.append(",").append(tu.getProp("attachs"));
+					}
 				}
+			}
+			if (sb.length()>0) {
+				res.put("attachs", sb.toString());
 			}
 			String reStr = (res.isEmpty())?"":JSON.write(res);
 			return reStr;

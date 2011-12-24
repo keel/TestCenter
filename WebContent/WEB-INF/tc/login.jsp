@@ -54,9 +54,9 @@ $('#consoleLogin').validate({
 	</div>
 <form action="<%=prefix %>/auth/login" method="post" id="consoleLogin">
 	<p><label for="uName">用户名:</label><br />
-	<input type="text" name="uName" id="uName" style="width:300px;" value="admin" /></p>
+	<input type="text" name="uName" id="uName" style="width:300px;" value="" /></p>
 	<p><label for="form_pwd">密 &nbsp;&nbsp;码:</label><br />
-	<input type="password" name="uPwd" id="uPwd" style="width:300px;" value="a123456" /></p>
+	<input type="password" name="uPwd" id="uPwd" style="width:300px;" value="" /></p>
 	<p style="float:left;padding-top:10px;"><input type="checkbox" name="saveLogin" value="false" id="saveLogin"/><label for="saveLogin"> 保存登录状态24小时</label></p>
 	<p style="float:right;padding:10px 0 0 0;"><input type="submit" id="submitBT" value="登录" style="width:80px;" /></p>
 	<div class="clear"></div>

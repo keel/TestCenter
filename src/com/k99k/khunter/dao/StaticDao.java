@@ -116,8 +116,17 @@ public class StaticDao extends MongoDao {
 		return tcNewsDao.queryByPage(page,pageSize,search, null, prop_level_id_desc, null);
 	}
 	
+	/**
+	 * {name:1}
+	 */
 	private static final BasicDBObject prop_queryStr_fields = new BasicDBObject("name",1);
+	/**
+	 * {name:1}
+	 */
 	private static final BasicDBObject prop_queryGroup_fields = new BasicDBObject("name",1);
+	/**
+	 * {group:1}
+	 */
 	private static final BasicDBObject prop_queryGroup_sort = new BasicDBObject("group",1);
 	static{
 		prop_queryStr_fields.put("shortName", 1);
@@ -184,7 +193,7 @@ public class StaticDao extends MongoDao {
 			int groupC = -1;
 	        while(cur.hasNext()) {
 	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
-	        	int g = (Integer)m.get("group");
+	        	int g = Integer.parseInt(m.get("group").toString());
 	        	if (g != groupC) {
 					sb.append("]},{\"g\":").append(g).append(",\"d\":[\"").append((String)m.get("name")).append("\"");
 					groupC = g;
@@ -222,7 +231,7 @@ public class StaticDao extends MongoDao {
 			int groupC = -1;
 	        while(cur.hasNext()) {
 	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
-	        	int g = (Integer)m.get("group");
+	        	int g = Integer.parseInt(m.get("group").toString());
 	        	if (g != groupC) {
 					sb.append("]},{\"g\":").append(g).append(",\"d\":[\"").append((String)m.get("name")).append("\"");
 					groupC = g;

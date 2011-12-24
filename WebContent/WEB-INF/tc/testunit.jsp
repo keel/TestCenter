@@ -60,6 +60,7 @@ $(function(){
 		var cRank = ["暂无","差","较差","一般","较好","优秀"];
 		$("#tRank").text(cRank[parseInt($("#tRank").text())]);
 	}
+	initUpload("<%=user.getName() %>",null,null,null,null,$.prefix+"/upload2");
 });
 var res=[];
 function initRE(j){
@@ -127,8 +128,12 @@ function allWait(){
 function saveRE(){
 	//保存res
 	abox("保存测试结果","处理中,请稍候……");
+	var ff = [];
+	$(".files_name").each(function(){
+		ff.push(encodeURIComponent($(this).text()));
+	});
 	var close= "<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a>",err=function(){abox("保存测试结果","<div class='reErr'>保存测试结果失败！ &nbsp;"+close+"</div>");};
-	$.post($.prefix+"/tasks/a_exec",{"sys":<%=sys%>,"tu_id":<%=one.getId() %>,"json":$.toJSON(res),"rank":$("#tu_rank").val()},function(data){
+	$.post($.prefix+"/tasks/a_exec",{"sys":<%=sys%>,"tu_id":<%=one.getId() %>,"json":$.toJSON(res),"rank":$("#tu_rank").val(),"ff":ff.join(",")},function(data){
 		if(data=="ok"){
 			abox("保存测试结果","<div class='reOk'>保存测试结果成功！ &nbsp;"+close+"</div>");
 		}else{err();}
@@ -242,18 +247,34 @@ out.print(sb);
     	s.append("</span>");
     }
     out.print(s);%>
+    <br /><br />
+    <%
+Object off = one.getProp("attachs");
+if(StringUtil.isStringWithLen(off,2)){
+	sb = new StringBuilder();
+	String[] fileList = off.toString().split(",");
+	sb.append("<div class='bold' style='padding-top:10px;'>文件列表</div>");
+	for(int i = 0;i<fileList.length;i++){
+		String f=fileList[i];
+		sb.append("<div class='file_upload'><a href='").append(prefix).append("/file/").append(f).append("'>").append(f).append("</a></div>");
+	}
+	out.print(sb);
+}
+%>
+    <div>测试附件(如问题截图等):<span id="swfBT"><span id="spanSWFUploadButton">请稍候...</span><span id="uploadInfo"></span></span><div id="upFiles"></div></div>
     </div>
 </div>
 
 <br />
-<%if(canSave){%><a href="javascript:saveRE();" class="aButton">保存测试结果</a> <%} %>
+<%if(canSave){%>
+
+<a href="javascript:saveRE();" class="aButton">保存测试结果</a> <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <div id="hide" class="hide">
 <div class="inBoxLine" id="execCase">
 	<input type="hidden" value="" name="cexe" id="cexe" />
   	测试结果:<select name="tu_re" id="tu_re"><option value="0">未测</option><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option></select><br />
   	测试结果说明:<br /><textarea style="height:60px;" rows="3" cols="3" id="tu_info" name="tu_info"></textarea>
-  	<div class="hide">测试附件:<span id="swfBT"><span id="spanSWFUploadButton">请稍候...</span><span id="uploadInfo"></span></span><div id="upFiles"></div></div>
   	<br /><a href="javascript:exec();" class="aButton">  确定  </a>
 </div> 
 </div>

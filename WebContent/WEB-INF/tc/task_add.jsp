@@ -51,8 +51,8 @@ $.validator.dealAjax = {
 	loading:function(){abox("创建任务","请稍候...");},
 	ok:function(data){
 		if(!isNaN(data)){
-			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>";
-			abox("创建任务","<div class='reOk'>创建任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
+			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>",taskUrl=($.isMy)?"/tasks/my":"/tasks";
+			abox("创建任务","<div class='reOk'>创建任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>"+taskUrl+"');\" class=\"aButton\">返回列表</a></div>");
 		}else{abox("创建任务","<div class='reErr'>创建任务失败! "+data+" &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
 	},
 	err:function(xhr){

@@ -32,11 +32,12 @@ $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>",$.tid=<%=one.getId() %>,$.sy
 $.isMy = <%=(ismy)?"true":"false" %>;
 $.me="<%=user.getName() %>";
 $.userType="<%=userType %>";
+$.taskUrl=($.isMy)?"/tasks/my":"/tasks";
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
 		$.post("<%=prefix %>/tasks/a_d", "id="+id ,function(data) {
-			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>/tasks"+($.isMy?"/my":"");};
+			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>"+$.taskUrl;};
 		});
 	}
 	return;
@@ -65,7 +66,7 @@ $(function(){
 		ok:function(data){
 			if(!isNaN(data)){
 				var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/tasks/"+data+"';\" class=\"aButton\">查看任务</a>";
-				abox("处理任务","<div class='reOk'>处理任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>/tasks');\" class=\"aButton\">返回列表</a></div>");
+				abox("处理任务","<div class='reOk'>处理任务成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('<%=prefix %>"+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");
 			}else{abox("处理任务","<div class='reErr'>处理任务失败! "+data+" &nbsp;"+close+"</div>");};
 		},
 		err:function(xhr){
@@ -200,8 +201,17 @@ function summary(){
 	}).error(function(){abox("汇总任务问题","<div class='reErr'>汇总任务问题失败! &nbsp;"+close+"</div>");});
 }
 function showSummary(data){
-	if(!data || data=="" || data.length==0){abox("汇总任务问题","处理完成,未发现任何问题. &nbsp;"+close);return;}
+	if(!data || data=="" || data.length==0){abox("汇总任务问题","处理完成,测试未发现任何问题. &nbsp;"+close);return;}
 	for ( var i in data) {
+		if(i=="attachs"){
+			var attachs = "<div>测试附件:",at=data[i].split(",");
+			for(var k=0;k<at.length;k++){
+				attachs+="<a href='"+$.prefix+"/file/"+at[k]+"'>"+at[k]+"</a><br />";
+			}
+			attachs+="</div>";
+			$(attachs).appendTo("#fCases");
+			continue;
+		}
 		var c=data[i][0];
 		var h=$("<div class='file_upload' style='background-color:#FFF;' id='qc_"+i+"'><div>"+i+". "+c.name
 				+"</div><div class='blue' style='font-size:12px;padding:5px;'>"+c.info+"</div></div>");
@@ -217,7 +227,7 @@ function confirmTU(){
 	abox("测试结果提交","处理中,请稍候……");
 	$.post($.prefix+"/tasks/a_confirm", {tid:$.tid,sys:$.sys,task_operator:$("#task_operator").val()},function(data) {
 		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
-		if(data=="ok"){abox("测试结果提交","<div class='reOk'>测试结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		if(data=="ok"){abox("测试结果提交","<div class='reOk'>测试结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");}
 		else{abox("测试结果提交","<div class='reErr'>测试结果提交失败. &nbsp;"+close+"</div>");};
 	}).error(function(){abox("测试结果提交","<div class='reErr'>测试结果提交失败. &nbsp;"+close+"</div>");});
 }
@@ -225,7 +235,7 @@ function finish(){
 	abox("确认结果提交","处理中,请稍候……");
 	$.post($.prefix+"/tasks/a_finish", $("#f_form").serialize(),function(data) {
 		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
-		if(data=="ok"){abox("确认结果提交","<div class='reOk'>确认结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		if(data=="ok"){abox("确认结果提交","<div class='reOk'>确认结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");}
 		else{abox("确认结果提交","<div class='reErr'>确认结果提交失败. &nbsp;"+close+"</div>");};
 	}).error(function(){abox("确认结果提交","<div class='reErr'>确认结果提交失败. &nbsp;"+close+"</div>");});
 }
@@ -233,7 +243,7 @@ function online(){
 	abox("上线","处理中,请稍候……");
 	$.post($.prefix+"/tasks/a_online", $("#o_form").serialize(),function(data) {
 		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
-		if(data=="ok"){abox("上线","<div class='reOk'>上线成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+"/tasks');\" class=\"aButton\">返回列表</a></div>");}
+		if(data=="ok"){abox("上线","<div class='reOk'>上线成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");}
 		else{abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");};
 	}).error(function(){abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");});
 }

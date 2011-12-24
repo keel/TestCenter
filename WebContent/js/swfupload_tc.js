@@ -3,7 +3,7 @@ function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url){
  swfu= new SWFUpload({
 	upload_url : (f_url)?f_url:$.prefix+"/upload",
 	flash_url : $.sPrefix+"/js/swfupload.swf",
-	post_params: {"uName":uName},
+	//post_params: {"uName":uName},
 	use_query_string:true, 
 	button_placeholder_id : "spanSWFUploadButton",
 	button_width: 100,
