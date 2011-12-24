@@ -319,7 +319,7 @@ StringBuilder sb = new StringBuilder();
 	sb.append("</div></div>");
 	out.print(sb);
 }
-if(userType>1){
+//if(userType>1){
 %>
 <div class="inBox" id="infos">
     <div class="inBoxTitle">任务流程及说明</div> 
@@ -335,7 +335,16 @@ if(userType>1){
     	    	while(itl.hasNext()){
     	    		HashMap<String,Object> log = itl.next();StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"));
     	    		sb2.append("<div class='inBoxLine'>").append(log.get("user")).append(" ").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"))).append(" ");
-    	    		sb2.append(log.get("info")).append("</div>");
+    	    		if(userType>1){
+    	    			sb2.append(log.get("info"));
+    	    		}else{
+    	    			String s = log.get("info").toString();
+    	    			int e = s.indexOf("-");
+    	    			if(e>0){
+    	    				sb2.append(s.substring(0,e));
+    	    			}
+    	    		}
+    	    		sb2.append("</div>");
     	    	}
     	    	out.print(sb2);
     		}
@@ -343,7 +352,7 @@ if(userType>1){
     	%>
     </div>
 </div>
-<%  }
+<% // }
 //已创建
 if(state==0 && userType > 3){%>
 <div id="appoint">
