@@ -1854,14 +1854,6 @@
 					"intro":"testCase id"
 				},
 				{
-					"col":"re.*.attach",
-					"def":"",
-					"len":0,
-					"required":false,
-					"type":0,
-					"intro":"testCase 附件(如图片等)"
-				},
-				{
 					"col":"re.*.re",
 					"def":0,
 					"len":0,
