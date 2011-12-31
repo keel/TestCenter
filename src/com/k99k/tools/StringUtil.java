@@ -114,7 +114,7 @@ public final class StringUtil {
 		return true;
 	}
 	/**
-	 * 判断一个Object的toString是不是数字组成
+	 * 判断一个Object的toString是不是数字组成,可以为负数
 	 * @param o Object
 	 * @return
 	 */
@@ -124,7 +124,9 @@ public final class StringUtil {
 		}
 		String s = o.toString();
 		if(s.length()==0)return false;
-		for(int i=0,j=s.length();i<j;i++){
+		//认可负数
+		int i = (s.charAt(0)=='-')?1:0;
+		for(int j=s.length();i<j;i++){
 			if(!Character.isDigit(s.charAt(i)))return false;
 		}
 		return true;

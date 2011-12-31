@@ -55,7 +55,7 @@ $(function(){
 	});
 	pageNav.fn = function(p,pn){
 	    if(p != <%=p%>){
-	    	window.location = "<%=prefix%>/tasks?p="+p+"&pz="+<%=pz%>;
+	    	window.location = "<%=prefix%>/tasks"+($.isMy?"/my":"")+"?p="+p+"&pz="+<%=pz%>;
 	    }
 	};
 	pageNav.go(<%=p%>,<%=pn%>);

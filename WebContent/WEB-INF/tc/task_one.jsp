@@ -247,8 +247,10 @@ function online(){
 		else{abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");};
 	}).error(function(){abox("上线","<div class='reErr'>上线失败. &nbsp;"+close+"</div>");});
 }
-function back(i){
-	
+function pre(i){
+	if(i==1){
+		
+	}
 }
 -->
 </script>
@@ -322,7 +324,7 @@ StringBuilder sb = new StringBuilder();
 //if(userType>1){
 %>
 <div class="inBox" id="infos">
-    <div class="inBoxTitle">任务流程及说明</div> 
+    <div class="inBoxTitle">任务流程</div> 
     <div class="inBoxContent">
     	<%
     	Object logO = one.getProp("log");
@@ -342,6 +344,8 @@ StringBuilder sb = new StringBuilder();
     	    			int e = s.indexOf("-");
     	    			if(e>0){
     	    				sb2.append(s.substring(0,e));
+    	    			}else{
+    	    				sb2.append(s);
     	    			}
     	    		}
     	    		sb2.append("</div>");
@@ -368,7 +372,7 @@ if(state==0 && userType > 3){%>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
-<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(3);" class="aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
+<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(1);" class="aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
 </div>
 
 <%//转发TestUnit,或在TestUnit完成后汇总
@@ -413,7 +417,29 @@ if(state==0 && userType > 3){%>
 <%}%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
-}else if(state==6 && userType>1){%>
+}else if(state==6 && userType>1){
+	String file = "";int i=0;
+	StringBuilder sb = new StringBuilder();
+	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
+	Iterator<KObject> it = tus.iterator();
+	while(it.hasNext()){
+		KObject tu = it.next();
+		if(!tu.getProp("gFile").equals(file)){
+			if(!file.equals("")){sb.append("</div></div>");}
+			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
+			sb.append("'><a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			file = (String)tu.getProp("gFile");
+			i++;
+		}else{
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+		}
+	}
+	sb.append("</div></div></div></div></div>");
+	out.print(sb);
+
+%>
+
 <div class="inBox" id="failCases">
     <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">

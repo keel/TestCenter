@@ -46,7 +46,15 @@ public class StaticDao extends MongoDao {
 	 */
 	public static final BasicDBObject prop_level_id_desc = new BasicDBObject("level",-1).append("_id",-1);
 
-	
+	/**
+	 * {level:-1,_id:1}
+	 */
+	public static final BasicDBObject prop_level_id_asc = new BasicDBObject("level",-1).append("_id",1);
+	/**
+	 * {level:-1,state:-1,_id:1}
+	 */
+	public static final BasicDBObject prop_level_state_id_asc = new BasicDBObject("level",-1).append("state",-1).append("_id",1);
+
 	
 	/**
 	 * {$inc:{commsCount:1}}

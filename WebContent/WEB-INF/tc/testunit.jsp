@@ -53,7 +53,8 @@ $(function(){
 	$("#cState").text(cState[parseInt($("#cState").text())]);
 
 	//初始化已测的结果
-	initRE($.parseJSON("<%=(res==null || res.isEmpty())?"[]":JSON.write(res).replaceAll("\"","\\\\\"")%>"));
+	var jj = <%=(res==null || res.isEmpty())?"[]":JSON.write(res)%>;
+	initRE(jj);
 	if(<%=canSave%> && <%=(one.getProp("rank")!=null)%>){
 		$("#tu_rank").val(<%=one.getProp("rank")%>);
 	}else{
@@ -89,14 +90,14 @@ function ere(i){
 	$("#execCase").appendTo("#exec_"+i);
 	clearExe();
 	if(res[i]){
-		var r=res[i];$("#tu_re").val(r.re);$("#tu_info").html(r.info);$("#upFiles").html(r.attach);
+		var r=res[i];$("#tu_re").val(r.re);$("#tu_info").html(r.info);
 	}else{
 		clearExe();
 	}
 	$("#cexe").val(i);
 }
 function clearExe(){
-	$("#cexe").val("");$("#tu_re").val(0);$("#tu_info").val("");$("#upFiles").html("");
+	$("#cexe").val("");$("#tu_re").val(0);$("#tu_info").val("");
 }
 function exec(){
 	//更新res

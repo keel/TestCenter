@@ -537,12 +537,11 @@ public class TTask extends Action {
 		}else if(tuRE==-3){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
-			slice.put("_id", 1);
-			slice.put("creatorName", 1);
+			slice.put("$slice", -1);
 			HashMap<String,Object> last = new HashMap<String, Object>(2);
-			last.put("log", -1);
-			slice.put("$slice", last);
-			HashMap<String,Object> lastLog = dao.query(q, slice, null, 0, 0, null).get(0);
+			last.put("log",slice);
+			last.put("_id", 1);
+			HashMap<String,Object> lastLog = dao.query(q, last, null, 0, 0, null).get(0);
 			if (lastLog != null) {
 				ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String, Object>>) lastLog.get("log");
 				if (logs != null &&  !logs.isEmpty()) {
@@ -552,6 +551,8 @@ public class TTask extends Action {
 				}
 			}
 			update.put("operator", task_operator);
+			update.put("state", 1);
+			task_info = "退回组长:"+task_operator;
 		}else if(tuRE==-2){
 			//放弃
 			update.put("state", -2);
@@ -980,7 +981,7 @@ public class TTask extends Action {
 				in.put("$in", taskIds);
 			}
 			q.put("_id", in);
-			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
 		}else if (userType==1) {
 		//厂家看到的是company为自己公司的任务
 			HashMap<String,Object> q = new HashMap<String, Object>();
@@ -988,7 +989,7 @@ public class TTask extends Action {
 			state.put("$gte", 0);
 			q.put("state", state);
 			q.put("company", u.getProp("company"));
-			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_state_id_asc, null);
 		}else{
 		//其他看到的是自己创建的任务
 			HashMap<String,Object> q = new HashMap<String, Object>();
@@ -996,7 +997,7 @@ public class TTask extends Action {
 			state.put("$gte", 0);
 			q.put("state", state);
 			q.put("creatorName", u.getName());
-			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
 		}
 		msg.addData("u", u);
 		msg.addData("list", list);
