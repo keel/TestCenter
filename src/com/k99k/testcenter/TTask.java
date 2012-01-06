@@ -507,7 +507,7 @@ public class TTask extends Action {
 			return;
 		}
 		String t_id = req.getParameter("tid");
-		String tu_re = req.getParameter("tu_re");
+		String tu_re = req.getParameter("tu_pass");
 		String task_info = req.getParameter("task_info");
 		String task_operator = req.getParameter("task_operator");
 		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re) 
@@ -968,7 +968,7 @@ public class TTask extends Action {
 		
 		ArrayList<KObject> list = null;
 		//测试组看到的是自己的待处理任务
-		if (userType>=2 && userType<=4) {
+		if ((userType>=2 && userType<=4) || userType>90) {
 			ArrayList<Long> taskIds = (ArrayList<Long>) u.getProp("unReadTasks");
 			HashMap<String,Object> q = new HashMap<String, Object>();
 			HashMap<String,Object> state = new HashMap<String, Object>(4);

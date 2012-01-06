@@ -81,7 +81,7 @@ $(function(){
 	});
 
 	selectTU();
-	
+
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
@@ -90,6 +90,29 @@ if((state==6 && userType>1) || state==3 || state==8){%>
 	if(data != ''){
 		showSummary(data);
 	}else{$("#fCases").html("未发现测试问题.");}
+<%}%>
+
+<% //处理finish选择
+if(state==6 && userType>1){%>
+	$("#tu_pass").change(function(){
+		var v = $(this).val();
+		if(v!=2 && v!=4){
+			$("#task_operator").hide();
+			var next = "";
+			if (v==9){
+				next = "<%=product.getProp("company") %>";
+			}else if(v==-3){
+				var ll = $("#infos").find(".inBoxLine");
+				next = (ll.length<=0)?"无":ll.last().text().split(" ")[0];
+			}else if(v==-2){
+				next = "无";
+			}
+			$("#task_next").text(next);
+		}else{
+			$("#task_operator").show();
+			$("#task_next").text("");
+		}
+	});
 <%}%>
 
 });
@@ -452,14 +475,14 @@ if(state==0 && userType > 3){%>
 int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
 if(isOnline==0 && (userType==4 || userType==99)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
-<label for="tu_re">确认测试结果：</label>
-<select name="tu_re" id="tu_re"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
-下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><br />
+<label for="tu_pass">确认测试结果：</label>
+<select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
+下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><span id="task_next"></span><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
-<a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果(不通过则通知厂家)</a>
+<a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果</a>
 <%}//由管理员操作上线
 else if(userType==99) { %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
