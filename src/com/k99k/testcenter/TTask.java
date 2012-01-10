@@ -107,6 +107,8 @@ public class TTask extends Action {
 //			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
 			this.del(req, u, httpmsg);
+		}else if(subact.equals("a_drop")){
+			this.drop(req, u, httpmsg);
 		}else if(subact.equals("a_confirm")){
 			this.confirm(req, u, httpmsg);
 		}else if(subact.equals("a_s")){
@@ -771,6 +773,43 @@ public class TTask extends Action {
 		}
 		JOut.err(403, msg);
 	}
+	
+	/**
+	 * 放弃任务
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void drop(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		
+		if (StringUtil.isDigits(req.getParameter("id"))) {
+			long id = Long.parseLong(req.getParameter("id"));
+			if (u.getType() < 4) {
+				KObject task = dao.findOne(id);
+				if (!task.getProp("company").equals(u.getProp("company"))) {
+					//权限不够
+					JOut.err(401, msg);
+					return;
+				}
+			}
+			HashMap<String,Object> query = new HashMap<String, Object>(2);
+			query.put("_id", id);
+			HashMap<String,Object> set = new HashMap<String, Object>(2);
+			HashMap<String,Object> drop = new HashMap<String, Object>(2);
+			drop.put("state", TASK_STATE_DROP);
+			set.put("$set", drop);
+			if (dao.updateOne(query, set)) {
+				ActionMsg atask = new ActionMsg("tTaskTask");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+				atask.addData("taskId", id);
+				atask.addData("act", "drop");
+				TaskManager.makeNewTask("TTaskTask-drop_"+id, atask);
+				msg.addData("[print]", "ok");
+				return;
+			}
+		}
+		JOut.err(403, msg);
+	}
 	/**
 	 * 处理任务添加
 	 * @param req
@@ -909,7 +948,7 @@ public class TTask extends Action {
 		long id = Long.parseLong(subact);
 		//Task
 		KObject one = dao.findOne(id);
-		if (one== null || one.getState() == -1) {
+		if (one== null || one.getState() < 0) {
 			JOut.err(404, msg);
 			return;
 		}

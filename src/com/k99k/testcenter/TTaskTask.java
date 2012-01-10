@@ -39,7 +39,7 @@ public class TTaskTask extends Action {
 		String act = (String)msg.getData("act");
 		if (act.equals("add")) {
 			this.add(msg);
-		}else if(act.equals("del")){
+		}else if(act.equals("del") || act.equals("drop")){
 			this.del(msg);
 		}else if(act.equals("appoint")){
 			this.appoint(msg);
@@ -346,7 +346,7 @@ public class TTaskTask extends Action {
 		set.put("$inc", inc);
 		boolean re = TUser.dao.update(query, set, false, true);
 		if (!re) {
-			log.error("Del task. - update all users unread tasks failed. task ID:"+tid);
+			log.error("update all users unread tasks failed. task ID:"+tid);
 		}
 	}
 	
