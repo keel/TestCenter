@@ -403,14 +403,14 @@ public class TTaskTask extends Action {
 			query = new HashMap<String, Object>(4);
 			set = new HashMap<String, Object>(4);
 			query.put("PID", pid);
-			query.put("state", 3);
+			query.put("state", TTask.TASK_STATE_NEED_MOD);
 			ArrayList<KObject> ts = TTask.dao.queryKObj(query, null, null, 0, 0, null);
 			Iterator<KObject> it = ts.iterator();
 			HashMap<String, Object> q = new HashMap<String, Object>(2);
 			while (it.hasNext()) {
 				KObject ta = it.next();
 				HashMap<String,Object> updateTask = new HashMap<String, Object>(2);
-				updateTask.put("state", 8);
+				updateTask.put("state", TTask.TASK_STATE_BACKED);
 				set.put("$set", updateTask);
 				q.put("_id", ta.getId());
 				TTask.dao.update(query, set, false, true);

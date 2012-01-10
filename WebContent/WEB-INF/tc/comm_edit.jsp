@@ -27,7 +27,7 @@ $.validator.dealAjax = {
 	ok:function(data){
 		if(!isNaN(data)){
 			var bt1 = "<a href=\"javascript:window.location='<%=prefix%>/topic/"+data+"';\" class=\"aButton\">查看话题</a>";
-			abox("回复编辑","<div class='reOk'>回复编辑成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.lo+"');\" class=\"aButton\">返回列表</a></div>");
+			abox("回复编辑","<div class='reOk'>回复编辑成功！ &nbsp;"+bt1);
 		}else{abox("回复编辑","<div class='reErr'>回复编辑失败! &nbsp;<a href='javascript:$.fancybox.close();' class=\"aButton\">关闭</a></div>");};
 	},
 	err:function(){

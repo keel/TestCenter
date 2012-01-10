@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*,com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*,com.k99k.khunter.*,com.k99k.testcenter.*,com.k99k.tools.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
@@ -85,7 +85,7 @@ $(function(){
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if((state==6 && userType>1) || state==3 || state==8){%>
+if((state==TTask.TASK_STATE_CONFIRM && userType>1) || state==TTask.TASK_STATE_NEED_MOD || state==TTask.TASK_STATE_BACKED){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);
@@ -93,7 +93,7 @@ if((state==6 && userType>1) || state==3 || state==8){%>
 <%}%>
 
 <% //处理finish选择
-if(state==6 && userType>1){%>
+if(state==TTask.TASK_STATE_CONFIRM && userType>1){%>
 	$("#tu_pass").change(function(){
 		var v = $(this).val();
 		if(v!=2 && v!=4){
@@ -381,7 +381,7 @@ StringBuilder sb = new StringBuilder();
 </div>
 <% // }
 //已创建
-if(state==0 && userType > 3){%>
+if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <div id="appoint">
 <form action="<%=prefix%>/tasks/a_p" method="post" id="p_form">
 <p><label for="task_info">任务附加说明：</label><br />
@@ -399,7 +399,7 @@ if(state==0 && userType > 3){%>
 </div>
 
 <%//转发TestUnit,或在TestUnit完成后汇总
-}else if(state==1 && tus !=null && !tus.isEmpty() && userType >= 2){
+}else if(state==TTask.TASK_STATE_TEST && tus !=null && !tus.isEmpty() && userType >= 2){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
@@ -440,7 +440,7 @@ if(state==0 && userType > 3){%>
 <%}%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
-}else if(state==6 && userType>1){
+}else if(state==TTask.TASK_STATE_CONFIRM && userType>1){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
@@ -497,7 +497,7 @@ else if(userType==99) { %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 
 <%//待反馈情况,厂家查看
-}else if((state==3 && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
+}else if((state==TTask.TASK_STATE_NEED_MOD && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
 <div class="inBox" id="failCases">
     <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">

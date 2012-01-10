@@ -20,14 +20,8 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_mytask"><a href="<%=prefix %>/tasks/my" >我的任务
 <%if(tt>0){ %><span id="newTasks" class="bold red">(<%=tt %>)</span><%} %>
 </a></li>
-<%
-if(type>=2){
-%>
 <li id="side_task"><a href="<%=prefix %>/tasks" >任务管理</a></li>
-<%
-}
-%>
-<li id="side_product"><a href="<%=prefix %>/products" >产品管理</a></li>
+<!--  <li id="side_product"><a href="<%=prefix %>/products" >产品管理</a></li>  -->
 </ul>
 
 <div>相关文档</div>

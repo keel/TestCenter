@@ -45,6 +45,18 @@ public class TTask extends Action {
 	static final Logger log = Logger.getLogger(TTask.class);
 	static DaoInterface dao;
 	static KObjSchema schema;
+	
+	public static final int TASK_STATE_NEW = 0;
+	public static final int TASK_STATE_TEST = 1;
+	public static final int TASK_STATE_PASS = 2;
+	public static final int TASK_STATE_PASS_PART = 4;
+	public static final int TASK_STATE_NEED_MOD = 3;
+	public static final int TASK_STATE_DROP = -2;
+	public static final int TASK_STATE_DEL = -1;
+	public static final int TASK_STATE_PAUSE = 5;
+	public static final int TASK_STATE_CONFIRM = 6;
+	public static final int TASK_STATE_BACKED = 8;
+	
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -220,7 +232,7 @@ public class TTask extends Action {
 		HashMap<String,Object> set = new HashMap<String, Object>();
 		set.put("level", level);
 		set.put("operator", operator.getName());
-		set.put("state", 1);
+		set.put("state", TASK_STATE_TEST);
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
@@ -289,7 +301,7 @@ public class TTask extends Action {
 					long uid = Long.parseLong(itr.next());
 					q.put("_id", uid);
 					//必须是待测状态
-					q.put("state", 0);
+					q.put("state", TASK_STATE_NEW);
 					sett.put("tester", tester);
 					set.put("$set", sett);
 					re = TestUnit.dao.updateOne(q, set);
@@ -435,7 +447,7 @@ public class TTask extends Action {
 		HashMap<String,Object> q = new HashMap<String, Object>();
 		q.put("TID", tid);
 		HashMap<String,Object> state = new HashMap<String, Object>(4);
-		state.put("$gte", 0);
+		state.put("$gte", TASK_STATE_NEW);
 		q.put("state", state);
 		HashMap<String, Object> res = new HashMap<String,Object>();
 		try {
@@ -528,7 +540,7 @@ public class TTask extends Action {
 			update.put("isOnline", 1);
 		}else if(tuRE==9){
 			//不通过,状态置为待反馈
-			update.put("state", 3);
+			update.put("state", TASK_STATE_NEED_MOD);
 			//long pid = (Long)(dao.findOne(tid).getProp("PID"));
 			KObject task = dao.findOne(tid);
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
@@ -551,11 +563,11 @@ public class TTask extends Action {
 				}
 			}
 			update.put("operator", task_operator);
-			update.put("state", 1);
+			update.put("state", TASK_STATE_TEST);
 			task_info = "退回组长:"+task_operator;
-		}else if(tuRE==-2){
+		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
-			update.put("state", -2);
+			update.put("state", TASK_STATE_DROP);
 		}else{
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -614,13 +626,13 @@ public class TTask extends Action {
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		String task_operator = "曹雨";
 		q.put("_id", tid);
-		if (tuRE == 2|| tuRE == 4) {
+		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
 			update.put("isOnline", 2);
 			update.put("state", tuRE);
-		}else if(tuRE==-2){
+		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
-			update.put("state", -2);
+			update.put("state", TASK_STATE_DROP);
 		}else if(tuRE==-3){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
@@ -698,7 +710,7 @@ public class TTask extends Action {
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> sett = new HashMap<String, Object>();
 		q.put("_id", tid);
-		sett.put("state", 6);
+		sett.put("state", TASK_STATE_CONFIRM);
 		sett.put("result", reJson);
 		sett.put("operator", task_operator);
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
@@ -943,12 +955,35 @@ public class TTask extends Action {
 	 */
 	private void list(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		if (u.getType() < 2) {
+		int userType = u.getType();
+		if (userType < 1) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
-		this.queryPage(StaticDao.prop_state_normal,subact, req, u, msg);
+		if (userType==1) {
+			//厂家看到的是company为自己公司的任务
+			String p_str = req.getParameter("p");
+			String pz_str = req.getParameter("pz");
+			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
+			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
+			ArrayList<KObject> list = null;
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			HashMap<String,Object> state = new HashMap<String, Object>(2);
+			state.put("$gte", TASK_STATE_NEW);
+			q.put("state", state);
+			q.put("company", u.getProp("company"));
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
+			msg.addData("u", u);
+			msg.addData("list", list);
+			msg.addData("pz", pz);
+			msg.addData("p", page);
+			msg.addData("sub", subact);
+			msg.addData("[jsp]", "/WEB-INF/tc/tasks.jsp");
+			return;
+		}else{
+			this.queryPage(StaticDao.prop_state_normal,subact, req, u, msg);
+		}
 	}
 	
 	/**
@@ -967,12 +1002,12 @@ public class TTask extends Action {
 		int userType = u.getType();
 		
 		ArrayList<KObject> list = null;
-		//测试组看到的是自己的待处理任务
-		if ((userType>=2 && userType<=4) || userType>90) {
+		//厂家和测试组看到的是自己的待处理任务
+		if ((userType>=1 && userType<=4) || userType>90) {
 			ArrayList<Long> taskIds = (ArrayList<Long>) u.getProp("unReadTasks");
 			HashMap<String,Object> q = new HashMap<String, Object>();
 			HashMap<String,Object> state = new HashMap<String, Object>(4);
-			state.put("$gte", 0);
+			state.put("$gte", TASK_STATE_NEW);
 			q.put("state", state);
 			HashMap<String,Object> in = new HashMap<String, Object>(4);
 			if (taskIds == null) {
@@ -982,19 +1017,21 @@ public class TTask extends Action {
 			}
 			q.put("_id", in);
 			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
-		}else if (userType==1) {
-		//厂家看到的是company为自己公司的任务
-			HashMap<String,Object> q = new HashMap<String, Object>();
-			HashMap<String,Object> state = new HashMap<String, Object>(2);
-			state.put("$gte", 0);
-			q.put("state", state);
-			q.put("company", u.getProp("company"));
-			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_state_id_asc, null);
-		}else{
+		}
+//		else if (userType==1) {
+//		//厂家看到的是company为自己公司的任务
+//			HashMap<String,Object> q = new HashMap<String, Object>();
+//			HashMap<String,Object> state = new HashMap<String, Object>(2);
+//			state.put("$gte", TASK_STATE_NEW);
+//			q.put("state", state);
+//			q.put("company", u.getProp("company"));
+//			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
+//		}
+		else{
 		//其他看到的是自己创建的任务
 			HashMap<String,Object> q = new HashMap<String, Object>();
 			HashMap<String,Object> state = new HashMap<String, Object>(2);
-			state.put("$gte", 0);
+			state.put("$gte", TASK_STATE_NEW);
 			q.put("state", state);
 			q.put("creatorName", u.getName());
 			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
