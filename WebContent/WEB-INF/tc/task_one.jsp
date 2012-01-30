@@ -272,7 +272,9 @@ function online(){
 }
 function pre(i){
 	if(i==1){
-		
+		$.post("<%=prefix %>/tasks/a_back", $("#p_form").serialize() ,function(data) {
+			if(data=="ok"){alert("已退回创建者");window.location = $.prefix+$.taskUrl;};
+		});
 	}
 }
 function dropTask(id){

@@ -95,7 +95,7 @@ String ismy = (sub.equals("my")) ? "?ismy=true" : "";
 if(list==null){out.print("<td></td><td>暂无</td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");}}
 else{
 	StringBuilder sb = new StringBuilder();
-	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","","已反馈"};
+	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","驳回","已反馈"};
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();

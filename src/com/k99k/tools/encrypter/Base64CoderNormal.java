@@ -19,22 +19,12 @@ import java.io.UnsupportedEncodingException;
 
 
 /**
-* A Base64 encoder/decoder.
-* 修改过的base64算法,为避免需要URLEncode，所以进行了以下改变:
- <pre>
- + -> _
- / -> -
- = -> * 
- </pre>
-* <p>
-* This class is used to encode and decode data in Base64 format as described in RFC 1521.
-*
-* <p>
+* 标准base64算法
 * Project home page: <a href="http://www.source-code.biz/base64coder/java/">www.source-code.biz/base64coder/java</a><br>
 * Author: Christian d'Heureuse, Inventec Informatik AG, Zurich, Switzerland<br>
 * Multi-licensed: EPL / LGPL / GPL / AL / BSD.
 */
-public class Base64Coder {
+public class Base64CoderNormal {
 
 // The line separator string of the operating system.
 private static final String systemLineSeparator = System.getProperty("line.separator");
@@ -46,8 +36,7 @@ private static char[]    map1 = new char[64];
       for (char c='A'; c<='Z'; c++) map1[i++] = c;
       for (char c='a'; c<='z'; c++) map1[i++] = c;
       for (char c='0'; c<='9'; c++) map1[i++] = c;
-      //##keel  原'+'改为'_' ,原'/'改为'-'
-      map1[i++] = '_'; map1[i++] = '-'; }
+      map1[i++] = '+'; map1[i++] = '/'; }
 
 // Mapping table from Base64 characters to 6-bit nibbles.
 private static byte[]    map2 = new byte[128];
@@ -74,7 +63,7 @@ private static byte[]    map2 = new byte[128];
 	* Encodes a string into Base64 format.
 	* No blanks or line breaks are inserted.
 	* @param s  A String to be encoded.
-	* @param encode String的编码
+	* @param encode String 的编码
 	* @return   A String containing the Base64 encoded data.
 	 * @throws UnsupportedEncodingException 
 	 * @throws UnsupportedEncodingException 
@@ -170,9 +159,8 @@ public static char[] encode (byte[] in, int iOff, int iLen) {
       int o3 = i2 & 0x3F;
       out[op++] = map1[o0];
       out[op++] = map1[o1];
-    //##keel  原两个'='改为两个'*'
-      out[op] = op < oDataLen ? map1[o2] : '*'; op++;
-      out[op] = op < oDataLen ? map1[o3] : '*'; op++; }
+      out[op] = op < oDataLen ? map1[o2] : '='; op++;
+      out[op] = op < oDataLen ? map1[o3] : '='; op++; }
    return out; }
 
 /**
@@ -233,8 +221,7 @@ public static byte[] decode (char[] in) {
 */
 public static byte[] decode (char[] in, int iOff, int iLen) {
    if (iLen%4 != 0) throw new IllegalArgumentException ("Length of Base64 encoded input string is not a multiple of 4.");
-   //##keel =变成*
-   while (iLen > 0 && in[iOff+iLen-1] == '*') iLen--;
+   while (iLen > 0 && in[iOff+iLen-1] == '=') iLen--;
    int oLen = (iLen*3) / 4;
    byte[] out = new byte[oLen];
    int ip = iOff;
@@ -261,7 +248,7 @@ public static byte[] decode (char[] in, int iOff, int iLen) {
       if (op<oLen) out[op++] = (byte)o2; }
    return out; }
 
-	// Dummy constructor.
-	private Base64Coder() {}
+// Dummy constructor.
+private Base64CoderNormal() {}
 
-}
+} // end class Base64Coder

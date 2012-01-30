@@ -56,6 +56,7 @@ public class TTask extends Action {
 	public static final int TASK_STATE_PAUSE = 5;
 	public static final int TASK_STATE_CONFIRM = 6;
 	public static final int TASK_STATE_BACKED = 8;
+	public static final int TASK_STATE_REJECT = 7;
 	
 
 	/* (non-Javadoc)
@@ -100,7 +101,7 @@ public class TTask extends Action {
 		}else if(subact.equals("a_finish")){
 			this.finish(req, u, httpmsg);
 		}else if(subact.equals("a_back")){
-			this.back(req, u, httpmsg);
+			this.backToCreator(req, u, httpmsg);
 		}else if(subact.equals("a_online")){
 			this.online(req, u, httpmsg);
 //		}else if(subact.equals("a_u")){
@@ -119,13 +120,14 @@ public class TTask extends Action {
 		return super.act(msg);
 	}
 	
+	
 	/**
-	 * 退回厂家,实际上是将任务放弃,厂家需要重新创建
+	 * 测试结果退回厂家或创建者,实际上是将任务放弃,厂家需要重新创建
 	 * @param req
 	 * @param u
 	 * @param msg
 	 */
-	private void back(HttpServletRequest req,KObject u,HttpActionMsg msg){
+	private void backToCreator(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
 		if (u.getType() < 4) {
 			//权限不够
@@ -133,6 +135,7 @@ public class TTask extends Action {
 			return;
 		}
 		String task_id = req.getParameter("tid");
+		String task_info = req.getParameter("task_info");
 		if(!StringUtil.isDigits(task_id) ){
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -143,7 +146,35 @@ public class TTask extends Action {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
-		//FIXME 将状态置为驳回状态，不可修改，由厂家新建
+		// 将状态置为驳回状态，可修改，由厂家修改，内部ID不变
+		String creator = task.getProp("creatorName").toString();
+		HashMap<String,Object> q = new HashMap<String, Object>(2);
+		q.put("_id", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>();
+		set.put("operator", creator);
+		set.put("state", TASK_STATE_REJECT);
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "驳回: "+task_info);
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", logmsg);
+		HashMap<String,Object> update = new HashMap<String, Object>();
+		update.put("$set", set);
+		update.put("$push", push);
+		if(dao.update(q, update, false, false)){
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("operator", task.getProp("operator").toString());
+			atask.addData("creator", creator);
+			atask.addData("act", "back");
+			TaskManager.makeNewTask("TTaskTask-back_"+tid, atask);
+			msg.addData("[print]", "ok");
+		}else{
+			JOut.err(403,"E500"+Err.ERR_TASK_BACK, msg);
+			return;
+		}
 		
 		
 	}
@@ -1012,7 +1043,7 @@ public class TTask extends Action {
 			state.put("$gte", TASK_STATE_NEW);
 			q.put("state", state);
 			q.put("company", u.getProp("company"));
-			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_asc, null);
+			list = dao.queryByPage(page,pageSize,q, null, StaticDao.prop_level_id_desc, null);
 			msg.addData("u", u);
 			msg.addData("list", list);
 			msg.addData("pz", pz);

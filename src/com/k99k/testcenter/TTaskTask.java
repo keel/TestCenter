@@ -53,12 +53,50 @@ public class TTaskTask extends Action {
 			this.finish(msg);
 		}else if(act.equals("online")){
 			this.online(msg);
+		}else if(act.equals("back")){
+			this.back(msg);
 		}
 		
 		
 		
 		
 		return super.act(msg);
+	}
+	
+
+	/**
+	 * 退回任务创建人
+	 * @param msg
+	 */
+	private void back(ActionMsg msg){
+		//long userid = (Long)msg.getData("uid");
+		String creator = (String)msg.getData("creator");
+		String operator = (String)msg.getData("operator");
+		long tid = (Long)msg.getData("tid");
+//		int re = (Integer)msg.getData("re");
+//		long uid = (Long)msg.getData("uid");
+//		if (re == -3) {
+//			
+//		}
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("name", operator);
+		query.put("unReadTasks", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull = new HashMap<String, Object>(2);
+		pull.put("unReadTasks", tid);
+		HashMap<String,Object> inc = new HashMap<String, Object>(2);
+		inc.put("newTasks", -1);
+		set.put("$pull", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
+		//更新待办人
+		query = new HashMap<String, Object>(2);
+		query.put("name", creator);
+		inc.put("newTasks", 1);
+		set.remove("$pull");
+		set.put("$push", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
 	}
 	
 	/**

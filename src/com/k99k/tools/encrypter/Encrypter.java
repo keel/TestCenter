@@ -12,7 +12,8 @@ import javax.crypto.Cipher;
 
 /**
  * 
- * 使用AES加密与解密,可对String类型进行加密与解密,密文可使用String存储.
+ * 使用AES加密与解密(使用非标准的base64返回string),可对String类型进行加密与解密,密文可使用String存储.
+ * (注意密钥是写死的,需要根据实际情况修改)
  * 
  */
 
@@ -39,8 +40,8 @@ public class Encrypter {
 		ecipher.init(Cipher.ENCRYPT_MODE, key2);
 		dcipher.init(Cipher.DECRYPT_MODE, key2);
 	}
-
-	public String encrypt(String str) throws Exception {
+	
+	public byte[] encryptToByte(String str) throws Exception {
 		
 		//return SimpleCrypto.encrypt(this.key, str);
 	
@@ -51,11 +52,30 @@ public class Encrypter {
 		byte[] enc = ecipher.doFinal(utf8);
 
 		// Encode bytes to base64 to get a string
-		return Base64Coder.encode(enc);
+		return enc;
 	
 	}
 
-	public String decrypt(String str) throws Exception {
+	/**
+	 * 加密并返回非标准base64的string
+	 * @param str
+	 * @return
+	 * @throws Exception
+	 */
+	public String encrypt(String str) throws Exception {
+
+		// Encode bytes to base64 to get a string
+		return Base64Coder.encode(encryptToByte(str));
+	
+	}
+	
+	/**
+	 * 使用base64处理string并解密,返回解密后的byte[]
+	 * @param str
+	 * @return
+	 * @throws Exception
+	 */
+	public byte[] decryptToByte(String str) throws Exception {
 		//return SimpleCrypto.decrypt(this.key, str);
 		
 		// Decode base64 to get bytes
@@ -63,10 +83,18 @@ public class Encrypter {
 
 		byte[] utf8 = dcipher.doFinal(dec);
 
+		return utf8;
+	}
+
+	/**
+	 * 使用base64处理string并解密，使用utf-8的string输出
+	 * @param str
+	 * @return
+	 * @throws Exception
+	 */
+	public String decrypt(String str) throws Exception {
 		// Decode using utf-8
-		return new String(utf8, "UTF8");
-		
-		
+		return new String(decryptToByte(str), "UTF8");
 	}
 
 	

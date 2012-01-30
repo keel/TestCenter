@@ -188,27 +188,31 @@ public class TestCase extends Action {
 //					if (re>=end) {
 //						end=re;
 //					}
+					int lev = aCase.getLevel();
 					switch (re) {
 					case 9:
 						//如果关键点不为通过则直接认为不通过
-						if (aCase.getLevel()>=5) {
+						if (lev>5) {
 							end=9;
 							hasEnd=true;
-							break;
+						}
+						//次关键点不通过结果为部分通过
+						else if(lev>1 && lev<=5) {
+							end=4;
 						}
 						break;
 					case 4:
 						//次关键点要求部分通过
-						if (aCase.getLevel()>=5) {
+						if (lev>5) {
 							end=4;
-						}else if (re>=end) {
+						}else if (re>end) {
 							end=re;
 						}
 						break;
 					//case 2:
 					//case 0:
 					default:
-						if (re>=end) {
+						if (re>end) {
 							end=re;
 						}
 					}
