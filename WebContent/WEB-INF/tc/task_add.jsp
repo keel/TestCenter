@@ -83,7 +83,7 @@ $.validator.over = function(form){
 
 $('#productForm').validate({
     rules: {
-		task_name: {required:true,rangelength:[1,100]},
+		task_name: {required:true,rangelength:[2,100]},
 		task_p_id: {required:true,number:true},
 		task_p_sys: {required:true},
 		task_p_type: {required:true},
@@ -248,7 +248,7 @@ js解析json后生成机型组对象和机型对象,分别进行填充,机型按
 <div id="taskFS">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
 <p><label for="task_info">任务说明：<span class="gray">请填入测试需要注意的要点,如果是修改后提交请说明具体的修改之处</span></label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea></p>
 <% if(userType>1){ %>
 <p>任务优先级：
 <select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>

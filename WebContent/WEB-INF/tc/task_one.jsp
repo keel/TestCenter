@@ -354,6 +354,19 @@ StringBuilder sb = new StringBuilder();
 	sb.append("</div></div>");
 	out.print(sb);
 }
+//WAP游戏
+else if(product.getProp("sys").toString().equals("2") && one.getState()==0 && userType>1){
+	StringBuilder sb = new StringBuilder();
+	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>WAP游戏适配机型</div><div class='inBoxContent'>");
+		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='fu_0");
+		sb.append("'>");
+		if(userType>=3){
+			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(0);'>适配机型</a> ]</span>");
+		}
+		sb.append("</div>");
+	sb.append("</div></div>");
+	out.print(sb);
+}
 //if(userType>1){
 %>
 <div class="inBox" id="infos">

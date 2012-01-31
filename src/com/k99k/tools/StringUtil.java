@@ -147,6 +147,12 @@ public final class StringUtil {
 		return true;
 	}
 	
+	/**
+	 * 判断String是否达到指定长度(>=len),(先经过trim处理)
+	 * @param obj
+	 * @param len
+	 * @return
+	 */
 	public static final boolean isStringWithLen(Object obj,int len){
 		if (obj == null) {
 			return false;

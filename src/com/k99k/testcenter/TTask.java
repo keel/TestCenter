@@ -239,7 +239,10 @@ public class TTask extends Action {
 			while (it.hasNext()) {
 				HashMap<String,Object> map = it.next();
 				String gFile = map.get("gFile").toString();
-				long fileId = Long.parseLong(map.get("fileId").toString());
+				long fileId = 0;
+				if (StringUtil.isDigits(gFile)) {
+					fileId = Long.parseLong(map.get("fileId").toString());
+				}
 				ArrayList<String> phList = (ArrayList<String>)map.get("phone");
 				Iterator<String> li = phList.iterator();
 				tu.setProp("gFile", gFile);
