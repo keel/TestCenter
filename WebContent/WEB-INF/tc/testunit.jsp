@@ -62,8 +62,11 @@ $(function(){
 		$("#tRank").text(cRank[parseInt($("#tRank").text())]);
 	}
 	initUpload("<%=user.getName() %>",null,null,null,null,$.prefix+"/upload2");
+
+	showOpt();
 });
 var res=[];
+var re_txt = ["未测","","通过","","部分通过","","","","","不通过"];
 function initRE(j){
 	var len = j.length;
 	if(len>0){
@@ -80,52 +83,49 @@ function updateRes(){
 		if(res[cid]){
 			var rr=res[cid];
 			$(this).find(".tus").removeAttr("class").attr("class","tus tu"+rr.re);
-			var info=(rr.attach.length<1)?showHtml(rr.info):(showHtml(rr.info)+"<br /><img src='"+$.sPrefix+"/file/"+rr.attach+"' />");
-			$(this).find(".re_re").html(info);
+			$(this).find(".re_re").html(showHtml(rr.info));
 		}
 	});
 }
-function ere(i){
-	//显示编辑
-	$("#execCase").appendTo("#exec_"+i);
+function ere(i,exe){
+	$("#addInfoCase").appendTo("#addInfo_"+i);
 	clearExe();
-	if(res[i]){
-		var r=res[i];$("#tu_re").val(r.re);$("#tu_info").html(r.info);
+	var r=res[i];
+	$("#re_tu").val(exe);$("#re_info").text(re_txt[exe]);
+	if(r){
+		r.re=exe;$("#tu_info").val(r.info);
 	}else{
-		clearExe();
+		res[i]={caseId:i,re:$("#re_tu").val(),info:$("#tu_info").val()};
 	}
 	$("#cexe").val(i);
+	updateRes();
 }
 function clearExe(){
-	$("#cexe").val("");$("#tu_re").val(0);$("#tu_info").val("");
+	$("#cexe").val("");$("#re_info").text("");$("#re_tu").val("");$("#tu_info").val("");
 }
-function exec(){
-	//更新res
-	var i=$("#cexe").val();
-	if(i===""){alert("更新失败!");return;}
-	var n={caseId:i,re:$("#tu_re").val(),info:$("#tu_info").val(),attach:$("#upFiles").text()};
-	res[i]=n;
-	$("#execCase").appendTo("#hide");
+function addInfo(){
+	//补充说明
+	var faId = ($("#addInfoCase").parent())[0].id.split("_");
+	if(faId.length!=2){alert("补充说明出错");return;}
+	var i = faId[1];
+	var info = $("#tu_info").val(),r=res[i];
+	if(info && $.trim(info).length>0){
+		if(r){r.info=info;};
+	}
+	$("#addInfoCase").appendTo("#hide");
 	updateRes();
 }
-function allPass(){
+
+function setAll(state,isAll){
 	$("#testCases .file_upload").each(function(){
 		var cid = this.id.split("_")[1];
 		if(res[cid]){
-			res[cid].re=2;
-		}else{res[cid]={caseId:cid,re:2,info:"",attach:""};}
+			if(isAll){res[cid].re=state;}
+		}else{res[cid]={caseId:cid,re:state,info:""};}
 	});
 	updateRes();
 }
-function allWait(){
-	$("#testCases .file_upload").each(function(){
-		var cid = this.id.split("_")[1];
-		if(res[cid]){
-			res[cid].re=0;
-		}else{res[cid]={caseId:cid,re:0,info:"",attach:""};}
-	});
-	updateRes();
-}
+
 function saveRE(){
 	//保存res
 	abox("保存测试结果","处理中,请稍候……");
@@ -139,9 +139,20 @@ function saveRE(){
 			abox("保存测试结果","<div class='reOk'>保存测试结果成功！ &nbsp;"+close+"</div>");
 		}else{err();}
 	}).error(function(){err();});
+};
+function showOpt(){
+	$(".caseOpt").each(function(i){
+		this.cid = this.id.split("_")[1];
+		var me = $(this);
+		me.append("<a href='javascript:ere("+this.cid+",0);' class=\"aButton\">未测</a><a href='javascript:ere("+this.cid+",2);' class=\"aButton\">通过</a><a href='javascript:ere("+this.cid+",4);' class=\"aButton\">部分通过</a><a href='javascript:ere("+this.cid+",9);' class=\"aButton\">不通过</a>");
+	});
 }
+
 -->
 </script>
+<style>
+.caseOpt{font-size: 12px;}
+</style>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
@@ -222,7 +233,7 @@ sb.append("</div></div></div>");
 out.print(sb);
 %>
 <div class="inBox" id="testCases">
-    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)  <%if(canSave){%><span><a href="javascript:allPass();" class="aButton">全部预设为通过</a> <a href="javascript:allWait();" class="aButton">全部预设为未测</a></span><%}%></span></div> 
+    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)  <%if(canSave){%><span><a href="javascript:setAll(2,true);" class="aButton">全设为通过</a> <a href="javascript:setAll(0,true);" class="aButton">全设为未测</a> <a href="javascript:setAll(0,false);" class="aButton">未处理设为未测</a> <a href="javascript:setAll(2,false);" class="aButton">未处理设为通过</a></span><%}%></span></div> 
     <div class="inBoxContent">
     <%
     StringBuilder s = new StringBuilder();
@@ -230,10 +241,11 @@ out.print(sb);
     	if(cases[j]==null){continue;}
     KObject ca = cases[j]; 
     int i = (Integer)ca.getProp("caseId");
-    s.append("<div id='exec_").append(i).append("' class='file_upload' style='background-color:#FFF;'><div><span class='tu0 tus'>").append(ca.getProp("caseId"));
+    s.append("<div id='addInfo_").append(i).append("' class='file_upload' style='background-color:#FFF;'><div><span class='tu0 tus'>").append(ca.getProp("caseId"));
     s.append(". ").append(ca.getName()).append(" </span> ");
     if(canSave){
-    s.append("<a href='javascript:ere(").append(i).append(");' class='aButton' style='font-size:12px;'>填报结果</a>");
+    //s.append("<a href='javascript:ere(").append(i).append(");' class='aButton' style='font-size:12px;'>填报结果</a>");
+    s.append("<span class='caseOpt' id='caseOpt_").append(i).append("'></span>");
     }
     s.append("</div><div class='blue' style='font-size:12px;padding:5px;'>要求:");
     s.append(ca.getProp("info")).append("</div><div class='re_re'></div></div>\r\n");
@@ -272,11 +284,11 @@ if(StringUtil.isStringWithLen(off,2)){
 <a href="javascript:saveRE();" class="aButton">保存测试结果</a> <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <div id="hide" class="hide">
-<div class="inBoxLine" id="execCase">
-	<input type="hidden" value="" name="cexe" id="cexe" />
-  	测试结果:<select name="tu_re" id="tu_re"><option value="0">未测</option><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option></select><br />
-  	测试结果说明:<br /><textarea style="height:60px;" rows="3" cols="3" id="tu_info" name="tu_info"></textarea>
-  	<br /><a href="javascript:exec();" class="aButton">  确定  </a>
+<div class="inBoxLine" id="addInfoCase">
+	<input type="hidden" value="" name="cexe" id="cexe" /><input type="hidden" value="" name="re_tu" id="re_tu" />
+  	测试结果: <span id="re_info"></span> <br />
+  	测试结果说明(可选操作):<br /><textarea style="height:60px;" rows="3" cols="3" id="tu_info" name="tu_info"></textarea>
+  	<br /><a href="javascript:addInfo();" class="aButton">补充说明</a>
 </div> 
 </div>
 </div>

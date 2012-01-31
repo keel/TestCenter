@@ -53,7 +53,7 @@ $(function(){
 	$("#task_p_acc_v").text(port_type[parseInt($("#task_p_acc_v").text())]);
 	var sys = ["kjava","Android","WAP","Brew","Windows mobile","Windows CE","其他"];
 	$("#task_p_sys_v").text(sys[parseInt($("#task_p_sys_v").text())]);
-	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","","已反馈"];
+	var cState = ["待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","驳回","已反馈"];
 	$("#cState").text(cState[parseInt($("#cState").text())]);
 	//选择机型
 	$(chooseDiv).appendTo("#hide");
@@ -395,7 +395,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <div id="appoint">
 <form action="<%=prefix%>/tasks/a_p" method="post" id="p_form">
 <p><label for="task_info">任务附加说明：</label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea></p>
 <p>优先级调整：
 <select name="task_level" id="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
@@ -489,7 +489,7 @@ if(isOnline==0 && (userType==4 || userType==99)){ %>
 <select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
 下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><span id="task_next"></span><br />
 <label for="task_info">附加说明：</label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
 <a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果</a>
@@ -499,7 +499,7 @@ else if(userType==99) { %>
 <label for="tu_re">确认上线：</label>
 <select name="tu_re" id="tu_re"><option value="2">上线</option><option value="4">上线部分通过</option><option value="-3">退回</option><option value="-2">放弃</option></select><br />
 <label for="task_info">附加说明：</label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea>
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认已上线</a>
@@ -522,9 +522,12 @@ else if(userType==99) { %>
 <a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此任务</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
-<%//厂家或访客查看情况,state<2的情况下
-}else {%>
-
+<%//厂家查看驳回状态
+}else if((state==TTask.TASK_STATE_REJECT && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
+<div class="inBox">
+<div>请仔细参考流程中驳回的原因，根据实际情况从业务平台重新发起任务：</div>
+<a href='javascript:dropTask(<%= one.getId()%>);' class='aButton tx_center' id="bt_rejectAcc">确认驳回并放弃</a>
+</div>
 <%}%>
 </div>
 
