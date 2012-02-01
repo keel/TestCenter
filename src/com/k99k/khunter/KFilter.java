@@ -149,7 +149,7 @@ public final class KFilter implements Filter {
 				return;
 			}
 			//是否打印
-			if (msg.getData("[print]") != null) {
+			else if (msg.getData("[print]") != null) {
 				resp.getWriter().print(msg.getData("[print]"));
 				return;
 			}

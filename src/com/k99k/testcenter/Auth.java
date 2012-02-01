@@ -104,6 +104,8 @@ public class Auth extends Action {
 		String co = WebTool.getCookieValue(httpmsg.getHttpReq().getCookies(), "co", "");
 		if (!coStr.equals("")) {
 			String[] u_p = Base64Coder.decodeString(coStr).split(":");
+			//System.out.println(coStr);
+			//System.out.println(Base64Coder.decodeString(coStr));
 			if (u_p.length == 3) {
 				KObject u = StaticDao.checkUser(u_p[0], u_p[1]);
 				if (u != null && (!co.equals("true"))) {

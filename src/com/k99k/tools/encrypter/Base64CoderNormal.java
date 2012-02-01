@@ -170,9 +170,26 @@ public static char[] encode (byte[] in, int iOff, int iLen) {
 * @return   A String containing the decoded data.
 * @throws   IllegalArgumentException If the input is not valid Base64 encoded data.
 */
-public static String decodeString (String s) {
-   return new String(decode(s)); }
-
+	public static String decodeString(String s) {
+		try {
+			return new String(decode(s), "utf-8");
+		} catch (UnsupportedEncodingException e) {
+		}
+		return null;
+	}
+	
+	/**
+	 * @param s
+	 * @param encode
+	 * @return
+	 */
+	public static String decodeString(String s,String encode) {
+		try {
+			return new String(decode(s), encode);
+		} catch (UnsupportedEncodingException e) {
+		}
+		return null;
+	}
 /**
 * Decodes a byte array from Base64 format and ignores line separators, tabs and blanks.
 * CR, LF, Tab and Space characters are ignored in the input data.

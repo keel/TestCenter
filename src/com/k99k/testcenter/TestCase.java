@@ -23,7 +23,7 @@ import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
 /**
- * 测试项目
+ * 测试项目,会缓存,修改数据库中的测试项目需要重启应用或刷新此Action
  * @author keel
  *
  */

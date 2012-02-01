@@ -437,7 +437,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 			file = (String)tu.getProp("gFile");
 			i++;
 		}else{
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			sb.append("<div><div><a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
 		}
 	}
 	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div></div></div>");
@@ -478,7 +478,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 			file = (String)tu.getProp("gFile");
 			i++;
 		}else{
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			sb.append("<div><div><a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
 		}
 	}
 	sb.append("</div></div></div></div></div>");
