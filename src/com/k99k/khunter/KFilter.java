@@ -178,7 +178,7 @@ public final class KFilter implements Filter {
 //			}
 			else{
 				resp.setStatus(404);
-				resp.getWriter().print("404 - 3");
+				//resp.getWriter().print("404 - 3");
 				return;
 			}
 		} catch (Exception e) {

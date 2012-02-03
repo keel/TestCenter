@@ -168,6 +168,12 @@ public class TUser extends Action  {
 		}
 	}
 	
+	static final HashMap<String,Object> testerType = new HashMap<String, Object>();
+	
+	static{
+		testerType.put("$gte", 2);
+		testerType.put("$lte", 3);
+	}
 	
 	/**
 	 * 查找某一测试组长的所属测试人员(包含组长自己),id及名称,返回json
@@ -177,15 +183,16 @@ public class TUser extends Action  {
 	 */
 	private void tester(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		int gid = Integer.parseInt(u.getProp("groupID").toString());
-		//groupID不能为0，且要求user类型为组长以上级别
-		if (gid==0 || u.getType()<3) {
+		//且要求user类型为组长以上级别
+		if (u.getType()<3) {
 			msg.addData("[print]", "");
 			return;
 		}
 		HashMap<String,Object> q = new HashMap<String, Object>(4);
 		q.put("groupID", gid);
+		//类型为测试人员或组长
+		q.put("type", testerType);
 		q.put("state", 0);
-		//TODO 注意将type>=10的去掉
 		HashMap<String,Object> fields = new HashMap<String, Object>(4);
 		fields.put("_id", 1);
 		fields.put("name", 1);

@@ -427,17 +427,20 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
 	Iterator<KObject> it = tus.iterator();
+	boolean wapfix = false;
 	while(it.hasNext()){
 		KObject tu = it.next();
-		if(!tu.getProp("gFile").equals(file)){
+		String gFile = tu.getProp("gFile").toString();
+		if(!gFile.equals(file)){
 			if(!file.equals("")){sb.append("</div></div>");}
-			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
-			sb.append("'><a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
+			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i).append("'>");
+			sb.append("<a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
 			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-			file = (String)tu.getProp("gFile");
+			file = gFile;
 			i++;
 		}else{
-			sb.append("<div><div><a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			if(gFile.equals("") && !wapfix){sb.append("<div><div class=\"groups\">");wapfix=true;};
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
 		}
 	}
 	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div></div></div>");
@@ -468,17 +471,20 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
 	Iterator<KObject> it = tus.iterator();
+	boolean wapfix = false;
 	while(it.hasNext()){
 		KObject tu = it.next();
-		if(!tu.getProp("gFile").equals(file)){
+		String gFile = tu.getProp("gFile").toString();
+		if(!gFile.equals(file)){
 			if(!file.equals("")){sb.append("</div></div>");}
 			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
 			sb.append("'><a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
 			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-			file = (String)tu.getProp("gFile");
+			file = gFile;
 			i++;
 		}else{
-			sb.append("<div><div><a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			if(gFile.equals("") && !wapfix){sb.append("<div><div class=\"groups\">");wapfix=true;};
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
 		}
 	}
 	sb.append("</div></div></div></div></div>");

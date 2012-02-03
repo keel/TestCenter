@@ -101,6 +101,9 @@ public class GameFile extends Action {
 			int len = (int)f.length();
 			resp.setContentLength(len);
 			if (len > 0) {
+				//不让KFilter处理
+				msg.addData("[none]", "true");
+				msg.removeData("[print]");
 				try {
 					InputStream inStream = new FileInputStream(f);
 					byte[] buf = new byte[4096];
@@ -112,8 +115,6 @@ public class GameFile extends Action {
 					inStream.close();
 					servletOS.flush();
 					servletOS.close();
-					//不让KFilter处理
-					msg.addData("[none]", "true");
 					return super.act(msg);
 				} catch (IOException e) {
 					log.error("Gamefile download failed:"+f);
@@ -121,9 +122,10 @@ public class GameFile extends Action {
 					return super.act(msg);
 				}
 			}
+		}else{
+			log.error("Gamefile not exist:"+f);
+			JOut.err(404,"文件不存在", httpmsg);
 		}
-		log.error("Gamefile not exist:"+f);
-		JOut.err(404,"文件不存在", httpmsg);
 		return super.act(msg);
 	}
 

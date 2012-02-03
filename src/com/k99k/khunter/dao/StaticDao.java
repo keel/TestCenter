@@ -219,7 +219,8 @@ public class StaticDao extends MongoDao {
 	
 	/**
 	 * json形式的查找,查找的字段为{name:1,shortName:1,group:1},sortby:prop_queryGroup_sort
-	 * @param dao
+	 * 针对WAP游戏(sys==2)时单独按归类生成json
+	 * @param sys
 	 * @param query
 	 * @param skip
 	 * @param len
@@ -227,27 +228,36 @@ public class StaticDao extends MongoDao {
 	 * @return json string
 	 */
 	@SuppressWarnings("unchecked")
-	public static final String queryPhoneGroupJson(HashMap<String,Object> query,int skip,int len,HashMap<String,Object> hint){
+	public static final String queryPhoneGroupJson(int sys,int skip,int len,HashMap<String,Object> hint){
 		try {
+			HashMap<String,Object> query = new HashMap<String, Object>(2);
+			query.put("type", sys);
 			BasicDBObject q = (query==null)?prop_empty:(query instanceof BasicDBObject)?(BasicDBObject)query:new BasicDBObject(query);
 			BasicDBObject hin = (hint==null)?null:new BasicDBObject(hint);
 			StringBuilder sb = new StringBuilder();
+			StringBuilder sb1 = new StringBuilder();
+			StringBuilder sb2 = new StringBuilder();
 			DBCollection coll = phoneDao.getColl();
 			DBCursor cur = null;
 			cur = coll.find(q, prop_queryGroup_fields).sort(prop_queryGroup_sort).skip(skip).limit(len).hint(hin);
 			sb.append("{\"gg\":[{\"g\":-1,\"d\":[");
 			int groupC = -1;
-	        while(cur.hasNext()) {
-	        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
-	        	int g = Integer.parseInt(m.get("group").toString());
-	        	if (g != groupC) {
-					sb.append("]},{\"g\":").append(g).append(",\"d\":[\"").append((String)m.get("name")).append("\"");
-					groupC = g;
-				}else{
-					sb.append(",\"").append((String)m.get("name")).append("\"");
-				}
-	        }
-	        sb.append("]}],\"aa\":{");
+			if (sys != 2) {
+				 while(cur.hasNext()) {
+		        	HashMap<String, Object> m = (HashMap<String, Object>) cur.next();
+		        	int g = Integer.parseInt(m.get("group").toString());
+		        	if (g != groupC) {
+						sb.append("]},{\"g\":").append(g).append(",\"d\":[\"").append((String)m.get("name")).append("\"");
+						groupC = g;
+					}else{
+						sb.append(",\"").append((String)m.get("name")).append("\"");
+					}
+		        }
+			}else{
+				sb.append("]},{\"g\":0,\"d\":[");
+			}
+	       
+	        //sb2.append("]}],\"aa\":{");
 	        //增加phoneGroup代表机型组等
 	        coll = phoneGroupDao.getColl();
 	        cur = coll.find(q);
@@ -258,18 +268,21 @@ public class StaticDao extends MongoDao {
 	        		//900+id作为g的序号
 //					sb.append(",{\"g\":").append(900+Integer.parseInt(m.get("_id").toString()));
 //					sb.append(",\"n\":\"").append(m.get("name")).append("\",\"d\":[");
-	        		sb.append("\"").append(m.get("name")).append("\":[");
+	        		sb2.append("\"").append(m.get("name")).append("\":[");
 					Iterator<String> it = li.iterator();
 					while (it.hasNext()) {
 						String ph = it.next();
-						sb.append("\"").append(ph).append("\",");
+						sb1.append("\"").append(ph).append("\",");
 					}
-					sb.deleteCharAt(sb.length()-1);
-					sb.append("]}");
+					sb1.deleteCharAt(sb1.length()-1);
+					sb2.append(sb1).append("]");
 				}
 	        }
 	        //------------------------
-	        sb.append("}");
+	        if (sys==2) {
+	        	sb.append(sb1);
+			}
+	        sb.append("]}],\"aa\":{").append(sb2).append("}}");
 	        return sb.toString();
 		} catch (Exception e) {
 			log.error("queryGroupJson error!", e);

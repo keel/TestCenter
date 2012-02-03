@@ -315,6 +315,24 @@ public class TTaskTask extends Action {
 		if (json==null || json.isEmpty()) {
 			return;
 		}
+		
+		//需要先清除此任务所涉及的所有测试人员任务
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("unReadTasks", tid);
+		query.put("type", 2);
+		HashMap<String,Object> set1 = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull1 = new HashMap<String, Object>(2);
+		pull1.put("unReadTasks", tid);
+		set1.put("$pull", pull1);
+		HashMap<String,Object> inc1 = new HashMap<String, Object>(2);
+		inc1.put("newTasks", -1);
+		set1.put("$inc", inc1);
+		boolean re = TUser.dao.update(query, set1, false, true);
+		if (!re) {
+			log.error("remove testers task failed. task ID:"+tid);
+		}
+		
+		
 		//
 		Iterator<HashMap<String,Object>> it = json.iterator();
 		HashMap<String,Object> q = new HashMap<String, Object>(4);

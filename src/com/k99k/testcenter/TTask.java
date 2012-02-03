@@ -240,8 +240,9 @@ public class TTask extends Action {
 				HashMap<String,Object> map = it.next();
 				String gFile = map.get("gFile").toString();
 				long fileId = 0;
-				if (StringUtil.isDigits(gFile)) {
-					fileId = Long.parseLong(map.get("fileId").toString());
+				Object fob = map.get("fileId");
+				if (StringUtil.isDigits(fob)) {
+					fileId = Long.parseLong(fob.toString());
 				}
 				ArrayList<String> phList = (ArrayList<String>)map.get("phone");
 				Iterator<String> li = phList.iterator();
