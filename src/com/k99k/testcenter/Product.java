@@ -122,11 +122,12 @@ public class Product extends Action {
 				msg.addData("[print]", "");
 				return ;
 			}
-			try {
-				p = new String(p.trim().getBytes("ISO-8859-1"),"utf-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+//			try {
+				//p = new String(p.trim().getBytes("ISO-8859-1"),"utf-8");
+				p = p.trim();
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			pt = dao.findOne(p);
 		}
 		//权限不够
@@ -153,14 +154,14 @@ public class Product extends Action {
 			msg.addData("[print]", "");
 			return ;
 		}
-		try {
-			q = new String(q.getBytes("ISO-8859-1"),"utf-8").trim();
-			c = new String(c.getBytes("ISO-8859-1"),"utf-8").trim();
-		} catch (UnsupportedEncodingException e1) {
-			e1.printStackTrace();
-			msg.addData("[print]", "");
-			return ;
-		}
+//		try {
+			q = q.trim();//new String(q.getBytes("ISO-8859-1"),"utf-8").trim();
+			c = c.trim();//new String(c.getBytes("ISO-8859-1"),"utf-8").trim();
+//		} catch (UnsupportedEncodingException e1) {
+//			e1.printStackTrace();
+//			msg.addData("[print]", "");
+//			return ;
+//		}
 		//权限不够
 		if(u.getType()<2 && !c.equals((String)u.getProp("company"))){
 			msg.addData("[print]", "");

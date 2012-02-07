@@ -109,7 +109,7 @@ function addInfo(){
 	if(faId.length!=2){alert("补充说明出错");return;}
 	var i = faId[1];
 	var info = $("#tu_info").val(),r=res[i];
-	if(info && $.trim(info).length>0){
+	if(info || info==""){
 		if(r){r.info=info;};
 	}
 	$("#addInfoCase").appendTo("#hide");

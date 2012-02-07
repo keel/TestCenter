@@ -238,11 +238,12 @@ public class News extends Action {
 		}else if(subact.equals("search")){
 			if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
 				String key = null;
-				try {
+//				try {
 					//TODO 针对tomcatURL编码转换
-					key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
-				} catch (UnsupportedEncodingException e) {
-				}
+					//key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
+					key = req.getParameter("k").trim();
+//				} catch (UnsupportedEncodingException e) {
+//				}
 				String p_str = req.getParameter("p");
 				String pz_str = req.getParameter("pz");
 				int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;

@@ -940,12 +940,13 @@ public class TTask extends Action {
 	private void search(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
 			String key = null;
-			try {
-				//TODO 针对tomcatURL编码转换
-				key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				//TODO 针对tomcatURL编码转换
+//				key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
+				key = req.getParameter("k").trim();
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			HashMap<String,Object> query = new HashMap<String, Object>(2);
 			Pattern p = Pattern.compile(key);
 			query.put("name", p);

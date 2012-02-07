@@ -141,12 +141,13 @@ public class TUser extends Action  {
 	private void one(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		if (StringUtil.isStringWithLen(req.getParameter("u"), 1)) {
 			String name = null;
-			try {
+//			try {
 				//TODO 针对tomcatURL编码转换
-				name = new String(req.getParameter("u").getBytes("ISO-8859-1"),"utf-8").trim();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+				//name = new String(req.getParameter("u").getBytes("ISO-8859-1"),"utf-8").trim();
+				name = req.getParameter("u").trim();
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			//Task
 			KObject one = dao.findOne(name);
 			if (one== null || one.getState() == -1) {

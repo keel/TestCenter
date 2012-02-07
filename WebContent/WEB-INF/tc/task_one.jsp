@@ -79,13 +79,14 @@ $(function(){
 			task_info: {required:true}
 	    }
 	});
-
+	<%//显示测试
+	if(state<=TTask.TASK_STATE_TEST){%>
 	selectTU();
-
+	<%}%>
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if((state==TTask.TASK_STATE_CONFIRM && userType>1) || state==TTask.TASK_STATE_NEED_MOD || state==TTask.TASK_STATE_BACKED){%>
+if((state>TTask.TASK_STATE_TEST && (user.getProp("company").equals(one.getProp("company"))) || userType>1)){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);
