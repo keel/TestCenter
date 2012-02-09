@@ -166,6 +166,22 @@
 			"pwd":"6667441"
 		},
 		{
+			"_actName":"egame",
+			"_class":"com.k99k.testcenter.EGame",
+			"companyUrl":"http://202.102.111.18/MIS/v/entitytest/cps?startIndex=0&pageSize=1",
+			"productUrl":"http://202.102.111.18/MIS/v/entitytest/products?startIndex=0&pageSize=1",
+			"handsetUrl":"http://202.102.111.18/MIS/v/entitytest/models?startIndex=0&pageSize=1",
+			"feeUrl":"http://202.102.111.18/MIS/v/entitytest/consumecodes"
+		},
+		{
+			"_actName":"egameFtp",
+			"_class":"com.k99k.testcenter.EGameFtpSynTask",
+			"ip":"202.102.39.14",
+			"port":21,
+			"user":"shitibao",
+			"pwd":"shitibao123"
+		},
+		{
 			"_actName":"end",
 			"_class":"com.k99k.testcenter.End"
 		}
