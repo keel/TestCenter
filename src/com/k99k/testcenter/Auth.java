@@ -18,7 +18,6 @@ import com.k99k.khunter.WebTool;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
-import com.k99k.tools.encrypter.Base64Coder;
 import com.k99k.tools.encrypter.Encrypter;
 import com.k99k.khunter.JOut;
 
@@ -43,7 +42,7 @@ public class Auth extends Action {
 	/**
 	 * 默认40分钟超时
 	 */
-	private static final int cookieTime = 2400;
+	private static final int cookieTime = 60*40;
 	
 	private static final int cookieTimeHalfMi = 1200/2*1000;
 	
@@ -116,12 +115,12 @@ public class Auth extends Action {
 				KObject u = null;
 				if (u_p[1].equals("egame")) {
 					//由平台接口过来的认证
-					if (StringUtil.isDigits(u_p[1])) {
+					if (StringUtil.isDigits(u_p[0])) {
 						//id
-						u = TUser.dao.findOne(Long.parseLong(u_p[1]));
+						u = TUser.dao.findOne(Long.parseLong(u_p[0]));
 					}else{
 						//userName
-						u = TUser.dao.findOne(u_p[1]);
+						u = TUser.dao.findOne(u_p[0]);
 					}
 				}else{
 					//普通用户名密码认证

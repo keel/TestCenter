@@ -48,6 +48,7 @@ public class Err {
 	public static final int ERR_EGAME_FEE = 304;
 	public static final int ERR_EGAME_DECODE = 305;
 	public static final int ERR_EGAME_T_ERR = 306;
+	public static final int ERR_EGAME_LOGIN_OUTOFTIME = 307;
 	
 	
 }

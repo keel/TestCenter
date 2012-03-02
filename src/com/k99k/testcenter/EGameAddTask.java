@@ -57,12 +57,17 @@ public class EGameAddTask {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long productId = 24123423;
-		long userId = 25435233;
+		long productId = 82;
+		long userId = 6;
 		long nowTime = System.currentTimeMillis();
 		String des = encodeTaskPara(productId,userId,nowTime);
 		System.out.println("des:"+des);
 		String src = decodeUrlPara(des);
+		System.out.println("src:"+src);
+		System.out.println("--------------");
+		des = encodeUserPara(userId,nowTime);
+		System.out.println("des:"+des);
+		src = decodeUrlPara(des);
 		System.out.println("src:"+src);
 	}
 

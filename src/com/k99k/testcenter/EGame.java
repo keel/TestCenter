@@ -15,6 +15,7 @@ import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.Net;
 import com.k99k.tools.StringUtil;
@@ -56,9 +57,9 @@ public class EGame extends Action {
 	private static String feeUrl;
 
 	/**
-	 * 登录状态保持时间
+	 * 登录状态保持时间,默认40分钟
 	 */
-	private static final int cookieTime = 2400;
+	private static final long cookieTime = 40*60*1000;
 	
 	
 	
@@ -85,7 +86,8 @@ public class EGame extends Action {
 		if (subact.equals("newtask")) {
 			this.newtask(req,u, httpmsg);
 		}else{
-			JOut.err(404, httpmsg);
+			//转到测试首页
+			this.toTC(req,u, httpmsg);
 		}
 		return super.act(msg);
 	}
@@ -125,6 +127,10 @@ public class EGame extends Action {
 						Auth.setLoginState(tt[0], "egame",loginTime,httpmsg.getHttpResp());
 						return u;
 					}
+				}else{
+					//FIXME 可跳转到爱游戏登录页
+					JOut.err(401,"E401"+Err.ERR_EGAME_LOGIN_OUTOFTIME,httpmsg);
+					return null;
 				}
 				
 			}
@@ -155,7 +161,19 @@ public class EGame extends Action {
 		msg.addData("u", user);
 		msg.addData("product", p);
 		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
-		
+	}
+	
+	private void toTC(HttpServletRequest req,KObject user,HttpActionMsg msg){
+		String p_str = req.getParameter("p");
+		String pz_str = req.getParameter("pz");
+		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
+		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):News.getPageSize();
+		ArrayList<KObject> list = StaticDao.loadNews(page, pz);
+		msg.addData("u", user);
+		msg.addData("list", list);
+		msg.addData("pz", pz);
+		msg.addData("p", page);
+		msg.addData("[jsp]", "/WEB-INF/tc/news.jsp");
 	}
 	
 

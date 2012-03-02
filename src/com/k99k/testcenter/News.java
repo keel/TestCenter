@@ -39,7 +39,7 @@ public class News extends Action {
 		super(name);
 	}
 	
-	private int pageSize = 30;
+	private static int pageSize = 30;
 	
 	static DaoInterface dao;
 	static KObjSchema schema;
@@ -64,7 +64,7 @@ public class News extends Action {
 			String p_str = req.getParameter("p");
 			String pz_str = req.getParameter("pz");
 			int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
-			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
+			int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):pageSize;
 			ArrayList<KObject> list = StaticDao.loadNews(page, pz);
 			msg.addData("u", u);
 			msg.addData("list", list);
@@ -296,15 +296,15 @@ public class News extends Action {
 	/**
 	 * @return the pageSize
 	 */
-	public final int getPageSize() {
+	public static final int getPageSize() {
 		return pageSize;
 	}
 
 	/**
 	 * @param pageSize the pageSize to set
 	 */
-	public final void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+	public static final void setPageSize(int pageSiz) {
+		pageSize = pageSiz;
 	}
 	
 	
