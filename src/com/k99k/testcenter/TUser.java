@@ -3,7 +3,6 @@
  */
 package com.k99k.testcenter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 

@@ -52,6 +52,19 @@ public class EGameFtpSynTask extends Action {
 		
 		return super.act(msg);
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see com.k99k.khunter.Action#init()
+	 */
+	@Override
+	public void init() {
+		super.init();
+		//创建一个循环任务
+		
+		
+	}
 
 	/**
 	 * FIXME 创建本次同步的文件.

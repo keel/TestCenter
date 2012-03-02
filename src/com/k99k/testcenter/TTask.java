@@ -3,7 +3,6 @@
  */
 package com.k99k.testcenter;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -114,6 +113,9 @@ public class TTask extends Action {
 			this.confirm(req, u, httpmsg);
 		}else if(subact.equals("a_s")){
 			this.search(subact,req, u, httpmsg);
+		}else if(subact.equals("add2")){
+			msg.addData("sub", subact);
+			this.toAdd2(u, httpmsg);
 		}else{
 			JOut.err(404, httpmsg);
 		}
@@ -954,12 +956,12 @@ public class TTask extends Action {
 			this.queryPage(query,subact, req, u, msg);
 			return;
 		}else{
-			JOut.err(401, msg);
+			JOut.err(403, msg);
 		}
 	}
 	
 	/**
-	 * 转到增加页
+	 * 通过EGAME接口获取产品信息并转到增加页
 	 * @param u
 	 * @param msg
 	 */
@@ -969,8 +971,35 @@ public class TTask extends Action {
 			JOut.err(401, msg);
 			return;
 		}
+		String opid = msg.getHttpReq().getParameter("pid");
+		if (!StringUtil.isDigits(opid)) {
+			JOut.err(403, msg);
+			return;
+		}
+		long pid = Long.parseLong(opid);
+		HashMap<String,String> product = EGame.getProduct(pid);
+		if (product == null) {
+			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT, msg);
+			return;
+		}
 		msg.addData("u", u);
+		msg.addData("pmap", product);
 		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
+	}
+	
+	/**
+	 * 转到增加页
+	 * @param u
+	 * @param msg
+	 */
+	private void toAdd2(KObject u,HttpActionMsg msg){
+		if (u.getType() < 1) {
+			//权限不够
+			JOut.err(401, msg);
+			return;
+		}
+		msg.addData("u", u);
+		msg.addData("[jsp]", "/WEB-INF/tc/task_add2.jsp");
 	}
 	
 	/**

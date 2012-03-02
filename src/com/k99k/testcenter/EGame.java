@@ -5,10 +5,20 @@ package com.k99k.testcenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.log4j.Logger;
 import com.k99k.khunter.Action;
+import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.HttpActionMsg;
+import com.k99k.khunter.JOut;
+import com.k99k.khunter.KFilter;
+import com.k99k.khunter.KObject;
 import com.k99k.tools.JSON;
 import com.k99k.tools.Net;
+import com.k99k.tools.StringUtil;
+import com.k99k.tools.encrypter.Encrypter;
 
 /**
  * 与爱游戏平台的接口
@@ -44,8 +54,111 @@ public class EGame extends Action {
 	 * 短代信息URL接口
 	 */
 	private static String feeUrl;
+
+	/**
+	 * 登录状态保持时间
+	 */
+	private static final int cookieTime = 2400;
 	
 	
+	
+	/* (non-Javadoc)
+	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
+	 */
+	@Override
+	public ActionMsg act(ActionMsg msg) {
+		HttpActionMsg httpmsg = (HttpActionMsg)msg;
+		HttpServletRequest req = httpmsg.getHttpReq();
+		//限IP
+		/*
+		if (!req.getRemoteAddr().equals("202.102.xxx.xxx")) {
+			JOut.err(401,"E401"+Err.ERR_IP, httpmsg);
+			return super.act(msg);
+		}*/
+		String subact = KFilter.actPath(msg, 2, "");
+		//判断用户登录
+		KObject u = checkLogin(httpmsg);
+		if (u == null) {
+			return super.act(msg);
+		}
+		//新建任务
+		if (subact.equals("newtask")) {
+			this.newtask(req,u, httpmsg);
+		}else{
+			JOut.err(404, httpmsg);
+		}
+		return super.act(msg);
+	}
+	
+	/**
+	 * 判断登录状态,成功则返回TUser,失败则返回 null
+	 * @param httpmsg
+	 * @return
+	 */
+	private KObject checkLogin(HttpActionMsg httpmsg){
+		//验证参数
+		if (!StringUtil.isStringWithLen(httpmsg.getHttpReq().getParameter("t"), 5)) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, httpmsg);
+			return null;
+		}
+		KObject u = Auth.checkCookieLogin(httpmsg);
+		if (u == null) {
+			//验证登录参数
+			String enc = httpmsg.getHttpReq().getParameter("t").trim();
+			String t = Encrypter.decrypt(enc);
+			if (!StringUtil.isStringWithLen(t, 5)) {
+				JOut.err(403,"E403"+Err.ERR_EGAME_DECODE, httpmsg);
+				return null;
+			}
+			String[] tt = t.split("#");
+			if (tt.length>=2 && StringUtil.isDigits(tt[0]) && StringUtil.isDigits(tt[1]) ) {
+				long userId = Long.parseLong(tt[0]);
+				long loginTime = Long.parseLong(tt[1]);
+				//判断登录时间是否已超时
+				if (System.currentTimeMillis()-loginTime <= cookieTime) {
+					u = TUser.dao.findOne(userId);
+					if (u != null) {
+						//如果带产品id,则加到user的属性中,注意后期处理时要清除
+						if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
+							u.setProp("pid", tt[2]);
+						}
+						Auth.setLoginState(tt[0], "egame",loginTime,httpmsg.getHttpResp());
+						return u;
+					}
+				}
+				
+			}
+			JOut.err(401,"E401"+Err.ERR_EGAME_T_ERR,httpmsg);
+			return null;
+		}
+		return u;
+	}
+	
+	/**
+	 * 创建新测试任务
+	 * @param req
+	 * @param user
+	 * @param msg
+	 */
+	private void newtask(HttpServletRequest req,KObject user,HttpActionMsg msg){
+		Object pidobj = user.getProp("pid");
+		if (!StringUtil.isDigits(pidobj)) {
+			JOut.err(403,"E403"+Err.ERR_EGAME_T_ERR,msg);
+			return;
+		}
+		long pid = Long.parseLong(user.removeProp("pid").toString());
+		KObject p = Product.dao.findOne(pid);
+		if (p == null) {
+			JOut.err(403,"E403"+Err.ERR_EGAME_PRODUCT,msg);
+			return;
+		}
+		msg.addData("u", user);
+		msg.addData("product", p);
+		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
+		
+	}
+	
+
 	/**
 	 * 获取CP信息
 	 * @param cpid
@@ -61,8 +174,8 @@ public class EGame extends Action {
 	 * @param id
 	 * @return HashMap形式的json
 	 */
-	public static final HashMap<String,String> getProduct(long id){
-		String url = productUrl+"&productId="+id;
+	public static final HashMap<String,String> getProduct(long pid){
+		String url = productUrl+"&productId="+pid;
 		return getUrlJson(url);
 	}
 	/**

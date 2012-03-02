@@ -21,6 +21,7 @@ public class Err {
 	public static final int ERR_AUTH_FAIL = 103;
 	public static final int ERR_JSON = 104;
 	public static final int ERR_DB_UPDATE = 105;
+	public static final int ERR_IP = 106;
 	
 	public static final int ERR_ADD_PRODUCT_FAIL = 201;
 	public static final int ERR_ADD_OPERATOR_FAIL = 202;
@@ -41,5 +42,12 @@ public class Err {
 	public static final int ERR_TOPIC_DEL = 217;
 	public static final int ERR_TASK_BACK = 218;
 	
-
+	public static final int ERR_EGAME_PRODUCT = 301;
+	public static final int ERR_EGAME_COMPANY = 302;
+	public static final int ERR_EGAME_HANDSET = 303;
+	public static final int ERR_EGAME_FEE = 304;
+	public static final int ERR_EGAME_DECODE = 305;
+	public static final int ERR_EGAME_T_ERR = 306;
+	
+	
 }

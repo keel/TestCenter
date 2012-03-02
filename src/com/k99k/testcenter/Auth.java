@@ -5,6 +5,8 @@ package com.k99k.testcenter;
 
 import java.util.HashMap;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
@@ -15,7 +17,9 @@ import com.k99k.khunter.KObject;
 import com.k99k.khunter.WebTool;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
+import com.k99k.tools.StringUtil;
 import com.k99k.tools.encrypter.Base64Coder;
+import com.k99k.tools.encrypter.Encrypter;
 import com.k99k.khunter.JOut;
 
 /**
@@ -60,11 +64,13 @@ public class Auth extends Action {
 				//是否保存登录状态
 				String cookie = httpmsg.getHttpReq().getParameter("saveLogin");
 				if (cookie != null && cookie.equals("true")) {
-					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()), httpmsg.getHttpResp());
-					WebTool.setCookie("co", "true", httpmsg.getHttpResp());
+					setLongLoginState(uName,uPwd,System.currentTimeMillis(),httpmsg.getHttpResp());
+					//WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()), httpmsg.getHttpResp());
+					//WebTool.setCookie("co", "true", httpmsg.getHttpResp());
 				}else{
 					//默认20分钟
-					WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),cookieTime, httpmsg.getHttpResp());
+					setLoginState(uName,uPwd,System.currentTimeMillis(),httpmsg.getHttpResp());
+					//WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),cookieTime, httpmsg.getHttpResp());
 				}
 				//返回ok
 				//msg.addData("[redirect]", "/news");
@@ -103,24 +109,61 @@ public class Auth extends Action {
 		String coStr = WebTool.getCookieValue(httpmsg.getHttpReq().getCookies(),"tcu","");
 		String co = WebTool.getCookieValue(httpmsg.getHttpReq().getCookies(), "co", "");
 		if (!coStr.equals("")) {
-			String[] u_p = Base64Coder.decodeString(coStr).split(":");
+			String[] u_p = Encrypter.decrypt(coStr).split(":");
 			//System.out.println(coStr);
 			//System.out.println(Base64Coder.decodeString(coStr));
 			if (u_p.length == 3) {
-				KObject u = StaticDao.checkUser(u_p[0], u_p[1]);
+				KObject u = null;
+				if (u_p[1].equals("egame")) {
+					//由平台接口过来的认证
+					if (StringUtil.isDigits(u_p[1])) {
+						//id
+						u = TUser.dao.findOne(Long.parseLong(u_p[1]));
+					}else{
+						//userName
+						u = TUser.dao.findOne(u_p[1]);
+					}
+				}else{
+					//普通用户名密码认证
+					u = StaticDao.checkUser(u_p[0], u_p[1]);
+				}
 				if (u != null && (!co.equals("true"))) {
 					long now = System.currentTimeMillis();
 					//log.info("Cookie time:"+new Date(Long.parseLong(u_p[2]))+" Cookie time left:"+(now - Long.parseLong(u_p[2])));
 					//时间间隔大于cookie时间的一半时，重新设置
 					if ((now - Long.parseLong(u_p[2])) >= cookieTimeHalfMi) {
 						//log.info("Cookie rebuilt."+(now - Long.parseLong(u_p[2])));
-						WebTool.setCookie("tcu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+now),cookieTime, httpmsg.getHttpResp());
+						//WebTool.setCookie("tcu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+now),cookieTime, httpmsg.getHttpResp());
+						setLoginState(u_p[0],u_p[1],now,httpmsg.getHttpResp());
 					}
 				}
 				return u;
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * 设置已登录状态
+	 * @param user
+	 * @param pwd
+	 * @param loginTime
+	 * @param resp
+	 */
+	public static void setLoginState(String user,String pwd,long loginTime,HttpServletResponse resp){
+		WebTool.setCookie("tcu", Encrypter.encrypt(user+":"+pwd+":"+loginTime),cookieTime, resp);
+	}
+	
+	/**
+	 * 设置长时间已登录状态,即使用cookie验证为true
+	 * @param user
+	 * @param pwd
+	 * @param loginTime
+	 * @param resp
+	 */
+	public static void setLongLoginState(String user,String pwd,long loginTime,HttpServletResponse resp){
+		setLoginState(user,pwd,loginTime,resp);
+		WebTool.setCookie("co", "true", resp);
 	}
 	
 	public static final boolean checkPermission(String act,int userType,int userLevel){

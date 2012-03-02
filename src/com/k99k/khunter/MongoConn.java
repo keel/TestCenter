@@ -105,7 +105,6 @@ public final class MongoConn implements DataSourceInterface{
 	 * @param kc KObjConfig
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public boolean buildNewTable(KObjConfig kc){
 		try {
 			DaoInterface dao = kc.getDaoConfig().findDao();
@@ -116,9 +115,9 @@ public final class MongoConn implements DataSourceInterface{
 			coll.save(new MongoWrapper(kobj));
 			//index
 			HashMap<String,KObjIndex> ins = kc.getKobjSchema().getIndexes();
-			Iterator it = ins.entrySet().iterator();
+			Iterator<Map.Entry<String, KObjIndex>> it = ins.entrySet().iterator();
 			while (it.hasNext()) {
-				Map.Entry<String, KObjIndex> entry = (Map.Entry<String, KObjIndex>) it.next();
+				Map.Entry<String, KObjIndex> entry = it.next();
 				KObjIndex ki = entry.getValue();
 				coll.ensureIndex(new BasicDBObject(ki.getCol(), (ki.isAsc())?1:-1),ki.getCol(), ki.isUnique());
 			}
@@ -330,7 +329,7 @@ public final class MongoConn implements DataSourceInterface{
 
 	@Override
 	public void exit() {
-		this.mongo.close();
+		mongo.close();
 	}
 	
 	

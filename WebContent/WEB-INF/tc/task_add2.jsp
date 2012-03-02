@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" session="false" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*" session="false" %>
 <%
 String sPrefix = KFilter.getStaticPrefix();
 String prefix = KFilter.getPrefix();
@@ -11,7 +11,6 @@ if(o != null ){
 	return;
 }
 KObject user = (KObject)data.getData("u");
-HashMap<String,String> pmap = (HashMap<String,String>)data.getData("pmap");
 int userType = user.getType();
 Boolean ismy = request.getParameter("ismy")!=null && request.getParameter("ismy").equals("true");
 out.print(JSPOut.out("head0","0","创建新测试任务"));%>
@@ -131,8 +130,14 @@ $("#task_p_search").autocomplete("<%=prefix %>/product/find",
 	chk:function(v){if($("#task_company").val().length<2){alert("请先确定[公司],再选择[产品]!");$("#task_p_search").val("");$("#task_company").focus();return false;}else{return (escape(v).indexOf("%u") < 0);};},
 	extraParams:addCompany
 });
-
-
+<% //如果指定了pid
+String pidstr = request.getParameter("pid");
+if(StringUtil.isDigits(pidstr)){
+StringBuilder skipP = new StringBuilder();
+skipP.append("pSelect(").append(pidstr).append(");$(\"#p_e\").remove();$('#type2').attr('checked','checked')");
+out.print(skipP);
+}
+%>
 });
 //-------------------------------------
 
