@@ -101,34 +101,25 @@ public class EGameFtpSynTask extends Action {
 			Iterator<Entry<String,String>> iter = f2f.entrySet().iterator(); 
 			while (iter.hasNext()) { 
 			    Entry<String,String> entry = iter.next(); 
-			    Object key = entry.getKey(); 
-			    Object val = entry.getValue(); 
+			    String src = entry.getKey(); 
+			    String dest = entry.getValue(); 
+			    
+			    String targetDir = dest.substring(0,dest.lastIndexOf("/"));
+			    
+			    //移动至目标文件夹,若无则创建
+				try {
+					client.changeDirectory(targetDir);
+				} catch (Exception e) {
+					client.createDirectory(targetDir);
+					client.changeDirectory(targetDir);
+				}
+				
+				File srcF = new File(src);
+				client.upload(srcF);
+				log.info("upload src["+src+"] to ["+dest+"]");
+				
 			} 
 			
-			//移动至目标文件夹,若无则创建
-			try {
-				client.changeDirectory(targetDir);
-			} catch (Exception e) {
-				client.createDirectory(targetDir);
-				client.changeDirectory(targetDir);
-			}
-			
-			log.info("remotePath----:"+client.currentDirectory());
-			
-			File dirf = new File(srcDir);
-			File[] fileList  = dirf.listFiles();
-			for (int i = 0; i < fileList.length; i++) {
-				if (fileList[i].isFile()) {
-					//上传文件
-					client.upload(fileList[i]);
-					log.info(fileList[i].getName());
-				}else if(fileList[i].isDirectory()){
-					//上传文件夹
-					String children = srcDir+"/"+fileList[i].getName();
-					String remote = targetDir+"/"+fileList[i].getName();
-					uploadFile(client,children,remote);
-				}
-			}
 		} catch (Exception e) {
 			log.error("uploadFile error:", e);
 		}
