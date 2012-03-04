@@ -6,6 +6,9 @@ package com.k99k.testcenter;
 import it.sauronsoftware.ftp4j.FTPClient;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -47,8 +50,14 @@ public class EGameFtpSynTask extends Action {
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
+		//从msg中获取pid,从TCTestUnit中找到测试通过的文件名,适配机型,fileId,
+		//然后以fileId从TCGameFile中找到真实文件名
 		
+		//生成适配对应文件
 		
+		//生成文件上传序列对应路径
+		
+		//开始上传
 		
 		return super.act(msg);
 	}
@@ -78,6 +87,52 @@ public class EGameFtpSynTask extends Action {
 		//生成config.csv文件
 		
 		return false;
+	}
+	
+	/**
+	 * 上传文件夹及下面的所有文件
+	 * @param client FTPClient
+	 * @param f2f HashMap形式,key:本地文件,value:远程目标文件
+	 * @throws Exception
+	 */
+	private final void uploadFile(FTPClient client,HashMap<String,String> f2f) throws Exception{
+		try {
+			
+			Iterator<Entry<String,String>> iter = f2f.entrySet().iterator(); 
+			while (iter.hasNext()) { 
+			    Entry<String,String> entry = iter.next(); 
+			    Object key = entry.getKey(); 
+			    Object val = entry.getValue(); 
+			} 
+			
+			//移动至目标文件夹,若无则创建
+			try {
+				client.changeDirectory(targetDir);
+			} catch (Exception e) {
+				client.createDirectory(targetDir);
+				client.changeDirectory(targetDir);
+			}
+			
+			log.info("remotePath----:"+client.currentDirectory());
+			
+			File dirf = new File(srcDir);
+			File[] fileList  = dirf.listFiles();
+			for (int i = 0; i < fileList.length; i++) {
+				if (fileList[i].isFile()) {
+					//上传文件
+					client.upload(fileList[i]);
+					log.info(fileList[i].getName());
+				}else if(fileList[i].isDirectory()){
+					//上传文件夹
+					String children = srcDir+"/"+fileList[i].getName();
+					String remote = targetDir+"/"+fileList[i].getName();
+					uploadFile(client,children,remote);
+				}
+			}
+		} catch (Exception e) {
+			log.error("uploadFile error:", e);
+		}
+		
 	}
 	
 	/**
@@ -115,7 +170,7 @@ public class EGameFtpSynTask extends Action {
 				}
 			}
 		} catch (Exception e) {
-			log.error("uploadFileToFtp error:", e);
+			log.error("uploadFile error:", e);
 		}
 		
 	}

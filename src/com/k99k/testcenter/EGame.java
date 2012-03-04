@@ -124,7 +124,7 @@ public class EGame extends Action {
 						if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
 							u.setProp("pid", tt[2]);
 						}
-						Auth.setLoginState(tt[0], "egame",loginTime,httpmsg.getHttpResp());
+						Auth.setLoginState(tt[0], "egame",loginTime,Integer.parseInt(String.valueOf(cookieTime)),httpmsg.getHttpResp());
 						return u;
 					}
 				}else{

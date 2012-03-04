@@ -43,6 +43,7 @@ public class Auth extends Action {
 	 * 默认40分钟超时
 	 */
 	private static final int cookieTime = 60*40;
+	private static final int longCookieTime = 24*60*60;
 	
 	private static final int cookieTimeHalfMi = 1200/2*1000;
 	
@@ -63,12 +64,12 @@ public class Auth extends Action {
 				//是否保存登录状态
 				String cookie = httpmsg.getHttpReq().getParameter("saveLogin");
 				if (cookie != null && cookie.equals("true")) {
-					setLongLoginState(uName,uPwd,System.currentTimeMillis(),httpmsg.getHttpResp());
+					setLongLoginState(uName,uPwd,httpmsg.getHttpResp());
 					//WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()), httpmsg.getHttpResp());
 					//WebTool.setCookie("co", "true", httpmsg.getHttpResp());
 				}else{
 					//默认20分钟
-					setLoginState(uName,uPwd,System.currentTimeMillis(),httpmsg.getHttpResp());
+					setLoginState(uName,uPwd,System.currentTimeMillis(),cookieTime,httpmsg.getHttpResp());
 					//WebTool.setCookie("tcu", Base64Coder.encodeString(uName+":"+uPwd+":"+System.currentTimeMillis()),cookieTime, httpmsg.getHttpResp());
 				}
 				//返回ok
@@ -133,7 +134,7 @@ public class Auth extends Action {
 					if ((now - Long.parseLong(u_p[2])) >= cookieTimeHalfMi) {
 						//log.info("Cookie rebuilt."+(now - Long.parseLong(u_p[2])));
 						//WebTool.setCookie("tcu", Base64Coder.encodeString(u_p[0]+":"+u_p[1]+":"+now),cookieTime, httpmsg.getHttpResp());
-						setLoginState(u_p[0],u_p[1],now,httpmsg.getHttpResp());
+						setLoginState(u_p[0],u_p[1],now,cookieTime,httpmsg.getHttpResp());
 					}
 				}
 				return u;
@@ -149,8 +150,8 @@ public class Auth extends Action {
 	 * @param loginTime
 	 * @param resp
 	 */
-	public static void setLoginState(String user,String pwd,long loginTime,HttpServletResponse resp){
-		WebTool.setCookie("tcu", Encrypter.encrypt(user+":"+pwd+":"+loginTime),cookieTime, resp);
+	public static void setLoginState(String user,String pwd,long loginTime,int keepTime,HttpServletResponse resp){
+		WebTool.setCookie("tcu", Encrypter.encrypt(user+":"+pwd+":"+loginTime),keepTime, resp);
 	}
 	
 	/**
@@ -160,8 +161,8 @@ public class Auth extends Action {
 	 * @param loginTime
 	 * @param resp
 	 */
-	public static void setLongLoginState(String user,String pwd,long loginTime,HttpServletResponse resp){
-		setLoginState(user,pwd,loginTime,resp);
+	public static void setLongLoginState(String user,String pwd,HttpServletResponse resp){
+		setLoginState(user,pwd,System.currentTimeMillis(),longCookieTime,resp);
 		WebTool.setCookie("co", "true", resp);
 	}
 	
