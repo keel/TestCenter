@@ -148,18 +148,65 @@ public class EGame extends Action {
 	 */
 	private void newtask(HttpServletRequest req,KObject user,HttpActionMsg msg){
 		Object pidobj = user.getProp("pid");
+		long pid = 0;
 		if (!StringUtil.isDigits(pidobj)) {
-			JOut.err(403,"E403"+Err.ERR_EGAME_T_ERR,msg);
+			//从参数解出pid
+			String enc = msg.getHttpReq().getParameter("t").trim();
+			String t = Encrypter.decrypt(enc);
+			if (!StringUtil.isStringWithLen(t, 5)) {
+				JOut.err(403,"E403"+Err.ERR_EGAME_DECODE, msg);
+				return;
+			}
+			String[] tt = t.split("#");
+			if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
+				//pidobj = tt[2];
+				pid = Long.parseLong(tt[2]);
+			}else{
+				JOut.err(403,"E403"+Err.ERR_EGAME_T_ERR,msg);
+				return;
+			}
+		}else{
+			pid = Long.parseLong(user.removeProp("pid").toString());
+		}
+		
+		
+		//直接从接口获取产品
+		HashMap<String,String> pmap = getProduct(pid);
+		if (pmap == null) {
+			//接口获取失败
+			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
 			return;
 		}
-		long pid = Long.parseLong(user.removeProp("pid").toString());
+		if (pmap.get("payType").equals("根据关卡或道具计费")) {
+			//获取短代信息
+			ArrayList<HashMap<String,String>> fee = getFee(pid);
+			if (fee != null) {
+				msg.addData("fee", fee);
+			}
+		}
+		//数据库中无此产品时使用pmap
+		msg.addData("pmap", pmap);
+		
+		/*先从数据库查找的方式
 		KObject p = Product.dao.findOne(pid);
 		if (p == null) {
-			JOut.err(403,"E403"+Err.ERR_EGAME_PRODUCT,msg);
-			return;
-		}
+			HashMap<String,String> pmap = getProduct(pid);
+			if (pmap == null) {
+				JOut.err(403,"E403"+Err.ERR_EGAME_PRODUCT,msg);
+				return;
+			}
+			if (pmap.get("payType").equals("根据关卡或道具计费")) {
+				//获取短代信息
+				ArrayList<HashMap<String,String>> fee = getFee(pid);
+				msg.addData("fee", fee);
+			}
+			//数据库中无此产品时使用pmap
+			msg.addData("pmap", pmap);
+		}else{
+			//数据库中能找到产品时用product
+			msg.addData("product", p);
+		}*/
 		msg.addData("u", user);
-		msg.addData("product", p);
 		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
 	}
 	
@@ -188,7 +235,7 @@ public class EGame extends Action {
 	}
 	
 	/**
-	 * 获取CP信息
+	 * 获取产品信息
 	 * @param id
 	 * @return HashMap形式的json
 	 */

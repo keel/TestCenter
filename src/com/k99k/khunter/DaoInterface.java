@@ -53,6 +53,14 @@ public interface DaoInterface extends Cloneable{
 	 */
 	public KObject findOne(String name);
 	
+	
+	/**
+	 * 按条件查询单个对象
+	 * @param query
+	 * @return
+	 */
+	public KObject findOne(HashMap<String,Object> query);
+	
 	/**
 	 * 判断名称是否已存在,存在则返回true
 	 * @param name KObject的name
@@ -67,6 +75,13 @@ public interface DaoInterface extends Cloneable{
 	 * @return Map<String,Object>
 	 */
 	public HashMap<String,Object> findOneMap(HashMap<String,Object> query,HashMap<String,Object> fields);
+	
+	/**
+	 * 查找单个对象的Map形式
+	 * @param query
+	 * @return
+	 */
+	public HashMap<String,Object> findOneMap(HashMap<String,Object> query);
 	
 	/**
 	 * 查找Map形式对象,顺序号为4

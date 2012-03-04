@@ -149,8 +149,21 @@ public class MongoDao implements DaoInterface{
 	}
 	
 	/**
+	 * 按条件查询单个对象
+	 * @param query
+	 * @return
+	 */
+	public KObject findOne(HashMap<String,Object> query){
+		Map<String, Object> m = this.findOneMap(query);
+		if (m != null) {
+			return  new  KObject(m);
+		}
+		return null;
+	}
+	
+	/**
 	 * 查找单个对象
-	 * @param id long
+	 * @param query HashMap<String,Object>
 	 * @return 未找到返回null
 	 */
 	public HashMap<String,Object> findOneMap(HashMap<String,Object> query){
@@ -184,6 +197,27 @@ public class MongoDao implements DaoInterface{
 		}
 	}
 	
+	/**
+	 * 查找Map形式对象
+	 * @param id long
+	 * @return Map形式,未找到返回null
+	 */
+	@SuppressWarnings("unchecked")
+	public HashMap<String, Object> findOneMap(long id){
+		try {
+			//coll = checkColl(coll);
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBObject o = coll.findOne(id);
+			if (o != null) {
+				return (HashMap<String, Object>)o;
+			}
+			return null;
+		} catch (Exception e) {
+			log.error("findOneMap error!", e);
+			return null;
+		}
+	}
+
 	/**
 	 * {_id:-1}
 	 */
@@ -392,28 +426,6 @@ public class MongoDao implements DaoInterface{
 		}
 		
 	}
-	
-	/**
-	 * 查找Map形式对象
-	 * @param id long
-	 * @return Map形式,未找到返回null
-	 */
-	@SuppressWarnings("unchecked")
-	public HashMap<String, Object> findOneMap(long id){
-		try {
-			//coll = checkColl(coll);
-			DBCollection coll = this.dataSource.getColl(tableName);
-			DBObject o = coll.findOne(id);
-			if (o != null) {
-				return (HashMap<String, Object>)o;
-			}
-			return null;
-		} catch (Exception e) {
-			log.error("findOneMap error!", e);
-			return null;
-		}
-	}
-	
 	
 	/**
 	 * 创建新对象,自动生成新ID

@@ -600,6 +600,13 @@
 					"intro":"公司名索引"
 				},
 				{
+					"col":"egameID",
+					"unique":false,
+					"asc":false,
+					"type":"type",
+					"intro":"egame平台的ID"
+				},
+				{
 					"col":"type",
 					"unique":false,
 					"asc":false,
@@ -755,6 +762,14 @@
 					"required":false,
 					"type":4,
 					"intro":"未读任务的ID"
+				},
+				{
+					"col":"egameID",
+					"def":0,
+					"len":0,
+					"required":false,
+					"type":4,
+					"intro":"egame平台的ID"
 				}
 			],
 			"intro":"登录平台的帐号"
@@ -909,6 +924,14 @@
 					"required":false,
 					"type":0,
 					"intro":"WAP产品的入口url"
+				},
+				{
+					"col":"gameClass",
+					"def":"",
+					"len":0,
+					"required":false,
+					"type":0,
+					"intro":"游戏类型"
 				}
 			],
 			"intro":"产品"
