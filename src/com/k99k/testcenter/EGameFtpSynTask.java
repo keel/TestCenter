@@ -90,12 +90,12 @@ public class EGameFtpSynTask extends Action {
 	}
 	
 	/**
-	 * 上传文件夹及下面的所有文件
+	 * 上传文件序列
 	 * @param client FTPClient
-	 * @param f2f HashMap形式,key:本地文件,value:远程目标文件
+	 * @param f2f HashMap形式的文件序列,key:本地文件完整路径,value:远程目标文件路径
 	 * @throws Exception
 	 */
-	private final void uploadFile(FTPClient client,HashMap<String,String> f2f) throws Exception{
+	private final void uploadFiles(FTPClient client,HashMap<String,String> f2f) throws Exception{
 		try {
 			
 			Iterator<Entry<String,String>> iter = f2f.entrySet().iterator(); 
@@ -106,12 +106,14 @@ public class EGameFtpSynTask extends Action {
 			    
 			    String targetDir = dest.substring(0,dest.lastIndexOf("/"));
 			    
-			    //移动至目标文件夹,若无则创建
-				try {
-					client.changeDirectory(targetDir);
-				} catch (Exception e) {
-					client.createDirectory(targetDir);
-					client.changeDirectory(targetDir);
+			    if (!client.currentDirectory().equals(targetDir)) {
+			    	//移动至目标文件夹,若无则创建
+			    	try {
+			    		client.changeDirectory(targetDir);
+			    	} catch (Exception e) {
+			    		client.createDirectory(targetDir);
+			    		client.changeDirectory(targetDir);
+			    	}
 				}
 				
 				File srcF = new File(src);
