@@ -573,7 +573,7 @@ public class TTask extends Action {
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		q.put("_id", tid);
-		if (tuRE == 2 || tuRE == 4) {
+		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
 			update.put("operator", task_operator);
 			update.put("isOnline", 1);
@@ -669,6 +669,13 @@ public class TTask extends Action {
 			//通过或部分通过
 			update.put("isOnline", 2);
 			update.put("state", tuRE);
+			KObject t = dao.findOne(tid);
+			long pid = (Long)t.getProp("PID");
+			ActionMsg amsg = new ActionMsg("egameFtp");
+			amsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+			amsg.addData("pid", pid);
+			amsg.addData("tid", tid);
+			TaskManager.makeNewTask("egameFtp-"+tid, amsg);
 		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
 			update.put("state", TASK_STATE_DROP);

@@ -183,7 +183,7 @@ public final class StringUtil {
 	}
 	
 	/**
-	 * 得到一个格式化日期
+	 * 得到一个当前时间的格式化日期
 	 * @param format yyyyMMdd 或yyyyMM等
 	 * @return
 	 */

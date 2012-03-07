@@ -4,8 +4,13 @@
 package com.k99k.testcenter;
 
 import it.sauronsoftware.ftp4j.FTPClient;
+import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -14,6 +19,9 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.dao.StaticDao;
+import com.k99k.tools.IO;
+import com.k99k.tools.StringUtil;
 
 /**
  * 游戏平台FTP同步产品接口
@@ -37,28 +45,83 @@ public class EGameFtpSynTask extends Action {
 	private String user;
 	
 	private String pwd;
+	
+	private String localPath;
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		
+		
 	}
+	
 	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
 	@Override
 	public ActionMsg act(ActionMsg msg) {
-		//从msg中获取pid,从TCTestUnit中找到测试通过的文件名,适配机型,fileId,
-		//然后以fileId从TCGameFile中找到真实文件名
+		//从msg中获取tid,从TestUnit中找到测试通过的文件名,适配机型,fileId,
+		Object pid = msg.getData("pid");
+		Object tid = msg.getData("tid");
+		if (!StringUtil.isDigits(tid) || !StringUtil.isDigits(pid)) {
+			log.error("EGameFtpSynTask faild. tid or pid not exsit.");
+			return super.act(msg);
+		}
+		//从TestUnit中找到测试通过的文件名,适配机型,fileId
+		HashMap<String,Object> q = new HashMap<String, Object>();
+		q.put("TID", Long.parseLong(String.valueOf(tid)));
+		q.put("state", 2);
+		ArrayList<HashMap<String,Object>> re = TestUnit.dao.query(q, StaticDao.fields_ftp_tid, null,0, 0, null);
+		if (re == null || re.size() == 0) {
+			log.error("EGameFtpSynTask faild. ERR_EGAME_FTP_TASK_NOT_FOUND.");
+			return super.act(msg);
+		}
+		//用于生成适配对应文件的StringBuffer
+		StringBuffer fsb = new StringBuffer();
+		//用于生成文件上传序列的HashMap
+		HashMap<String,String> f2f = new HashMap<String, String>();
+		String remotePath = "/"+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/";
+		
+		//清空query条件
+		q = new HashMap<String, Object>(2);
+		for (Iterator<HashMap<String, Object>> it = re.iterator(); it.hasNext();) {
+			HashMap<String, Object> map = it.next();
+			String fileId = map.get("fileId").toString();
+			String gFile = map.get("gFile").toString();
+			String phone = map.get("phone").toString();
+			//以fileId从TCGameFile中找到真实文件名
+			q.put("_id", Long.parseLong(fileId));
+			map = GameFile.dao.findOneMap(q, StaticDao.fields_ftp_fileName);
+			String fileName = map.get("fileName").toString();
+			//适配对应文件
+			fsb.append(fileName).append(",").append(phone).append("\r\n");
+			//文件上传序列
+			f2f.put(this.localPath+fileName, remotePath+fileName);
+		}
 		
 		//生成适配对应文件
-		
-		//生成文件上传序列对应路径
+		String csv = this.localPath+"config_"+System.currentTimeMillis()+".csv";
+		try {
+			IO.writeTxt(fsb.toString(), "utf-8", csv);
+		} catch (IOException e) {
+			log.error("EGameFtpSynTask faild. ERR_EGAME_FTP_WRITE_CONFIG.");
+			return super.act(msg);
+		}
+		f2f.put(csv, remotePath+"config.csv");
 		
 		//开始上传
-		
+		FTPClient fc = new FTPClient();
+		try {
+			fc.connect(this.ip);
+			fc.login(this.user, this.pwd);
+			uploadFiles(fc,f2f);
+			fc.disconnect(true);
+		} catch (Exception e) {
+			log.error("uploadFiles error.", e);
+			return super.act(msg);
+		}
 		return super.act(msg);
 	}
 	
@@ -74,58 +137,62 @@ public class EGameFtpSynTask extends Action {
 		
 		
 	}
-
-	/**
-	 * FIXME 创建本次同步的文件.
-	 * @return 是否创建成功
-	 */
-	private boolean createSynFiles(){
-		//创建时间文件夹和PID文件夹
-		
-		//移动文件包到待上传目录
-		
-		//生成config.csv文件
-		
-		return false;
-	}
 	
 	/**
 	 * 上传文件序列
 	 * @param client FTPClient
 	 * @param f2f HashMap形式的文件序列,key:本地文件完整路径,value:远程目标文件路径
-	 * @throws Exception
 	 */
-	private final void uploadFiles(FTPClient client,HashMap<String,String> f2f) throws Exception{
-		try {
+	static final void uploadFiles(FTPClient client,HashMap<String,String> f2f) throws Exception{
+		Iterator<Entry<String,String>> iter = f2f.entrySet().iterator(); 
+		while (iter.hasNext()) { 
+		    Entry<String,String> entry = iter.next(); 
+		    final String src = entry.getKey(); 
+		    final String dest = entry.getValue(); 
+		    
+		    int targetDirSplit = dest.lastIndexOf("/");
+		    String targetDir = dest.substring(0,targetDirSplit);
+		    String targetFileName = dest.substring(targetDirSplit+1);
+		    if (!client.currentDirectory().equals(targetDir)) {
+		    	//移动至目标文件夹,若无则创建
+		    	try {
+		    		client.changeDirectory(targetDir);
+		    	} catch (Exception e) {
+		    		client.createDirectory(targetDir);
+		    		client.changeDirectory(targetDir);
+		    	}
+			}
 			
-			Iterator<Entry<String,String>> iter = f2f.entrySet().iterator(); 
-			while (iter.hasNext()) { 
-			    Entry<String,String> entry = iter.next(); 
-			    String src = entry.getKey(); 
-			    String dest = entry.getValue(); 
-			    
-			    String targetDir = dest.substring(0,dest.lastIndexOf("/"));
-			    
-			    if (!client.currentDirectory().equals(targetDir)) {
-			    	//移动至目标文件夹,若无则创建
-			    	try {
-			    		client.changeDirectory(targetDir);
-			    	} catch (Exception e) {
-			    		client.createDirectory(targetDir);
-			    		client.changeDirectory(targetDir);
-			    	}
+		    InputStream in = new FileInputStream(src);
+			//做好失败和成功记录
+			client.upload(targetFileName,in,0,0,new FTPDataTransferListener() {
+				
+				@Override
+				public void transferred(int length) {
+					
 				}
 				
-				File srcF = new File(src);
-				client.upload(srcF);
-				log.info("upload src["+src+"] to ["+dest+"]");
+				@Override
+				public void started() {
+					
+				}
 				
-			} 
-			
-		} catch (Exception e) {
-			log.error("uploadFile error:", e);
-		}
-		
+				@Override
+				public void failed() {
+					log.info("FTP upload failed!["+src+"] to ["+dest+"]");
+				}
+				
+				@Override
+				public void completed() {
+					log.info("upload OK! ["+src+"] to ["+dest+"]");
+				}
+				
+				@Override
+				public void aborted() {
+					
+				}
+			});
+		} 
 	}
 	
 	/**
@@ -135,7 +202,7 @@ public class EGameFtpSynTask extends Action {
 	 * @param targetDir 远程目标文件夹
 	 * @throws Exception
 	 */
-	private final void uploadFile(FTPClient client,String srcDir,String targetDir) throws Exception{
+	static final void uploadDir(FTPClient client,String srcDir,String targetDir) throws Exception{
 		try {
 			
 			//移动至目标文件夹,若无则创建
@@ -159,7 +226,7 @@ public class EGameFtpSynTask extends Action {
 					//上传文件夹
 					String children = srcDir+"/"+fileList[i].getName();
 					String remote = targetDir+"/"+fileList[i].getName();
-					uploadFile(client,children,remote);
+					uploadDir(client,children,remote);
 				}
 			}
 		} catch (Exception e) {
@@ -169,27 +236,27 @@ public class EGameFtpSynTask extends Action {
 	}
 	
 
-	/**
-	 * 上传同步文件到ftp服务器
-	 * @param targetPath
-	 * @param srcPathTo
-	 *  
-	 */
-	private final boolean synFtps(String targetPath,String srcPathTo){
-		boolean re = true;
-		try {
-			FTPClient client = new FTPClient();
-			client.connect(this.ip,this.port);
-			client.login(this.user,this.pwd);
-			log.info("synftp:"+client.getHost()+" srcPathTo:"+srcPathTo);
-			uploadFile(client,srcPathTo,targetPath);	
-			client.disconnect(true);
-		} catch (Exception e) {
-			log.error("synftps error!", e);
-			re = false;
-		} 
-		return re;
-	}
+//	/**
+//	 * 上传同步文件到ftp服务器
+//	 * @param targetPath
+//	 * @param srcPathTo
+//	 *  
+//	 */
+//	final boolean synFtps(String targetPath,String srcPathTo){
+//		boolean re = true;
+//		try {
+//			FTPClient client = new FTPClient();
+//			client.connect(this.ip,this.port);
+//			client.login(this.user,this.pwd);
+//			log.info("synftp:"+client.getHost()+" srcPathTo:"+srcPathTo);
+//			uploadFile(client,srcPathTo,targetPath);	
+//			client.disconnect(true);
+//		} catch (Exception e) {
+//			log.error("synftps error!", e);
+//			re = false;
+//		} 
+//		return re;
+//	}
 	
 	
 
@@ -247,6 +314,22 @@ public class EGameFtpSynTask extends Action {
 	 */
 	public final void setPwd(String pwd) {
 		this.pwd = pwd;
+	}
+
+
+	/**
+	 * @return the localPath
+	 */
+	public final String getLocalPath() {
+		return localPath;
+	}
+
+
+	/**
+	 * @param localPath the localPath to set
+	 */
+	public final void setLocalPath(String localPath) {
+		this.localPath = localPath;
 	}
 
 	

@@ -15,6 +15,7 @@ import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.Net;
@@ -85,12 +86,15 @@ public class EGame extends Action {
 		//新建任务
 		if (subact.equals("newtask")) {
 			this.newtask(req,u, httpmsg);
+		}else if (subact.equals("task")) {
+			this.task(req,u, httpmsg);
 		}else{
 			//转到测试首页
 			this.toTC(req,u, httpmsg);
 		}
 		return super.act(msg);
 	}
+	
 	
 	/**
 	 * 判断登录状态,成功则返回TUser,失败则返回 null
@@ -141,32 +145,44 @@ public class EGame extends Action {
 	}
 	
 	/**
+	 * 转到具体任务页,即转到该产品ID的最新任务
+	 * @param req
+	 * @param user
+	 * @param msg
+	 */
+	private void task(HttpServletRequest req,KObject user,HttpActionMsg msg){
+		long pid = parsePID(req,user,msg);
+		if (pid == 0) {
+			return;
+		}
+		HashMap<String,Object> query = new HashMap<String, Object>(2);
+		query.put("PID", pid);
+		HashMap<String,Object> sort = new HashMap<String, Object>(2);
+		sort.put("_id", -1);
+		HashMap<String,Object> column = new HashMap<String, Object>(2);
+		column.put("_id", 1);
+		
+		ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, column, sort, 0, 1, null);
+		if (re == null || re.size() ==0) {
+			JOut.err(403,"E403"+Err.ERR_EGAME_T_NOT_FOUND, msg);
+			return;
+		}
+		long tid = (Long)(re.get(0).get("_id"));
+		msg.removeData("[print]");
+		msg.removeData("[jsp]");
+		msg.addData("[redirect]", KFilter.getPrefix()+"/task/"+tid);
+	}
+	
+	/**
 	 * 创建新测试任务
 	 * @param req
 	 * @param user
 	 * @param msg
 	 */
 	private void newtask(HttpServletRequest req,KObject user,HttpActionMsg msg){
-		Object pidobj = user.getProp("pid");
-		long pid = 0;
-		if (!StringUtil.isDigits(pidobj)) {
-			//从参数解出pid
-			String enc = msg.getHttpReq().getParameter("t").trim();
-			String t = Encrypter.decrypt(enc);
-			if (!StringUtil.isStringWithLen(t, 5)) {
-				JOut.err(403,"E403"+Err.ERR_EGAME_DECODE, msg);
-				return;
-			}
-			String[] tt = t.split("#");
-			if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
-				//pidobj = tt[2];
-				pid = Long.parseLong(tt[2]);
-			}else{
-				JOut.err(403,"E403"+Err.ERR_EGAME_T_ERR,msg);
-				return;
-			}
-		}else{
-			pid = Long.parseLong(user.removeProp("pid").toString());
+		long pid = parsePID(req,user,msg);
+		if (pid == 0) {
+			return;
 		}
 		
 		
@@ -210,6 +226,44 @@ public class EGame extends Action {
 		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
 	}
 	
+	/**
+	 * 获取PID
+	 * @param req
+	 * @param user
+	 * @param msg
+	 * @return
+	 */
+	private long parsePID(HttpServletRequest req,KObject user,HttpActionMsg msg){
+		Object pidobj = user.getProp("pid");
+		long pid = 0;
+		if (!StringUtil.isDigits(pidobj)) {
+			//从参数解出pid
+			String enc = msg.getHttpReq().getParameter("t").trim();
+			String t = Encrypter.decrypt(enc);
+			if (!StringUtil.isStringWithLen(t, 5)) {
+				JOut.err(403,"E403"+Err.ERR_EGAME_DECODE, msg);
+				return 0;
+			}
+			String[] tt = t.split("#");
+			if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
+				//pidobj = tt[2];
+				pid = Long.parseLong(tt[2]);
+			}else{
+				JOut.err(403,"E403"+Err.ERR_EGAME_T_ERR,msg);
+				return 0;
+			}
+		}else{
+			pid = Long.parseLong(user.removeProp("pid").toString());
+		}
+		return pid;
+	}
+	
+	/**
+	 * 跳转到测试首页，即公告页
+	 * @param req
+	 * @param user
+	 * @param msg
+	 */
 	private void toTC(HttpServletRequest req,KObject user,HttpActionMsg msg){
 		String p_str = req.getParameter("p");
 		String pz_str = req.getParameter("pz");

@@ -49,6 +49,11 @@ public class Err {
 	public static final int ERR_EGAME_DECODE = 305;
 	public static final int ERR_EGAME_T_ERR = 306;
 	public static final int ERR_EGAME_LOGIN_OUTOFTIME = 307;
+	public static final int ERR_EGAME_T_NOT_FOUND = 308;
+	public static final int ERR_EGAME_FTP_NOID = 309;
+	public static final int ERR_EGAME_FTP_TASK_NOT_FOUND = 310;
+	public static final int ERR_EGAME_FTP_WRITE_CONFIG = 311;
+	public static final int ERR_EGAME_FTP_UPLOAD = 312;
 	
 	
 }

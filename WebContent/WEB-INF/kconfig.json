@@ -179,7 +179,8 @@
 			"ip":"202.102.39.14",
 			"port":21,
 			"user":"shitibao",
-			"pwd":"shitibao123"
+			"pwd":"shitibao123",
+			"localPath":"F:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
 			"_actName":"end",
