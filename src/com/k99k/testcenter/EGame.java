@@ -3,6 +3,8 @@
  */
 package com.k99k.testcenter;
 
+import it.sauronsoftware.ftp4j.FTPClient;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -88,11 +90,39 @@ public class EGame extends Action {
 			this.newtask(req,u, httpmsg);
 		}else if (subact.equals("task")) {
 			this.task(req,u, httpmsg);
+		}else if (subact.equals("test")) {
+			this.test(req,u, httpmsg);
 		}else{
 			//转到测试首页
 			this.toTC(req,u, httpmsg);
 		}
 		return super.act(msg);
+	}
+	
+	private void test(HttpServletRequest req,KObject user,HttpActionMsg msg){
+		String dir = "/"+req.getParameter("te");
+		FTPClient fc = new FTPClient();
+		try {
+			fc.connect("202.102.39.14");
+			fc.login("shitibao", "shitibao123");
+			
+			String[] ds = dir.split("/");
+			for (int i = 0; i < ds.length; i++) {
+				if (ds[i].length()>0 && !fc.currentDirectory().equals(ds[i])) {
+					try {
+						fc.createDirectory(ds[i]);
+					} catch (Exception e) {
+					}
+					fc.changeDirectory(ds[i]);
+				}
+			}
+			fc.disconnect(true);
+			msg.addData("[print]", "create OK!"+dir);
+		} catch (Exception e) {
+			log.error("fc error.", e);
+			msg.addData("[print]", "create failed!"+dir);
+			return;
+		}
 	}
 	
 	
@@ -102,13 +132,13 @@ public class EGame extends Action {
 	 * @return
 	 */
 	private KObject checkLogin(HttpActionMsg httpmsg){
-		//验证参数
-		if (!StringUtil.isStringWithLen(httpmsg.getHttpReq().getParameter("t"), 5)) {
-			JOut.err(403,"E403"+Err.ERR_PARAS, httpmsg);
-			return null;
-		}
 		KObject u = Auth.checkCookieLogin(httpmsg);
 		if (u == null) {
+			//验证参数
+			if (!StringUtil.isStringWithLen(httpmsg.getHttpReq().getParameter("t"), 5)) {
+				JOut.err(403,"E403"+Err.ERR_PARAS, httpmsg);
+				return null;
+			}
 			//验证登录参数
 			String enc = httpmsg.getHttpReq().getParameter("t").trim();
 			String t = Encrypter.decrypt(enc);

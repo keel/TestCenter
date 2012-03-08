@@ -114,6 +114,7 @@ public class EGameFtpSynTask extends Action {
 		//开始上传
 		FTPClient fc = new FTPClient();
 		try {
+			fc.setPassive(false);
 			fc.connect(this.ip);
 			fc.login(this.user, this.pwd);
 			uploadFiles(fc,f2f);
@@ -155,12 +156,16 @@ public class EGameFtpSynTask extends Action {
 		    String targetFileName = dest.substring(targetDirSplit+1);
 		    if (!client.currentDirectory().equals(targetDir)) {
 		    	//移动至目标文件夹,若无则创建
-		    	try {
-		    		client.changeDirectory(targetDir);
-		    	} catch (Exception e) {
-		    		client.createDirectory(targetDir);
-		    		client.changeDirectory(targetDir);
-		    	}
+		    	String[] ds = targetDir.split("/");
+				for (int i = 0; i < ds.length; i++) {
+					if (ds[i].length()>0 && !client.currentDirectory().equals(ds[i])) {
+						try {
+							client.createDirectory(ds[i]);
+						} catch (Exception e) {
+						}
+						client.changeDirectory(ds[i]);
+					}
+				}
 			}
 			
 		    InputStream in = new FileInputStream(src);
