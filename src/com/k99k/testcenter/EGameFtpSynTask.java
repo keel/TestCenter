@@ -134,13 +134,11 @@ public class EGameFtpSynTask extends Action {
 	@Override
 	public void init() {
 		super.init();
-		//创建一个循环任务
-		
 		
 	}
 	
 	/**
-	 * 上传文件序列
+	 * 上传文件序列,从远端根目录开始定位
 	 * @param client FTPClient
 	 * @param f2f HashMap形式的文件序列,key:本地文件完整路径,value:远程目标文件路径
 	 */
@@ -150,7 +148,7 @@ public class EGameFtpSynTask extends Action {
 		    Entry<String,String> entry = iter.next(); 
 		    final String src = entry.getKey(); 
 		    final String dest = entry.getValue(); 
-		    
+		    client.changeDirectory("/");
 		    int targetDirSplit = dest.lastIndexOf("/");
 		    String targetDir = dest.substring(0,targetDirSplit);
 		    String targetFileName = dest.substring(targetDirSplit+1);
@@ -167,7 +165,7 @@ public class EGameFtpSynTask extends Action {
 					}
 				}
 			}
-			
+		    
 		    InputStream in = new FileInputStream(src);
 			//做好失败和成功记录
 			client.upload(targetFileName,in,0,0,new FTPDataTransferListener() {

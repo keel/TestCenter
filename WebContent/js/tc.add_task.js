@@ -18,7 +18,7 @@ function pSelect(pid){
 		else{
 			pJSON = data;
 			$("#task_name_v").text(data.name);
-			$("#task_p_id_v").text(data.productID);
+			$("#task_p_id_v").text(data._id);
 			$("#task_p_sys_v").text($("#task_p_sys > option[value="+data.sys+"]").text());
 			$("#task_p_type_v").text($("#task_p_type > option[value="+data.type+"]").text());
 			$("#task_p_net_v").text($("label[for='task_p_net"+data.netPort+"']").text());

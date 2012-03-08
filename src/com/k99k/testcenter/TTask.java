@@ -577,6 +577,7 @@ public class TTask extends Action {
 			//通过或部分通过
 			update.put("operator", task_operator);
 			update.put("isOnline", 1);
+			task_info = "通过 - "+task_info;
 		}else if(tuRE==9){
 			//不通过,状态置为待反馈
 			update.put("state", TASK_STATE_NEED_MOD);
@@ -584,7 +585,7 @@ public class TTask extends Action {
 			KObject task = dao.findOne(tid);
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
-			
+			task_info = "未通过 - "+task_info;
 		}else if(tuRE==-3){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
@@ -607,6 +608,7 @@ public class TTask extends Action {
 		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
 			update.put("state", TASK_STATE_DROP);
+			task_info = "已放弃 - "+task_info;
 		}else{
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -614,7 +616,7 @@ public class TTask extends Action {
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
-		logmsg.put("info", "确认完成 - "+task_info);
+		logmsg.put("info", "测试完成:"+task_info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
 		push.put("log", logmsg);
 		set.put("$push", push);
@@ -891,15 +893,20 @@ public class TTask extends Action {
 			return;
 		}
 		//创建产品确定PID
-		long pid = -10;
-		if (!json.containsKey("_id")) {
-			pid = Product.add(json);
-			if(pid<0){
-				JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
-				return;
+		if (!StringUtil.isDigits(json.get("_id"))) {
+			JOut.err(403,"E403"+Err.ERR_PARAS+"-_id", msg);
+			return;
+		}
+		long pid = Long.parseLong(String.valueOf(json.get("_id")));
+		if (json.containsKey("newp")) {
+			json.remove("newp");
+			if (!dao.checkId(pid)) {
+				int re = Product.add(json);
+				if(re!=0){
+					JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
+					return;
+				}
 			}
-		}else{
-			pid = Long.parseLong(String.valueOf(json.get("_id")));
 		}
 		//创建任务
 		KObject operator = TUser.dao.findOne(task_operator);

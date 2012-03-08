@@ -55,7 +55,8 @@ if(gType.equals("单机游戏")){
 }
 out.print(netType+";");
 %>
-pJSON.productID = <%=pmap.get("gameId")%>;
+pJSON._id = <%=pmap.get("gameId")%>;
+pJSON.newp = 2;
 pJSON.sys = <% 
 String sys = "6";Object os = pmap.get("gameOS");
 if(os.equals("JAVA")){

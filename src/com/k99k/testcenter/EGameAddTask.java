@@ -57,7 +57,7 @@ public class EGameAddTask {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long productId = 143;
+		long productId = 145;
 		long userId = 5;
 		long nowTime = System.currentTimeMillis();
 		String des = encodeTaskPara(productId,userId,nowTime);

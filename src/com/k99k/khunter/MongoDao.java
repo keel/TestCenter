@@ -267,7 +267,22 @@ public class MongoDao implements DaoInterface{
 				return true;
 			}
 		} catch (Exception e) {
-			log.error("removeIndex error!", e);
+			log.error("checkName error!", e);
+			return false;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean checkId(long id) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = coll.find(new BasicDBObject("_id", id),prop_id).limit(1);
+			if (cur.hasNext()) {
+				return true;
+			}
+		} catch (Exception e) {
+			log.error("checkId error!", e);
 			return false;
 		}
 		return false;

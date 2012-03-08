@@ -81,7 +81,7 @@ public class Product extends Action {
 	 * @param p HashMap
 	 * @return pid ,失败则返回负值
 	 */
-	static long add(HashMap<String,Object> p){
+	static int add(HashMap<String,Object> p){
 		//增加一个sys与url的联动验证
 		Object syso = p.get("sys");
 		if(!StringUtil.isDigits(syso)){return -1;}
@@ -96,9 +96,9 @@ public class Product extends Action {
 		if(schema.setPropFromMapForCreate(p,kobj)){
 			return -3;
 		}
-		kobj.setId(dao.getIdm().nextId());
+		//kobj.setId(dao.getIdm().nextId());
 		if(dao.save(kobj)){
-			return kobj.getId();
+			return 0;//kobj.getId();
 		}
 		return -4;
 	}

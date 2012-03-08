@@ -69,6 +69,13 @@ public interface DaoInterface extends Cloneable{
 	public boolean checkName(String name);
 	
 	/**
+	 * 判断id是否已存在,存在则返回true
+	 * @param name KObject的name
+	 * @return 存在则返回true
+	 */
+	public boolean checkId(long id);
+	
+	/**
 	 * 查找单个对象的Map形式,顺序号为3
 	 * @param query
 	 * @param fields

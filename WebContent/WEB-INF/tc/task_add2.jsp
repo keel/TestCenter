@@ -68,7 +68,8 @@ $.validator.over = function(form){
 			$("#"+this.name+"_v").html(v);$("#"+this.name+"_h").val($(this).val());
 		});
 		pJSON.name = $("#task_name").val();
-		pJSON.productID = $("#task_p_id").val();
+		pJSON._id = $("#task_p_id").val();
+		pJSON.newp = 1;
 		pJSON.sys = $("#task_p_sys").val();
 		pJSON.type = $("#task_p_type").val();
 		pJSON.netType = $("input[name='task_p_net']:checked").val();
