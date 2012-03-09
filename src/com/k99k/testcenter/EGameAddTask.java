@@ -3,6 +3,13 @@
  */
 package com.k99k.testcenter;
 
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.k99k.tools.encrypter.Encrypter;
 
 /**
@@ -10,7 +17,10 @@ import com.k99k.tools.encrypter.Encrypter;
  * @author keel
  *
  */
-public class EGameAddTask {
+public class EGameAddTask extends HttpServlet {
+
+	private static final long serialVersionUID = 1L;
+
 
 	/**
 	 * 
@@ -18,6 +28,48 @@ public class EGameAddTask {
 	public EGameAddTask() {
 	}
 	
+	private String url = "http://202.102.40.43/egame/";
+	
+	
+	
+	/* (non-Javadoc)
+	 * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+	 */
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
+		//------------------------------
+		//从url或session中取出以下参数
+		//------------------------------
+		//跳转到的目标地址
+		String target = req.getParameter("target");
+		//游戏产品ID
+		String pid = req.getParameter("pid");
+		//用户ID，可从登录session中获取，注意必须是已登录状态，非登录状态时直接跳转到平台的登录页
+		String userId = req.getParameter("uid");
+		
+		if (target.equals("newtask")) {
+			//跳转到创建新任务
+			resp.sendRedirect(this.url+"newtask?t="+encodeTaskPara(Long.parseLong(pid), Long.parseLong(userId), System.currentTimeMillis()));
+			return;
+		}else if(target.equals("task")){
+			//跳转到查看该产品的测试任务
+			resp.sendRedirect(this.url+"task?t="+encodeTaskPara(Long.parseLong(pid), Long.parseLong(userId), System.currentTimeMillis()));
+			return;
+		}else if(target.equals("test")){
+			//跳转到测试系统首页
+			resp.sendRedirect(this.url+"?t="+encodeUserPara(Long.parseLong(userId), System.currentTimeMillis()));
+			return;
+		}
+		
+		
+		super.doGet(req, resp);
+	}
+
+
+
+
+
 	/**
 	 * 生成添加测试任务URL
 	 * @param productId
@@ -54,6 +106,7 @@ public class EGameAddTask {
 	
 
 	/**
+	 * 测试
 	 * @param args
 	 */
 	public static void main(String[] args) {

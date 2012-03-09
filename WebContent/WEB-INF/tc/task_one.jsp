@@ -116,6 +116,7 @@ if(state==TTask.TASK_STATE_CONFIRM && userType>1){%>
 	});
 <%}%>
 
+feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 });
 function aSubmit(f){
 	if(f=="#p_form"){
@@ -286,6 +287,21 @@ function dropTask(id){
 		});
 	}
 }
+function feeInfo(fee,to){
+	if(fee != ''){
+		var f = $.parseJSON(fee);
+		if(Object.prototype.toString.apply(f) === '[object Array]'){
+			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
+			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
+			$.each(f,function(){
+				var tr = "<tr><td>"+this.consumecodename+"</td><td>"+this.fee+"</td><td>"+this.consumecodedsc+"</td><td>"+this.paychanel+"</td><td>"+this.triger+"</td><td>"+this.memo+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumecodename+"','"+this.notecode+"');\">查看</a></td></tr>";
+				tb = tb + tr;
+			});
+			tb=tb+"</table>";
+			$(to).html(tb);
+		}
+	}
+}
 -->
 </script>
 <%out.print(JSPOut.out("main0","0",user.getName())); %>
@@ -322,8 +338,8 @@ function dropTask(id){
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-    	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"><%=product.getProp("netPort") %></span></div> 
-    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 计费点描述: <br /><span id="task_p_fee_v" class="blueBold"><%=product.getProp("feeInfo") %></span></div> 
+    	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span>联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"><%=product.getProp("netPort") %></span></div> 
+    	<div class="inBoxLine"> 计费点情况: <br /><span id="task_p_fee_v" class="hide"><%=product.getProp("feeInfo") %></span><div id="feeInfoTable"></div></div> 
     	<%if(Integer.parseInt(product.getProp("sys").toString())==2){%>
     	<div class="inBoxLine">测试入口URL: <span id="task_p_url_v" class="blueBold"><%=product.getUrl()%></span></div> 
     	<%} %>

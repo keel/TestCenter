@@ -37,7 +37,7 @@ $.company = "<%=user.getProp("company") %>";
 $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
 	$(tar).addClass("sideON");
-
+	
 //处理产品信息
 pJSON.company = $.company;
 pJSON.name = '<%=pmap.get("name")%>';
@@ -144,6 +144,24 @@ swfu.newfile = function(file){
 };
 
 
+function feeInfo(fee,to){
+	if(fee != ''){
+		var f = $.parseJSON(fee);
+		if(Object.prototype.toString.apply(f) === '[object Array]'){
+			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
+			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
+			$.each(f,function(){
+				var tr = "<tr><td>"+this.consumecodename+"</td><td>"+this.fee+"</td><td>"+this.consumecodedsc+"</td><td>"+this.paychanel+"</td><td>"+this.triger+"</td><td>"+this.memo+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumecodename+"','"+this.notecode+"');\">查看</a></td></tr>";
+				tb = tb + tr;
+			});
+			tb=tb+"</table>";
+			$(to).html(tb);
+		}
+	}
+}
+
+feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
+
 });
 //-------------------------------------
 
@@ -163,17 +181,16 @@ swfu.newfile = function(file){
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=user.getProp("company") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=pmap.get("gameId") %></span></div>
-    	<div class="inBoxLine">产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("name") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOS") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("cpId") %></span></div> 
+   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=user.getProp("company") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=pmap.get("gameId") %></span> 产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("name") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOS") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("cpId") %></span></div> 
     	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payType") %></span>计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("serviceFeeType") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameType") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameClass") %></span></div> 
     	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=pmap.get("synUrl") %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=pmap.get("wapUrl") %></span></div>
-    	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="blueBold"><%=feeInfo %></span></div>
- 
+    	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="hide"><%=feeInfo %></span><div id="feeInfoTable"></div></div>
+
     </div>
 </div>
 
 <div class="inBox" id="uploadFS">
-    <div class="inBoxTitle">游戏实体包上传或URL设置</div> 
+    <div class="inBoxTitle">游戏实体包上传</div> 
     <div class="inBoxContent">
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
