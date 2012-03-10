@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-
 import org.apache.log4j.Logger;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * Action管理器，负责载入和刷新Action，以及添加新的Action等
@@ -72,7 +71,7 @@ public final class ActionManager {
 			//读取配置文件刷新注入的Action数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+				Map<String,?> root = (Map<String,?>) JSON.read(ini);
 				//先定位到json的actions属性
 				//Map<String, ?> actionsMap = (Map<String, ?>) root.get(ActionManager.getName());
 				ArrayList<Map<String,?>> actList = (ArrayList<Map<String, ?>>) root.get(ActionManager.getName());
@@ -238,7 +237,7 @@ public final class ActionManager {
 	public static final boolean reLoadAction(String act){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 			//先定位到json的actions属性
 			ArrayList<Map<String,?>> actList = (ArrayList<Map<String,?>>) root.get(ActionManager.getName());
 			Map<String, ?> m = null;

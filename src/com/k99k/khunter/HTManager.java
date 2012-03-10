@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * KHunter系统管理者,协调管理中心
@@ -71,6 +71,7 @@ public final class HTManager {
 	 * @param iniFile 配置文件路径
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public static boolean init(String iniFile){
 		boolean initOK = false;
 		if (!isInited) {
@@ -78,7 +79,7 @@ public final class HTManager {
 			log.info("================ [HTManager starting... ] ================");
 			try {
 				String iniJson = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(iniJson);
+				Map<String,?> root = (Map<String,?>) JSON.read(iniJson);
 				if (root.containsKey("classPath") && root.containsKey("iniPath")) {
 					classPath = (String) root.get("classPath");
 					//ini = (String) root.get("iniPath");

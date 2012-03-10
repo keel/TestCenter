@@ -9,7 +9,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * DataSource管理器,注意它仅支持newDataSource方法中的数据源,不从配置文件中生成新对象
@@ -91,7 +91,7 @@ public final class DataSourceManager {
 			//读取配置文件刷新注入的DataSourceInterface数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+				Map<String,?> root = (Map<String,?>) JSON.read(ini);
 				//先定位到json的dataSources属性
 				Map<String, ?> dsMap = (Map<String, ?>) root.get(DataSourceManager.getName());
 				//循环加入DataSourceInterface
@@ -213,7 +213,7 @@ public final class DataSourceManager {
 	public static final boolean reLoadDataSource(String dsName){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 			//先定位到json的dataSources属性
 			Map<String, ?> dsMap = (Map<String, ?>) root.get(DataSourceManager.getName());
 			Map<String, ?> m = (Map<String, ?>) dsMap.get(dsName);

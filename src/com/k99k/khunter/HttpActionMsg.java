@@ -6,6 +6,8 @@ package com.k99k.khunter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.k99k.tools.JSON;
+
 /**
  * Http方式的ActionMsg
  * @author keel
@@ -46,7 +48,7 @@ public class HttpActionMsg extends ActionMsg {
 	StringBuilder addToJson(StringBuilder sb) {
 		sb.append(",\"ip\":\"").append(this.ip).append("\",");
 		sb.append("\"url\":\"").append(this.url).append("\",");
-		sb.append("\"paraMap\":").append(jsonWriter.write(this.httpReq.getParameterMap()));
+		sb.append("\"paraMap\":").append(JSON.write(this.httpReq.getParameterMap()));
 		return sb;
 	}
 

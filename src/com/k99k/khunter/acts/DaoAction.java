@@ -11,7 +11,7 @@ import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObject;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * DaoAction
@@ -132,7 +132,7 @@ public class DaoAction extends Action {
 		if (dao == null || jsonReq == null) {
 			return 20;
 		}
-		HashMap<String,Object> reqMap = JSONTool.readJsonString(jsonReq);
+		HashMap<String,Object> reqMap = (HashMap<String,Object>)JSON.read(jsonReq);
 		if (reqMap == null || (!reqMap.containsKey("req"))) {
 			return 21;
 		}

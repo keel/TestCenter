@@ -5,7 +5,7 @@ package com.k99k.khunter;
 
 import java.util.HashMap;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -30,8 +30,8 @@ public class KObjDaoConfig {
 			return null;
 		}
 		KObjDaoConfig kdc = new KObjDaoConfig();
-		if(!JSONTool.checkMapTypes(map,new String[]{"daoName"},new Class[]{String.class})){
-			ErrorCode.logError(KObjManager.log, 8, 24, "newInstance's para 'map' JSONTool.checkMapTypes error.");
+		if(!JSON.checkMapTypes(map,new String[]{"daoName"},new Class[]{String.class})){
+			ErrorCode.logError(KObjManager.log, 8, 24, "newInstance's para 'map' JSON.checkMapTypes error.");
 			return null;
 		}
 		kdc.daoName = (String) map.get("daoName");

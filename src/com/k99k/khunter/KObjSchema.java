@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -102,7 +102,7 @@ public class KObjSchema {
 				return 1;
 			}
 			//验证Column的key和value类型
-			if(!JSONTool.checkMapTypes(colMap,new String[]{"col","def","type","intro","len","required"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class,Boolean.class})){
+			if(!JSON.checkMapTypes(colMap,new String[]{"col","def","type","intro","len","required"},new Class[]{String.class,Object.class,Long.class,String.class,Long.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, "kobjColumn:"+i);
 				return 1;
 			}
@@ -296,7 +296,7 @@ public class KObjSchema {
 	public int setIndex(HashMap<String,Object> iMap,boolean synDB){
 		int err = 10;
 		try {
-			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+			if(!JSON.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
 				return 10;
 			}
@@ -363,7 +363,7 @@ public class KObjSchema {
 	 */
 	public final int setIndexToDB(HashMap<String,Object> iMap){
 		try {
-			if(!JSONTool.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
+			if(!JSON.checkMapTypes(iMap,new String[]{"col","asc","intro","type","unique"},new Class[]{String.class,Boolean.class,String.class,String.class,Boolean.class})){
 				//ErrorCode.logError(log, 8,1, " kobjIndex:"+i);
 				return 10;
 			}

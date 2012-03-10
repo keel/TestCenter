@@ -66,7 +66,7 @@ public class ConsoleEditIni extends Action {
 //					msg.addData("save", "no para");
 //				}else {
 //					//验证json格式
-//					if (JSONTool.validateJsonString(json)) {
+//					if (JSON.validateJsonString(json)) {
 //						//保存
 //						if(KIoc.writeTxtInUTF8(HTManager.getIniPath()+iniFileName+".json", json)){
 //							msg.addData("save", "ok");

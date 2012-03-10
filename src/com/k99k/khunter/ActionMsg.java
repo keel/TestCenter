@@ -5,7 +5,8 @@ package com.k99k.khunter;
 
 import java.util.HashMap;
 import java.util.Map;
-import org.stringtree.json.JSONWriter;
+
+import com.k99k.tools.JSON;
 
 /**
  * Action请求传递的消息,包括了请求和返回的数据集
@@ -32,11 +33,6 @@ public class ActionMsg {
 		this.actitonName = actionName;
 		this.data = new HashMap<String, Object>(dataInitSize);
 	}
-	
-	/**
-	 * 用于输出json格式
-	 */
-	static final JSONWriter jsonWriter = new JSONWriter();
 	
 	
 	private String actitonName;
@@ -74,7 +70,7 @@ public class ActionMsg {
 		}else{
 			sb.append("\"").append(this.nextAction.getName()).append("\",");
 		}
-		sb.append("\"data\":").append(jsonWriter.write(data));
+		sb.append("\"data\":").append(JSON.write(data));
 		sb = this.addToJson(sb);
 		sb.append("}");
 		return sb.toString();

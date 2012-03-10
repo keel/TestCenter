@@ -22,7 +22,7 @@ import com.k99k.khunter.KObjDaoConfig;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 import com.mongodb.BasicDBObject;
 
@@ -55,7 +55,7 @@ public class KObjAction extends Action{
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public ActionMsg act(ActionMsg msg) {
 		HttpActionMsg httpmsg = (HttpActionMsg)msg;
@@ -107,11 +107,11 @@ public class KObjAction extends Action{
 			else if(part.equals("dao")){
 				String daoJson = httpmsg.getHttpReq().getParameter("schema_daojson");
 				if (StringUtil.isStringWithLen(daoJson, 2)) {
-					KObjDaoConfig kdc = KObjDaoConfig.newInstance(JSONTool.readJsonString(daoJson));
+					KObjDaoConfig kdc = KObjDaoConfig.newInstance((HashMap<String,Object>)JSON.read(daoJson));
 					if (kdc != null) {
 						//更新KObjConfig
 						kc.setDaoConfig(kdc);
-						msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\""+JSONTool.writeJsonString(kdc.toMap())+"\"}}");
+						msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\""+JSON.write(kdc.toMap())+"\"}}");
 						return super.act(msg);
 					}
 					rePrint = "{\"re\":\"err\",\"d\":{\"schema_daojson\":\"KObjDaoConfig.newInstance error\"}}";
@@ -124,7 +124,7 @@ public class KObjAction extends Action{
 				String colJson = httpmsg.getHttpReq().getParameter("schema_coljson");
 				if (StringUtil.isStringWithLen(colJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					if(ks.setColumn(JSONTool.readJsonString(colJson)) == 0){
+					if(ks.setColumn((HashMap<String,Object>)JSON.read(colJson)) == 0){
 						msg.addData("[print]", "{\"re\":\"ok\",\"d\":"+colJson+"}");
 						return super.act(msg);
 					}
@@ -138,7 +138,7 @@ public class KObjAction extends Action{
 				String colJson = httpmsg.getHttpReq().getParameter("schema_coljson");
 				if (StringUtil.isStringWithLen(colJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					String k = JSONTool.readJsonString(colJson).get("col").toString();
+					String k = ((HashMap<String,Object>)JSON.read(colJson)).get("col").toString();
 					if(ks.containsColumn(k)){
 						ks.removeColumn(k);
 						msg.addData("[print]", "{\"re\":\"ok\",\"d\":"+colJson+"}");
@@ -154,7 +154,7 @@ public class KObjAction extends Action{
 				String indexJson = httpmsg.getHttpReq().getParameter("schema_indexjson");
 				if (StringUtil.isStringWithLen(indexJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					if (ks.setIndex(JSONTool.readJsonString(indexJson),true) == 0) {
+					if (ks.setIndex((HashMap<String,Object>)JSON.read(indexJson),true) == 0) {
 						msg.addData("[print]", "{\"re\":\"ok\",\"d\":"+indexJson+"}");
 						return super.act(msg);
 					}
@@ -168,7 +168,7 @@ public class KObjAction extends Action{
 				String indexJson = httpmsg.getHttpReq().getParameter("schema_indexjson");
 				if (StringUtil.isStringWithLen(indexJson, 2)) {
 					KObjSchema ks = kc.getKobjSchema();
-					String k = JSONTool.readJsonString(indexJson).get("col").toString();
+					String k = ((HashMap<String,Object>)JSON.read(indexJson)).get("col").toString();
 					if (ks.removeIndex(k)) {
 						msg.addData("[print]", "{\"re\":\"ok\",\"d\":"+indexJson+"}");
 						return super.act(msg);
@@ -215,15 +215,18 @@ public class KObjAction extends Action{
 					String kobj_skip = httpmsg.getHttpReq().getParameter("kobj_skip");
 					String kobj_len = httpmsg.getHttpReq().getParameter("kobj_len");
 					String kobj_hint = httpmsg.getHttpReq().getParameter("kobj_hint");
-					HashMap<String,Object> query = (StringUtil.isStringWithLen(kobj_q, 2) && JSONTool.validateJsonString(kobj_q)) ? JSONTool.readJsonString(kobj_q) : new HashMap();
-					HashMap<String,Object> fields = (StringUtil.isStringWithLen(kobj_f, 2) && JSONTool.validateJsonString(kobj_f)) ? JSONTool.readJsonString(kobj_f) : null;
-					HashMap<String,Object> sortBy = (StringUtil.isStringWithLen(kobj_sort, 2) && JSONTool.validateJsonString(kobj_sort)) ? JSONTool.readJsonString(kobj_sort) : null;
+					HashMap<String,Object> query = StringUtil.isStringWithLen(kobj_q, 2) ? (HashMap<String,Object>)JSON.read(kobj_q) : null;
+					HashMap<String,Object> fields = StringUtil.isStringWithLen(kobj_f, 2) ? (HashMap<String,Object>)JSON.read(kobj_f) : null;
+					HashMap<String,Object> sortBy = StringUtil.isStringWithLen(kobj_sort, 2) ? (HashMap<String,Object>)JSON.read(kobj_sort) : null;
+					if (query == null) {
+						query = new HashMap<String,Object>(2);
+					}
 					int skip = (StringUtil.isDigits(kobj_skip))?Integer.parseInt(kobj_skip):0;
 					//默认长度为20
 					int len = (StringUtil.isDigits(kobj_len))?Integer.parseInt(kobj_len):20;
-					HashMap<String,Object> hint = (StringUtil.isStringWithLen(kobj_hint, 2) && JSONTool.validateJsonString(kobj_hint)) ? JSONTool.readJsonString(kobj_hint) : null;
+					HashMap<String,Object> hint = StringUtil.isStringWithLen(kobj_hint, 2) ? (HashMap<String,Object>)JSON.read(kobj_hint) : null;
 					List list = kc.getDaoConfig().findDao().query(query, fields, sortBy, skip, len, hint);
-					String d = JSONTool.writeJsonString(list);
+					String d = JSON.write(list);
 					msg.addData("[print]", "{\"re\":\"ok\",\"d\":{\"list\":"+d+"}}");
 					return super.act(msg);
 				}catch(Exception e){
@@ -259,8 +262,9 @@ public class KObjAction extends Action{
 				//如果有kobj_id参数则为更新,无则为添加
 				String kobj_id = httpmsg.getHttpReq().getParameter("kobj_id");
 				if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kobj_json, 2)) {
-					if (JSONTool.validateJsonString(kobj_json)) {
-						HashMap nk = JSONTool.readJsonString(kobj_json);
+					Object jj = JSON.read(kobj_json);
+					if (jj != null) {
+						HashMap<String,Object> nk = (HashMap<String,Object>)jj;
 						KObjSchema ks = kc.getKobjSchema();
 						DaoInterface dao = kc.getDaoConfig().findDao();
 						//去掉不存在的属性
@@ -308,7 +312,7 @@ public class KObjAction extends Action{
 			String kcjson  = httpmsg.getHttpReq().getParameter("schema_kcjson");
 			String rePrint = "para error";
 			if (StringUtil.isStringWithLen(key, 2) && StringUtil.isStringWithLen(kcjson, 2)) {
-				int re = KObjManager.createKObjConfigToDB(key, JSONTool.readJsonString(kcjson));
+				int re = KObjManager.createKObjConfigToDB(key, (HashMap<String,Object>)JSON.read(kcjson));
 				if (re == 0) {
 					msg.addData("[print]", "ok");
 					return super.act(msg);	
@@ -325,7 +329,7 @@ public class KObjAction extends Action{
 			if (update == null) {
 				msg.addData("right", "kobjmgr_saveini");
 				msg.addData("headerAdd", JS_SNIPPET);
-				msg.addData("newIni", JSONTool.writeFormatedJsonString(KObjManager.getCurrentIni(), 6));
+				msg.addData("newIni", JSON.writeFormat(KObjManager.getCurrentIni(), 6));
 				return super.act(msg);
 			}else{
 				String re = "err:savaIni error.";

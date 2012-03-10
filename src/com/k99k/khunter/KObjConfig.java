@@ -6,7 +6,7 @@ package com.k99k.khunter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * KObjConfig
@@ -38,7 +38,7 @@ public class KObjConfig {
 		KObjConfig kc = new KObjConfig();
 		kc.setKobjName(key);
 		try {
-			if (!JSONTool.checkMapTypes(map,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})) {
+			if (!JSON.checkMapTypes(map,new String[]{"intro","dao","columns","indexes"},new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})) {
 				ErrorCode.logError(KObjManager.log, 8, 22, map.toString());
 				return null;
 			}
@@ -85,7 +85,7 @@ public class KObjConfig {
 //	 * @return
 //	 */
 //	public final boolean checkDaoMap(HashMap<String, Object> map){
-//		if(!JSONTool.checkMapTypes(map,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
+//		if(!JSON.checkMapTypes(map,new String[]{"daoName","newDaoName"},new Class[]{String.class,String.class})){
 //			return false;
 //		}
 //		//如果create为new,则必须有tableName字段

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import org.apache.log4j.Logger;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -260,7 +260,7 @@ public final class KObjManager {
 	 * @param iniFile
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("rawtypes")
 	public static final boolean buildAllNewData(String newDataSourceName){
 		try {
 			DataSourceInterface ds = DataSourceManager.findDataSource(newDataSourceName.trim());
@@ -269,7 +269,7 @@ public final class KObjManager {
 				return false;
 			}
 //			String ini = KIoc.readTxtInUTF8(iniFilePath);
-//			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+//			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 //			//先定位到json的对应属性
 //			Map<String, ?> mgr = (Map<String, ?>) root.get(getName());
 			Iterator it = kobjMap.entrySet().iterator(); 
@@ -329,7 +329,7 @@ public final class KObjManager {
 			try {
 				
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+				Map<String,?> root = (Map<String,?>) JSON.read(ini);
 				//先定位到json的对应属性
 				Map<String, ?> mgr = (Map<String, ?>) root.get(getName());
 
@@ -338,7 +338,7 @@ public final class KObjManager {
 				for (Iterator<String> iter = mgr.keySet().iterator(); iter.hasNext();) {
 					String keyName = iter.next();
 					HashMap<String, Object> m = (HashMap<String, Object>) mgr.get(keyName);
-//					if(!JSONTool.checkMapTypes(m, new String[]{"intro","dao","columns","indexes"}, new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
+//					if(!JSON.checkMapTypes(m, new String[]{"intro","dao","columns","indexes"}, new Class[]{String.class,HashMap.class,ArrayList.class,ArrayList.class})){
 //						ErrorCode.logError(log, 8, 6," key:"+keyName);
 //						continue;
 //					}
@@ -387,7 +387,7 @@ public final class KObjManager {
 		//读取配置文件
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 			//先定位到json的对应属性
 			Map<String, ?> mgr = (Map<String, ?>) root.get(getName());
 

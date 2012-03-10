@@ -9,7 +9,7 @@ import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * 读取页面固定模块(模板)的配置文件到内存,以帮助输出JSP;<br />
@@ -122,7 +122,7 @@ public class JSPOut extends Action {
 	public void init() {
 		try {
 			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+this.ini);
-			HashMap<String,?> root = (HashMap<String,?>) JSONTool.readJsonString(ini);
+			HashMap<String,?> root = (HashMap<String,?>) JSON.read(ini);
 			ArrayList<HashMap<String,Object>> jc = (ArrayList<HashMap<String,Object>>) root.get("jspCache");
 			for (Iterator<HashMap<String, Object>> it = jc.iterator(); it.hasNext();) {
 				HashMap<String, Object> jspc = it.next();

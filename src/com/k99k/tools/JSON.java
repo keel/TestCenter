@@ -28,6 +28,71 @@ public class JSON {
 	}
 	
 	/**
+	 * 检查Map是否存在指定的多个String key
+	 * @param m Map
+	 * @param keys String[]
+	 * @return 少任意一个key则返回false
+	 */
+	@SuppressWarnings("rawtypes")
+	public static final boolean checkMapKeys(Map m,String[] keys){
+		if (m == null || keys == null) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			if (!m.containsKey(keys[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 检查Map是否存在指定的多个String key，且类型分别为valueClass(instanceof)
+	 * @param m Map
+	 * @param keys String[] 
+	 * @param valueClass Class[] 当为Object.class时可为任意类型
+	 * @return 少任意一个key则返回false
+	 */
+	@SuppressWarnings("rawtypes")
+	public static final boolean checkMapTypes(Map m,String[] keys,Class[] valueClass){
+		if (m == null || keys == null || valueClass == null || keys.length!=valueClass.length) {
+			return false;
+		}
+		for (int i = 0; i < keys.length; i++) {
+			//Object可为任意类型
+			if (valueClass[i].equals(Object.class)) {
+				continue;
+			}
+			if (!m.containsKey(keys[i]) || (!m.get(keys[i]).getClass().equals(valueClass[i]))) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * 定位到Json的某一个节点
+	 * @param root HashMap<String,Object> 
+	 * @param jsonPath  String[]
+	 * @return 节点对应对象,若路径不存在则返回null
+	 */
+	@SuppressWarnings("unchecked")
+	public static final Object findJsonNode(HashMap<String,Object> root,String[] jsonPath){
+		if (jsonPath==null || jsonPath.length<1) {
+			return null;
+		}
+		HashMap<String,Object> target =  root;
+		//定位到需要更新的节点
+		for (int i = 0; i < jsonPath.length; i++) {
+			if (target == null) {
+				return null;
+			}
+			target = (HashMap<String,Object>)(target.get(jsonPath[i]));
+		}
+		return target;
+	}
+	
+	/**
 	 * 将对象以JSON格式输出,不支持bean(bean将直接输出toString),注意对象中不能有自我引用!
 	 * @param obj
 	 * @return String

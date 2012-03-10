@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 
 /**
@@ -271,7 +271,7 @@ public final class TaskManager {
 			//读取配置文件刷新注入的Task数据
 			try {
 				String ini = KIoc.readTxtInUTF8(iniFile);
-				Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+				Map<String,?> root = (Map<String,?>) JSON.read(ini);
 				//先定位到json的tasks属性
 				Map<String, ?> m = (Map<String, ?>) root.get(TaskManager.getName());
 				Object o = m.get("taskMapInitSize");
@@ -391,7 +391,7 @@ public final class TaskManager {
 	public static final boolean reLoadTask(String act){
 		try {
 			String ini = KIoc.readTxtInUTF8(iniFilePath);
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 			//先定位到json的actions属性
 			Map<String, ?> tasksMap = (Map<String, ?>) root.get(TaskManager.getName());
 			Map<String, ?> m = (Map<String, ?>) tasksMap.get(act);

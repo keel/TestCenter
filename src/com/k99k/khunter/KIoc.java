@@ -23,7 +23,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.k99k.tools.IO;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
 /**
@@ -358,7 +358,7 @@ public final class KIoc {
 				return 12;
 			}else {
 				//验证json格式
-				if (JSONTool.validateJsonString(json)) {
+				if (JSON.read(json) != null) {
 					//保存
 					backupFile(jsonFilePath);
 					if(KIoc.writeTxtInUTF8(jsonFilePath, json)){
@@ -386,7 +386,7 @@ public final class KIoc {
 		if (json == null || jsonFilePath == null) {
 			return 27;
 		}
-		String jsonString = JSONTool.writeFormatedJsonString(json);
+		String jsonString = JSON.writeFormat(json);
 		if (jsonString == null) {
 			return 10;
 		}
@@ -420,12 +420,13 @@ public final class KIoc {
 	 * @param iniValue 更新的值
 	 * @return 是否更新成功
 	 */
+	@SuppressWarnings("unchecked")
 	public static final boolean updateIniFileNode(String iniFilePath,String[] jsonPath,int opType,int arrPostion,String iniKey,Object iniValue){
 		String ini = KIoc.readTxtInUTF8(iniFilePath);
 		if (ini == null) {
 			return false;
 		}
-		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+		HashMap<String, Object> root = (HashMap<String,Object>) JSON.read(ini);
 		if (root == null) {
 			return false;
 		}
@@ -478,7 +479,7 @@ public final class KIoc {
 					listTarget.add(value);
 				}
 			}
-			return root;//JSONTool.writeFormatedJsonString(root);
+			return root;//JSON.writeFormatedJsonString(root);
 		} catch (Exception e) {
 			ErrorCode.logError(log, KIoc.ERR_CODE1, 23,e, root+" | "+jsonPath+" | "+opType);
 			return null;
@@ -500,14 +501,14 @@ public final class KIoc {
 //		if (ini == null) {
 //			return false;
 //		}
-//		HashMap<String, Object> root = (HashMap<String,Object>) JSONTool.readJsonString(ini);
+//		HashMap<String, Object> root = (HashMap<String,Object>) JSON.read(ini);
 //		if (root == null) {
 //			return false;
 //		}
 //		HashMap<String, Object> newJson = updateJsonNode(root,jsonPath,opType,position,key,iniValue);
 //		if (newJson != null) {
 //			backupFile(iniFilePath);
-//			KIoc.writeTxtInUTF8(iniFilePath, JSONTool.writeFormatedJsonString(newJson));
+//			KIoc.writeTxtInUTF8(iniFilePath, JSON.writeFormatedJsonString(newJson));
 //			return true;
 //		}
 //		return false;
@@ -540,7 +541,7 @@ public final class KIoc {
 //			}else{
 //				listTarget.add(value);
 //			}
-//			return JSONTool.writeFormatedJsonString(root);
+//			return JSON.writeFormatedJsonString(root);
 //		} catch (Exception e) {
 //			ErrorCode.logError(log, KIoc.ERR_CODE1, 24,e, root+" | "+jsonPath+" | "+opType);
 //			return null;

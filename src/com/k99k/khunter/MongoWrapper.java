@@ -112,7 +112,7 @@ public class MongoWrapper implements DBObject {
 	/* (non-Javadoc)
 	 * @see org.bson.BSONObject#putAll(java.util.Map)
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void putAll(Map arg0) {
 		kobj.getPropMap().putAll(arg0);

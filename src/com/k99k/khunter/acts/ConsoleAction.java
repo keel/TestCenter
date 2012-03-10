@@ -18,7 +18,7 @@ import com.k99k.khunter.KFilter;
 import com.k99k.khunter.HTManager;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.KIoc;
-import com.k99k.tools.JSONTool;
+import com.k99k.tools.JSON;
 
 /**
  * 控制台总Action,同时管理其他Console 用到的action
@@ -120,7 +120,7 @@ public class ConsoleAction extends Action {
 	public void init() {
 		try {
 			String ini = KIoc.readTxtInUTF8(HTManager.getIniPath()+getIniPath());
-			Map<String,?> root = (Map<String,?>) JSONTool.readJsonString(ini);
+			Map<String,?> root = (Map<String,?>) JSON.read(ini);
 			//先定位到json的actions属性
 			Map<String, ?> actionsMap = (Map<String, ?>) root.get("actions");
 			//循环加入Action
