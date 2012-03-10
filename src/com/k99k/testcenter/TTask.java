@@ -900,6 +900,7 @@ public class TTask extends Action {
 		long pid = Long.parseLong(String.valueOf(json.get("_id")));
 		if (json.containsKey("newp")) {
 			json.remove("newp");
+			//FIXME 在数据库中创建Product后就再不会更新了，需要有一处可以再次从EGame更新Product
 			if (!dao.checkId(pid)) {
 				int re = Product.add(json);
 				if(re!=0){
@@ -991,13 +992,22 @@ public class TTask extends Action {
 			return;
 		}
 		long pid = Long.parseLong(opid);
-		HashMap<String,String> product = EGame.getProduct(pid);
-		if (product == null) {
-			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT, msg);
+		//直接从接口获取产品
+		HashMap<String,String> pmap = EGame.getProduct(pid);
+		if (pmap == null) {
+			//接口获取失败
+			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
 			return;
 		}
+		if (pmap.get("payType").equals("根据关卡或道具计费")) {
+			//获取短代信息
+			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+			if (fee != null) {
+				msg.addData("fee", fee);
+			}
+		}
 		msg.addData("u", u);
-		msg.addData("pmap", product);
+		msg.addData("pmap", pmap);
 		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
 	}
 	

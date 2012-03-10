@@ -553,7 +553,7 @@ else if(userType==99) { %>
 <br />
 <div id="feedback">
 <%if(userType == 1 || userType ==99){ %>
-<a href="<%=prefix+"/tasks/add2?pid="+one.getProp("PID")+((ismy)?"&ismy=true":"")%>" class="aButton">反馈并发起修改后的测试</a>
+<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&ismy=true":"")%>" class="aButton">反馈并发起修改后的测试</a>
 <a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&tid="+one.getId()%>" class="aButton">对此任务发起回复讨论</a>
 <a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此任务</a>
 <%} %>
