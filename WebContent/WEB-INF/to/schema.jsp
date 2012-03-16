@@ -27,7 +27,7 @@ if(kc == null){
 <div class="weight">Intro:</div>
 <div id="schema_intro"><%=kc.getIntro() %></div>
 <div class="weight">Dao: </div>
-<div id="schema_daojson"><%=JSONTool.writeJsonString(kc.getDaoConfig().toMap())%></div>
+<div id="schema_daojson"><%=JSON.write(kc.getDaoConfig().toMap())%></div>
 <div class="weight">Columns: - <span id="schema_col_add"></span></div>
 <table id="schema_columns">
 <tr><th>column</th><th>required</th><th>default</th><th>type</th><th>intro</th><th>len</th><th>validator</th><th style="width:140px;">EDIT</th></tr>

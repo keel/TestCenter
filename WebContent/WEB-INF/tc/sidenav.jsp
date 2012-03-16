@@ -7,11 +7,18 @@ int type = (StringUtil.isDigits(request.getParameter("type")))? Integer.parseInt
 int gg = (StringUtil.isDigits(request.getParameter("gg")))? Integer.parseInt(request.getParameter("gg")):0;
 int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(request.getParameter("tt")):0;
 %><div id="sideNav">
+<div>导航</div>
+<ul>
+<li id="side_pwd"><a href="http://202.102.39.9/MIS/" >返回管理平台</a></li>
+<li id="side_logout"><a href="http://game.189.cn" target="_blank">爱游戏门户</a></li>
+</ul>
+<%if(type > 1){ %>
 <div>用户信息</div>
 <ul>
 <li id="side_pwd"><a href="<%=prefix %>/user/edit" >修改用户信息</a></li>
 <li id="side_logout"><a href="<%=prefix %>/auth/logout" >注销</a></li>
 </ul>
+<%} %>
 <div>测试管理</div>
 <ul>
 <li id="side_gg"><a href="<%=prefix %>/news" >公告
@@ -24,18 +31,18 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <!--  <li id="side_product"><a href="<%=prefix %>/products" >产品管理</a></li>  -->
 </ul>
 
+<div>讨论</div>
+<ul>
+<li id="side_topic_pub"><a href="<%=prefix %>/topic/pub" >公共讨论</a></li>
+<li id="side_topic_company"><a href="<%=prefix %>/topic/company" >我的产品</a></li>
+</ul>
+
 <div>相关文档</div>
 <ul>
 <li id="side_topic_doc_proc"><a href="<%=prefix %>/topic/doc/proc" >流程说明</a></li>
 <li id="side_topic_doc_handset"><a href="<%=prefix %>/topic/doc/handset" >手机终端信息</a></li>
 <li id="side_topic_doc_faq"><a href="<%=prefix %>/topic/doc/faq" >适配常见问题</a></li>
 <li id="side_topic_doc_api"><a href="<%=prefix %>/topic/doc/api" >电信接口</a></li>
-</ul>
-
-<div>讨论</div>
-<ul>
-<li id="side_topic_pub"><a href="<%=prefix %>/topic/pub" >公共讨论</a></li>
-<li id="side_topic_company"><a href="<%=prefix %>/topic/company" >公司产品讨论</a></li>
 </ul>
 
 <%

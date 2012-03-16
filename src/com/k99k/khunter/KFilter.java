@@ -171,6 +171,12 @@ public final class KFilter implements Filter {
 				resp.sendRedirect(redirect);
 				return;
 			}
+			//是否直接跳转
+			else if (msg.getData("[goto]") != null) {
+				String link = (String) msg.getData("[goto]");
+				resp.sendRedirect(link);
+				return;
+			}
 			//继续走chain
 //			else if(msg.getData("[chain]") != null){
 //				chain.doFilter(request, response);

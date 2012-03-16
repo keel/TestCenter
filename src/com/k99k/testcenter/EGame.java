@@ -200,7 +200,7 @@ public class EGame extends Action {
 		long tid = (Long)(re.get(0).get("_id"));
 		msg.removeData("[print]");
 		msg.removeData("[jsp]");
-		msg.addData("[redirect]", KFilter.getPrefix()+"/task/"+tid);
+		msg.addData("[redirect]", "/task/"+tid);
 	}
 	
 	/**

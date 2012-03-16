@@ -84,7 +84,9 @@ $(function(){
 int usertype = user.getType();
 boolean canEdit = (usertype>=4);
 String ismy = (sub.equals("my")) ? "?ismy=true" : "";
+if(usertype>1){
 %><span style="padding-left:20px;"><a href="<%=prefix%>/tasks/add2<%=ismy%>" class="aButton">创建新任务</a></span>
+<%} %>
 </div>
 
 <div>
