@@ -39,7 +39,7 @@ $(function(){
 	$(tar).addClass("sideON");
 	
 //处理产品信息
-pJSON.company = $.company;
+pJSON.company = '<%=pmap.get("cpName")%>';
 pJSON.name = '<%=pmap.get("name")%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
@@ -92,7 +92,7 @@ if(!isPack.equals("0")){
 	type = "5";
 }
 out.print(type+";");
-%>;
+%>
 pJSON.url = '<%=pmap.get("wapUrl")%>';
 pJSON.gameClass = '<%=pmap.get("gameClass")%>';
 pJSON.cpID = '<%=pmap.get("cpID")%>';
@@ -145,7 +145,7 @@ swfu.newfile = function(file){
 
 
 function feeInfo(fee,to){
-	if(fee != ''){
+	if(fee != '' && fee.indexOf('{')>0){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
@@ -166,7 +166,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 //-------------------------------------
 
 </script>
-<%out.print(JSPOut.out("main0","0",user.getName())); %>
+<%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
   <jsp:param name="type" value="<%=userType %>" /> 
@@ -181,7 +181,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=user.getProp("company") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=pmap.get("gameId") %></span> 产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("name") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOS") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("cpId") %></span></div> 
+   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=pmap.get("gameId") %></span> 产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("name") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOS") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("cpId") %></span></div> 
     	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payType") %></span>计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("serviceFeeType") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameType") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameClass") %></span></div> 
     	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=pmap.get("synUrl") %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=pmap.get("wapUrl") %></span></div>
     	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="hide"><%=feeInfo %></span><div id="feeInfoTable"></div></div>
@@ -219,7 +219,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <p>下一流程处理人：
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
-<input type="hidden" id="task_type_h" name="task_type_h" value="" />
+<input type="hidden" id="task_type_h" name="task_type_h" value="<%=pmap.get("task_type") %>" />
 <textarea rows="1" cols="1" class="hide" name="task_p_json_h" id="task_p_json_h"></textarea>
 </form>
 <p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a> </p>

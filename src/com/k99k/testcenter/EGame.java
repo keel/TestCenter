@@ -17,7 +17,6 @@ import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObject;
-import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.Net;
@@ -223,6 +222,11 @@ public class EGame extends Action {
 			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
 			return;
 		}
+		//加入真正的公司名称
+		pmap.put("cpName", Company.egameIds.get(pmap.get("cpId").toString()));
+		//是否为此产品的首次测试
+		boolean isOld = Product.dao.checkId(pid);
+		pmap.put("task_type", (isOld)?"1":"0");
 		if (pmap.get("payType").equals("根据关卡或道具计费")) {
 			//获取短代信息
 			ArrayList<HashMap<String,String>> fee = getFee(pid);

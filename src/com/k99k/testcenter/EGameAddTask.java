@@ -111,7 +111,7 @@ public class EGameAddTask extends HttpServlet {
 	 */
 	public static void main(String[] args) {
 		long productId = 145;
-		long userId = 5;
+		long userId = 81;
 		long nowTime = System.currentTimeMillis();
 		String des = encodeTaskPara(productId,userId,nowTime);
 		System.out.println("des:"+des);

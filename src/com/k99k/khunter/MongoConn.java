@@ -29,8 +29,8 @@ public final class MongoConn implements DataSourceInterface{
 	
 	private String ip = "127.0.0.1";
 	private int port = 27017;
-	private String dbName = "kht";
-	private String user = "sike_ht";
+	private String dbName = "tc";
+	private String user = "keel";
 	private String pwd = "jsinfo2901_A";
 	
 	private int connectionsPerHost = 50;
@@ -50,22 +50,54 @@ public final class MongoConn implements DataSourceInterface{
 	public static void main(String[] args) {
 		//test for mongolab.com test
 		MongoConn mongo = new MongoConn();
-		mongo.setIp("dbh13.mongolab.com");
-		mongo.setPort(27137);
-		mongo.setDbName("fwall");
-		mongo.setUser("keelsike");
-		mongo.setPwd("crystalthing");
+		mongo.setIp("127.0.0.1");
+		mongo.setPort(27017);
+		//mongo.setPort(27137);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
 		if (mongo.init()) {
-			DBCollection conn = mongo.getColl("test");
+			DBCollection conn = mongo.getColl("cp1");
+			DBCollection co = mongo.getColl("TCCompany");
+			DBCollection cu = mongo.getColl("TCUser");
 			DBCursor cur = conn.find();
-			if (cur.hasNext()) {
-				System.out.println(cur.next());
+			long i = 31L;
+			while (cur.hasNext()) {
+				//System.out.println(cur.next());
+				DBObject cc = (DBObject) cur.next();
+				String cpName = cc.get("cpName").toString();
+				String cpid = cc.get("cpid").toString();
+				cc.put("shortName", CnToSpell.getLetter(cpName));
+				
+				conn.save(cc);
+				System.out.println(cc);
+				
+				cc.put("_id", i);
+				cc.put("name", cpName);
+				cc.put("mainUser", cpid);
+				cc.put("cpId", cpid);
+				cc.removeField("cpid");
+				cc.removeField("cpName");
+				co.save(cc);
+				
+				cc.put("_id", i);
+				cc.put("name", cpid);
+				cc.put("type", 11);
+				cc.put("phoneNumber", "");
+				cc.put("pwd", "egame");
+				cc.put("company", cpName);
+				cc.put("egameID", cpid);
+				cc.removeField("cpid");
+				cc.removeField("cpName");
+				cc.removeField("shortName");
+				cu.save(cc);
+				
+				//System.out.println(cc);
+				i++;
 			}
 		}else{
 			System.out.println("err!");
 		}
-		
-		
 	}
 	*/
 	/**

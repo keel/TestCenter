@@ -89,14 +89,14 @@ public class EGameFtpSynTask extends Action {
 		for (Iterator<HashMap<String, Object>> it = re.iterator(); it.hasNext();) {
 			HashMap<String, Object> map = it.next();
 			String fileId = map.get("fileId").toString();
-			String gFile = map.get("gFile").toString();
+			//String gFile = map.get("gFile").toString();
 			String phone = map.get("phone").toString();
 			//以fileId从TCGameFile中找到真实文件名
 			q.put("_id", Long.parseLong(fileId));
 			map = GameFile.dao.findOneMap(q, StaticDao.fields_ftp_fileName);
 			String fileName = map.get("fileName").toString();
-			//适配对应文件
-			fsb.append(fileName).append(",").append(phone).append("\r\n");
+			//适配对应文件,使用egameId
+			fsb.append(fileName).append(",").append(Phone.egameIds.get(phone)).append("\r\n");
 			//文件上传序列
 			f2f.put(this.localPath+fileName, remotePath+fileName);
 		}

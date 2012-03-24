@@ -143,7 +143,7 @@ out.print(skipP);
 //-------------------------------------
 
 </script>
-<%out.print(JSPOut.out("main0","0",user.getName())); %>
+<%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
   <jsp:param name="type" value="<%=userType %>" /> 

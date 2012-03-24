@@ -288,7 +288,7 @@ function dropTask(id){
 	}
 }
 function feeInfo(fee,to){
-	if(fee != ''){
+	if(fee != '' && fee.indexOf('{')>0){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
@@ -304,7 +304,7 @@ function feeInfo(fee,to){
 }
 -->
 </script>
-<%out.print(JSPOut.out("main0","0",user.getName())); %>
+<%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
   <jsp:param name="lv" value="<%=user.getLevel() %>" /> 
   <jsp:param name="type" value="<%=user.getType() %>" /> 

@@ -75,7 +75,7 @@ function urlSet(){
 	var v=$("#task_p_url").val();
 	if(!v || $.trim(v).length<=0){alert("请正确填写WAP的入口URL地址");return;}
 	else{pJSON.url=v;$("#task_p_json_h").html($.toJSON(pJSON));
-	$("#task_type_h").val($('input:radio[name=task_type]:checked').val());
+	if($("#task_type_h").val()==""){$("#task_type_h").val($('input:radio[name=task_type]:checked').val());};
 	$("#urlInput").hide();$("#urlSet .blueBold").text($("#task_p_url").val()).show();
 	$("#taskFS").appendTo("#task_new");
 	}
@@ -99,7 +99,7 @@ function filesSet(){
 	if(i==0){alert("请上传文件并指定机型组!");return;}
 	//生成文件json
 	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").html($.toJSON(pJSON));}
-	if(pJSON.type){$("#task_type_h").val(pJSON.type);}else{$("#task_type_h").val($('input:radio[name=task_type]:checked').val());};
+	if($("#task_type_h").val()==""){$("#task_type_h").val($('input:radio[name=task_type]:checked').val());};
 	$("#swfBT,.u_ok,#fileupload .aButton").hide();
 	$("#taskFS").appendTo("#task_new");
 }

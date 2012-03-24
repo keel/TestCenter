@@ -74,8 +74,9 @@ public class JSPOut extends Action {
 	/**
 	 * 带单个参数输出缓存
 	 * @param cacheName
+	 * @param position
 	 * @param para
-	 * @return String
+	 * @return
 	 */
 	public static final String out(String cacheName,String position,String para){
 		String s = jspCacheMap.get(cacheName);

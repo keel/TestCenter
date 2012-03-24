@@ -5,6 +5,7 @@ package com.k99k.testcenter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,6 +37,12 @@ public class Company extends Action {
 	
 	static DaoInterface dao;
 	static KObjSchema schema;
+	
+	/**
+	 * {egameId(cpid):name}缓存
+	 */
+	static HashMap<String,String> egameIds;
+	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
 	 */
@@ -116,6 +123,20 @@ public class Company extends Action {
 	public void init() {
 		dao = DaoManager.findDao("TCCompanyDao");
 		schema = KObjManager.findSchema("TCCompany");
+		
+		//缓存egameId
+		egameIds = new HashMap<String, String>(1000);
+		HashMap<String,Object> f = new HashMap<String, Object>();
+		f.put("name", 1);
+		f.put("mainUser",1);
+		ArrayList<HashMap<String,Object>> ls = dao.query(null, f, null, 0, 0, null);
+		for (Iterator<HashMap<String, Object>> it = ls.iterator(); it.hasNext();) {
+			HashMap<String, Object> m = it.next();
+			Object mu = m.get("mainUser");
+			if (mu != null && mu.toString().startsWith("C")) {
+				egameIds.put(mu.toString(), m.get("name").toString());
+			}
+		}
 		super.init();
 	}
 	
