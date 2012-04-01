@@ -86,7 +86,7 @@ $(function(){
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if((state>TTask.TASK_STATE_TEST && (user.getProp("company").equals(one.getProp("company"))) || userType>1)){%>
+if((state>TTask.TASK_STATE_TEST && (user.getProp("company").equals(one.getProp("company"))) || userType>=1)){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);
@@ -483,7 +483,9 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <%}%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
-}else if(state==TTask.TASK_STATE_CONFIRM && userType>1){
+//}else if(state==TTask.TASK_STATE_CONFIRM && userType>1){
+}else if(state>TTask.TASK_STATE_TEST && state!=TTask.TASK_STATE_NEED_MOD){
+	if(userType > 1){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
@@ -506,15 +508,18 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	}
 	sb.append("</div></div></div></div></div>");
 	out.print(sb);
-
+	}
+	
 %>
-
 <div class="inBox" id="failCases">
     <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">
     
     </div>
 </div>
+<% 
+	if(userType>1){
+%>
 <br />
 <div id="finish">
 <%//由权限为4的人确认到准备上线状态
@@ -542,7 +547,9 @@ else if(userType==99) { %>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 
-<%//待反馈情况,厂家查看
+<%
+	}
+//待反馈情况,厂家查看
 }else if((state==TTask.TASK_STATE_NEED_MOD && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
 <div class="inBox" id="failCases">
     <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 

@@ -80,12 +80,14 @@ public class EGame extends Action {
 		}*/
 		String subact = KFilter.actPath(msg, 2, "");
 		//判断用户登录
+		//Auth.logout(httpmsg, httpmsg.getHttpResp());
 		KObject u = checkLogin(httpmsg);
 		if (u == null) {
 			return super.act(msg);
 		}
 		//新建任务
 		if (subact.equals("newtask")) {
+			
 			this.newtask(req,u, httpmsg);
 		}else if (subact.equals("task")) {
 			this.task(req,u, httpmsg);
@@ -131,8 +133,9 @@ public class EGame extends Action {
 	 * @return
 	 */
 	private KObject checkLogin(HttpActionMsg httpmsg){
-		KObject u = Auth.checkCookieLogin(httpmsg);
-		if (u == null) {
+		//KObject u = Auth.checkCookieLogin(httpmsg);
+		KObject u = null;
+		//if (u == null) {
 			//验证参数
 			if (!StringUtil.isStringWithLen(httpmsg.getHttpReq().getParameter("t"), 5)) {
 				JOut.err(403,"E403"+Err.ERR_PARAS, httpmsg);
@@ -146,12 +149,13 @@ public class EGame extends Action {
 				return null;
 			}
 			String[] tt = t.split("#");
-			if (tt.length>=2 && StringUtil.isDigits(tt[0]) && StringUtil.isDigits(tt[1]) ) {
-				long userId = Long.parseLong(tt[0]);
+			if (tt.length>=2 && StringUtil.isDigits(tt[1]) ) {
+				//long userId = Long.parseLong(tt[0]);
 				long loginTime = Long.parseLong(tt[1]);
 				//判断登录时间是否已超时
 				if (System.currentTimeMillis()-loginTime <= cookieTime) {
-					u = TUser.dao.findOne(userId);
+					//使用CPID
+					u = TUser.dao.findOne(tt[0]);
 					if (u != null) {
 						//如果带产品id,则加到user的属性中,注意后期处理时要清除
 						if (tt.length == 3 && StringUtil.isDigits(tt[2])) {
@@ -167,10 +171,10 @@ public class EGame extends Action {
 				}
 				
 			}
-			JOut.err(401,"E401"+Err.ERR_EGAME_T_ERR,httpmsg);
+			JOut.err(401,"E401"+Err.ERR_EGAME_USER_NOT_FOUND,httpmsg);
 			return null;
-		}
-		return u;
+		//}
+		//return u;
 	}
 	
 	/**
@@ -195,12 +199,13 @@ public class EGame extends Action {
 		if (re == null || re.size() ==0) {
 			JOut.err(403,"E403"+Err.ERR_EGAME_T_NOT_FOUND, msg);
 			return;
-		}
+		} 
 		long tid = (Long)(re.get(0).get("_id"));
 		msg.removeData("[print]");
 		msg.removeData("[jsp]");
-		msg.addData("[redirect]", "/task/"+tid);
+		msg.addData("[redirect]", "/tasks/"+tid);
 	}
+	
 	
 	/**
 	 * 创建新测试任务
@@ -213,7 +218,29 @@ public class EGame extends Action {
 		if (pid == 0) {
 			return;
 		}
+		//先确定此产品有无在测试平台提交任务,如果有则直接转到查看
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("PID", pid);
+		HashMap<String,Object> gte = new HashMap<String, Object>(2);
+		gte.put("$gte", 0);
+		query.put("state", gte);
+//		HashMap<String,Object> sort = new HashMap<String, Object>(2);
+//		sort.put("_id", -1);
+//		HashMap<String,Object> column = new HashMap<String, Object>(2);
+//		column.put("_id", 1);
 		
+		ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, null, 0, 1, null);
+		if (re != null && re.size() >0) {
+			long tid = (Long)(re.get(0).get("_id"));
+			msg.removeData("[print]");
+			msg.removeData("[jsp]");
+			msg.addData("[redirect]", "/tasks/"+tid);
+			return;
+		}
+		
+		//--------------------------------
+		//创建产品
+		//--------------------------------
 		
 		//直接从接口获取产品
 		HashMap<String,String> pmap = getProduct(pid);
@@ -408,14 +435,14 @@ public class EGame extends Action {
 	 */
 	public static void main(String[] args) {
 		
-		EGame.companyUrl = "http://202.102.111.18/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
-		EGame.productUrl = "http://202.102.111.18/MIS/v/entitytest/products?startIndex=0&pageSize=1";
-		EGame.handsetUrl = "http://202.102.111.18/MIS/v/entitytest/models?startIndex=0&pageSize=1";
-		EGame.feeUrl = "http://202.102.111.18/MIS/v/entitytest/consumecodes";
+		EGame.companyUrl = "http://202.102.111.22:8080/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
+		EGame.productUrl = "http://202.102.111.22:8080/MIS/v/entitytest/products?startIndex=0&pageSize=1";
+		EGame.handsetUrl = "http://202.102.111.22:8080/MIS/v/entitytest/models?startIndex=0&pageSize=1";
+		EGame.feeUrl = "http://202.102.111.22:8080/MIS/v/entitytest/consumecodes";
 		
 		
-		String comId = "C22001";
-		long pid = 219230;
+		String comId = "C11040";
+		long pid = 228503;
 		String mod = "E63V";
 		long feePid = 142;
 		

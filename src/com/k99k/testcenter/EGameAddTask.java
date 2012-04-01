@@ -28,7 +28,7 @@ public class EGameAddTask extends HttpServlet {
 	public EGameAddTask() {
 	}
 	
-	private String url = "http://202.102.40.43/egame/";
+	private String url = "http://202.102.40.43:8888/tc/egame";
 	
 	
 	
@@ -50,15 +50,15 @@ public class EGameAddTask extends HttpServlet {
 		
 		if (target.equals("newtask")) {
 			//跳转到创建新任务
-			resp.sendRedirect(this.url+"newtask?t="+encodeTaskPara(Long.parseLong(pid), Long.parseLong(userId), System.currentTimeMillis()));
+			resp.sendRedirect(this.url+"newtask?t="+encodeTaskPara(Long.parseLong(pid), userId, System.currentTimeMillis()));
 			return;
 		}else if(target.equals("task")){
 			//跳转到查看该产品的测试任务
-			resp.sendRedirect(this.url+"task?t="+encodeTaskPara(Long.parseLong(pid), Long.parseLong(userId), System.currentTimeMillis()));
+			resp.sendRedirect(this.url+"task?t="+encodeTaskPara(Long.parseLong(pid), userId, System.currentTimeMillis()));
 			return;
 		}else if(target.equals("test")){
 			//跳转到测试系统首页
-			resp.sendRedirect(this.url+"?t="+encodeUserPara(Long.parseLong(userId), System.currentTimeMillis()));
+			resp.sendRedirect(this.url+"?t="+encodeUserPara(userId, System.currentTimeMillis()));
 			return;
 		}
 		
@@ -73,12 +73,12 @@ public class EGameAddTask extends HttpServlet {
 	/**
 	 * 生成添加测试任务URL
 	 * @param productId
-	 * @param userId
+	 * @param cpid
 	 * @param loginTime
 	 * @return
 	 */
-	public static final String encodeTaskPara(long productId,long userId,long loginTime){
-		String src = new StringBuilder(String.valueOf(userId)).append("#").append(loginTime).append("#").append(productId).toString();
+	public static final String encodeTaskPara(long productId,String cpid,long loginTime){
+		String src = new StringBuilder(String.valueOf(cpid)).append("#").append(loginTime).append("#").append(productId).toString();
 		String des = Encrypter.encrypt(src);
 		return des;
 	}
@@ -89,8 +89,8 @@ public class EGameAddTask extends HttpServlet {
 	 * @param loginTime
 	 * @return
 	 */
-	public static final String encodeUserPara(long userId,long loginTime){
-		String src = new StringBuilder(String.valueOf(userId)).append("#").append(loginTime).toString();
+	public static final String encodeUserPara(String cpid,long loginTime){
+		String src = new StringBuilder(String.valueOf(cpid)).append("#").append(loginTime).toString();
 		String des = Encrypter.encrypt(src);
 		return des;
 	}
@@ -110,8 +110,8 @@ public class EGameAddTask extends HttpServlet {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long productId = 145;
-		long userId = 81;
+		long productId = 163418;
+		String userId = "C09015";
 		long nowTime = System.currentTimeMillis();
 		String des = encodeTaskPara(productId,userId,nowTime);
 		System.out.println("des:"+des);

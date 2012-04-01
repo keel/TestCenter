@@ -82,8 +82,7 @@ public class Auth extends Action {
 		}
 		//处理注销
 		else if(subact.equals("logout")){
-			WebTool.removeCookie("tcu", httpmsg.getHttpResp());
-			WebTool.removeCookie("co", httpmsg.getHttpResp());
+			logout(msg, httpmsg.getHttpResp());
 			msg.addData("[redirect]", "/login");
 			return super.act(msg);
 		}
@@ -98,6 +97,16 @@ public class Auth extends Action {
 			}
 			return super.act(msg);
 		}
+	}
+	
+	/**
+	 * 注销
+	 * @param msg
+	 * @param resp
+	 */
+	public static final void logout(ActionMsg msg,HttpServletResponse resp){
+		WebTool.removeCookie("tcu", resp);
+		WebTool.removeCookie("co", resp);
 	}
 	
 	/**

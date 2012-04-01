@@ -38,8 +38,12 @@ public class SMS extends Action {
 			return super.act(msg);
 		}
 		for (int i = 0; i < dests.length; i++) {
-			if(!Sms.sendOne(dests[i], content)){
-				log.error("SMS send error. dest:"+dests[i]+" content:"+content);
+			if (StringUtil.isStringWithLen(dests[i], 10)) {
+				if(!Sms.sendOne(dests[i], content)){
+					log.error("SMS send error. dest:"+dests[i]+" content:"+content);
+				}
+			}else{
+				log.error("SMS dest is empty. passed. content:"+content);
 			}
 		}
 		return super.act(msg);

@@ -211,8 +211,8 @@ public class TTaskTask extends Action {
 				int i = 0;
 				while (it.hasNext()) {
 					HashMap<java.lang.String, java.lang.Object> m = it.next();
-					dests_phone[i] = m.get("phoneNumber").toString();
-					dests_email[i] = m.get("email").toString();
+					dests_phone[i] = (m.get("phoneNumber")==null)?"":m.get("phoneNumber").toString();
+					dests_email[i] = (m.get("email")==null)?"":m.get("email").toString();
 					i++;
 				}
 				

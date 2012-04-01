@@ -1048,7 +1048,7 @@ public class TTask extends Action {
 		msg.addData("one", one);
 		msg.addData("product", product);
 		//Task的状态处于待分配(已创建)
-		if (one.getState()==0 || (u.getType() == 1 && one.getState()==1)) {
+		if (one.getState()==TASK_STATE_NEW || (u.getType() == 1 && one.getState()>=TASK_STATE_TEST)) {
 			//显示待分配的文件或URL
 			int sys = Integer.parseInt(product.getProp("sys").toString());
 			if (sys!=2) {

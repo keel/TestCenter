@@ -54,6 +54,7 @@ public class Err {
 	public static final int ERR_EGAME_FTP_TASK_NOT_FOUND = 310;
 	public static final int ERR_EGAME_FTP_WRITE_CONFIG = 311;
 	public static final int ERR_EGAME_FTP_UPLOAD = 312;
+	public static final int ERR_EGAME_USER_NOT_FOUND = 313;
 	
 	
 }
