@@ -537,8 +537,12 @@ if(isOnline==0 && (userType==4 || userType==99)){ %>
 <%}//由管理员操作上线
 else if(userType==99) { %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
-<label for="tu_re">确认上线：</label>
-<select name="tu_re" id="tu_re"><option value="2">上线</option><option value="4">上线部分通过</option><option value="-3">退回</option><option value="-2">放弃</option></select><br />
+<label for="tu_re">最终操作：</label><select name="tu_re" id="tu_re">
+<%//由管理员操作上线
+ if(isOnline!=2) { %>
+<option value="2">上线</option><option value="4">上线部分通过</option>
+<%} %>
+<option value="-3">退回</option><option value="-2">放弃</option></select><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />

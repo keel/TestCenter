@@ -254,7 +254,7 @@ public class EGame extends Action {
 		//是否为此产品的首次测试
 		boolean isOld = Product.dao.checkId(pid);
 		pmap.put("task_type", (isOld)?"1":"0");
-		if (pmap.get("payType").equals("根据关卡或道具计费")) {
+		if (pmap.get("payType").indexOf("根据关卡或道具计费")>-1) {
 			//获取短代信息
 			ArrayList<HashMap<String,String>> fee = getFee(pid);
 			if (fee != null) {

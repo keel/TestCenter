@@ -71,12 +71,12 @@ public final class TaskManager {
 	/**
 	 * 定时任务执行的线程池
 	 */
-	private final static ScheduledThreadPoolExecutor scheduledPool =  new ScheduledThreadPoolExecutor(ratePoolSize,new RejectedTaskHandler());
+	private final static ScheduledThreadPoolExecutor scheduledPool =  new ScheduledThreadPoolExecutor(ratePoolSize,new RejectedTaskHandler("scheduledPool"));
 	
 	/**
 	 * 定时循环执行任务的线程池
 	 */
-	private final static ScheduledThreadPoolExecutor ratePool =  new ScheduledThreadPoolExecutor(scheduledPoolSize,new RejectedTaskHandler());
+	private final static ScheduledThreadPoolExecutor ratePool =  new ScheduledThreadPoolExecutor(scheduledPoolSize,new RejectedTaskHandler("ratePool"));
 	
 	/**
 	 * 单线程立即执行任务的线程池
@@ -102,7 +102,7 @@ public final class TaskManager {
 			maximumPoolSize,
 			keepAliveTime,TimeUnit.MILLISECONDS,
 			arrBlockQueue,
-			new RejectedTaskHandler()
+			new RejectedTaskHandler("exePool")
 	);
 	
 	
@@ -346,7 +346,7 @@ public final class TaskManager {
 									maximumPoolSize,
 									keepAliveTime,TimeUnit.MILLISECONDS,
 									arrBlockQueue,
-									new RejectedTaskHandler()
+									new RejectedTaskHandler("exePool")
 							);
 						}
 					}
