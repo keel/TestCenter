@@ -57,40 +57,52 @@ public final class MongoConn implements DataSourceInterface{
 		mongo.setUser("keel");
 		mongo.setPwd("jsGame_1810");
 		if (mongo.init()) {
-			DBCollection conn = mongo.getColl("cp1");
+			//DBCollection conn = mongo.getColl("cp1");
 			DBCollection co = mongo.getColl("TCCompany");
 			DBCollection cu = mongo.getColl("TCUser");
-			DBCursor cur = conn.find();
-			long i = 31L;
+			DBCursor cur = cu.find();
+			long i = 8;
 			while (cur.hasNext()) {
 				//System.out.println(cur.next());
+				DBObject co2 = new BasicDBObject();
 				DBObject cc = (DBObject) cur.next();
-				String cpName = cc.get("cpName").toString();
-				String cpid = cc.get("cpid").toString();
-				cc.put("shortName", CnToSpell.getLetter(cpName));
+				String mainUser = cc.get("name").toString();
+				String name = cc.get("company").toString();
 				
-				conn.save(cc);
-				System.out.println(cc);
+				co2.put("_id", i);
+				co2.put("shortName", CnToSpell.getLetter(name));
+				co2.put("mainUser", mainUser);
+				co2.put("name", name);
+				co2.put("state", 0);
+				co2.put("level", 0);
+				co2.put("type", 0);
+				co2.put("version", 1);
 				
-				cc.put("_id", i);
-				cc.put("name", cpName);
-				cc.put("mainUser", cpid);
-				cc.put("cpId", cpid);
-				cc.removeField("cpid");
-				cc.removeField("cpName");
+				co.save(co2);
+				
+				//conn.save(cc);
+				System.out.println(co2);
+				
+				
+				
+//				cc.put("name", cpName);
+//				cc.put("mainUser", cpid);
+//				cc.put("cpId", cpid);
+//				cc.removeField("cpid");
+//				cc.removeField("cpName");
 				co.save(cc);
 				
-				cc.put("_id", i);
-				cc.put("name", cpid);
-				cc.put("type", 11);
-				cc.put("phoneNumber", "");
-				cc.put("pwd", "egame");
-				cc.put("company", cpName);
-				cc.put("egameID", cpid);
-				cc.removeField("cpid");
-				cc.removeField("cpName");
-				cc.removeField("shortName");
-				cu.save(cc);
+//				cc.put("_id", i);
+//				cc.put("name", cpid);
+//				cc.put("type", 11);
+//				cc.put("phoneNumber", "");
+//				cc.put("pwd", "egame");
+//				cc.put("company", cpName);
+//				cc.put("egameID", cpid);
+//				cc.removeField("cpid");
+//				cc.removeField("cpName");
+//				cc.removeField("shortName");
+//				cu.save(cc);
 				
 				//System.out.println(cc);
 				i++;

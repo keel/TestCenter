@@ -76,6 +76,7 @@ function aSubmit(){
 <div class="aboxTitle">编辑用户信息</div>
 <div class="aboxContent">
 <form action="<%=prefix%>/user/a_u" method="post" id="user_form">
+<%if(user.getType()>1) {%>
 <p>
 用户名：<span class="bold blue"><%=user_one.getName()%></span> 公司：<span class="bold blue"><%=user_one.getProp("company")%></span></p>
 <p>
@@ -84,9 +85,10 @@ function aSubmit(){
 再次输入：<br />
 <input type="password" id="user_pwd2" name="user_pwd2" value="" /><br />
 <br />
-手机号码：<br />
+<%} %>
+手机号码：(用于接收短信通知)<br />
 <input type="text" id="user_phone" name="user_phone" value="<%=user_one.getProp("phoneNumber")%>" /><br />
-电子邮箱：<br />
+电子邮箱：(用于接收邮件通知)<br />
 <input type="text" id="user_email" name="user_email" value="<%=user_one.getProp("email")%>" /><br />
 QQ号：<br />
 <input type="text" id="user_qq" name="user_qq" value="<%=user_one.getProp("qq")%>" /><br />

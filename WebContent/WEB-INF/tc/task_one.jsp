@@ -86,7 +86,7 @@ $(function(){
 	//隐藏按钮
 	$("#bt_confirm").hide();
 <% //显示summary
-if((state>TTask.TASK_STATE_TEST && (user.getProp("company").equals(one.getProp("company"))) || userType>=1)){%>
+if((state>TTask.TASK_STATE_TEST && ((user.getProp("company").equals(one.getProp("company"))) || userType>=1))){%>
 	var data=<%=(StringUtil.isStringWithLen(one.getProp("result"),2))?one.getProp("result").toString():"''"%>;
 	if(data != ''){
 		showSummary(data);
@@ -484,7 +484,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
 <%//已执行结束,查看TestUnit
 //}else if(state==TTask.TASK_STATE_CONFIRM && userType>1){
-}else if(state>TTask.TASK_STATE_TEST && state!=TTask.TASK_STATE_NEED_MOD){
+}else if(state>TTask.TASK_STATE_TEST && state!=TTask.TASK_STATE_NEED_MOD && state!=TTask.TASK_STATE_REJECT){
 	if(userType > 1){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
@@ -578,7 +578,7 @@ else if(userType==99) { %>
 <%}%>
 </div>
 
-
+<!-- <%=userType+"|"+state%> -->
 
 <div id="hide" class="hide"></div>
 </div>

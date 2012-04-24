@@ -138,7 +138,13 @@ var sucFn = function(file, serverData){
 	$.hasFileIndex = i;
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
-initUpload("<%=user.getName() %>",sucFn,"*.apk;*.jar;*.jad;*.zip");
+var upFileType = "*.jpg";
+if(pJSON.sys==0){
+	upFileType = "*.jar";
+}else if(pJSON.sys==1){
+	upFileType = "*.apk";
+}
+initUpload("<%=user.getName() %>",sucFn,upFileType);
 swfu.newfile = function(file){
 	return '<%=user.getId()+"_"+System.currentTimeMillis() %>'+"_"+file.index+file.type;
 };
@@ -195,7 +201,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
 			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo"> &nbsp;文件最大不超过100M,格式限定为apk,jar,jad,zip,按住Ctrl键可多选</span>
+			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过100M,按住<span class="purpleBold">Ctrl键</span>可一次选择多个文件上传</span>
 		</div>
 		<div id="upFiles"></div>
 		<br /><a href="javascript:filesSet();" class="aButton">确定</a> 

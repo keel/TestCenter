@@ -12,13 +12,11 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_pwd"><a href="http://202.102.39.9/MIS/" >返回管理平台</a></li>
 <li id="side_logout"><a href="http://game.189.cn" target="_blank">爱游戏门户</a></li>
 </ul>
-<%if(type > 1){ %>
 <div>用户信息</div>
 <ul>
 <li id="side_pwd"><a href="<%=prefix %>/user/edit" >修改用户信息</a></li>
 <li id="side_logout"><a href="<%=prefix %>/auth/logout" >注销</a></li>
 </ul>
-<%} %>
 <div>测试管理</div>
 <ul>
 <li id="side_gg"><a href="<%=prefix %>/news" >公告

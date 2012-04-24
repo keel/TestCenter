@@ -89,8 +89,8 @@ public class TUser extends Action  {
 			HashMap<String,Object> update = new HashMap<String, Object>();
 			HashMap<String,Object> set = new HashMap<String, Object>();
 			
-			if (StringUtil.isStringWithLen(req.getParameter("user_pwd"), 6) && req.getParameter("user_pwd").equals(req.getParameter("user_pwd2"))) {
-				//修改密码
+			if (u.getType()>1 && StringUtil.isStringWithLen(req.getParameter("user_pwd"), 6) && req.getParameter("user_pwd").equals(req.getParameter("user_pwd2"))) {
+				//修改密码,必须厂家以上的权限才可修改
 				set.put("pwd", req.getParameter("user_pwd"));
 			}
 			if (StringUtil.isDigits(req.getParameter("user_phone"))) {
