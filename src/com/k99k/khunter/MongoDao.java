@@ -287,6 +287,21 @@ public class MongoDao implements DaoInterface{
 		}
 		return false;
 	}
+	
+	@Override
+	public long checkExist(HashMap<String,Object> query) {
+		try {
+			DBCollection coll = this.dataSource.getColl(tableName);
+			DBCursor cur = coll.find(new BasicDBObject(query),prop_id).limit(1);
+			if (cur.hasNext()) {
+				return (Long)cur.next().get("_id");
+			}
+		} catch (Exception e) {
+			log.error("checkId error!", e);
+			return -1;
+		}
+		return -1;
+	}
 
 
 	/**

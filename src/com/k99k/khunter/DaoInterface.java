@@ -75,6 +75,14 @@ public interface DaoInterface extends Cloneable{
 	 */
 	public boolean checkId(long id);
 	
+	
+	/**
+	 * 判断是否存在有此条件的记录,返回第一条记录的id
+	 * @param query
+	 * @return 存在则第一条记录的id,否则返回-1
+	 */
+	public long checkExist(HashMap<String,Object> query);
+	
 	/**
 	 * 查找单个对象的Map形式,顺序号为3
 	 * @param query

@@ -71,6 +71,17 @@ public class StaticDao extends MongoDao {
 	 */
 	public static final BasicDBObject fields_ftp_fileName = new BasicDBObject("fileName",1);
 
+	/**
+	 * { >=0 }
+	 */
+	public static final BasicDBObject prop_normal = new BasicDBObject("$gte",0);
+	
+	/**
+	 * {testTimes:1}
+	 */
+	public static final BasicDBObject prop_testTimes = new BasicDBObject("testTimes",1);
+
+	
 	public static final void initS(){
 		tcUserDao = DaoManager.findDao("TCUserDao");
 		tcNewsDao = DaoManager.findDao("TCNewsDao");

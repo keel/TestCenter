@@ -88,7 +88,7 @@ public class EGame extends Action {
 		//新建任务
 		if (subact.equals("newtask")) {
 			
-			this.newtask(req,u, httpmsg);
+			newtask(req,u, httpmsg,false);
 		}else if (subact.equals("task")) {
 			this.task(req,u, httpmsg);
 		}else if (subact.equals("test")) {
@@ -212,12 +212,29 @@ public class EGame extends Action {
 	 * @param req
 	 * @param user
 	 * @param msg
+	 * @param isReply 是否是再次提交
 	 */
-	private void newtask(HttpServletRequest req,KObject user,HttpActionMsg msg){
-		long pid = parsePID(req,user,msg);
-		if (pid == 0) {
+	static void newtask(HttpServletRequest req,KObject user,HttpActionMsg msg,boolean isReply){
+		if (user.getType() < 1) {
+			//权限不够
+			JOut.err(401, msg);
 			return;
 		}
+		long pid = 0;
+		if (!isReply) {
+			pid = parsePID(req,user,msg);
+			if (pid == 0) {
+				return;
+			}
+		}else{
+			String opid = req.getParameter("pid");
+			if (!StringUtil.isDigits(opid)) {
+				JOut.err(403, msg);
+				return;
+			}
+			pid = Long.parseLong(opid);
+		}
+		
 		//先确定此产品有无在测试平台提交任务,如果有则直接转到查看
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
 		query.put("PID", pid);
@@ -228,15 +245,17 @@ public class EGame extends Action {
 //		sort.put("_id", -1);
 //		HashMap<String,Object> column = new HashMap<String, Object>(2);
 //		column.put("_id", 1);
-		
-		ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, null, 0, 1, null);
-		if (re != null && re.size() >0) {
-			long tid = (Long)(re.get(0).get("_id"));
-			msg.removeData("[print]");
-			msg.removeData("[jsp]");
-			msg.addData("[redirect]", "/tasks/"+tid);
-			return;
+		if (!isReply) {
+			ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, null, 0, 1, null);
+			if (re != null && re.size() >0) {
+				long tid = (Long)(re.get(0).get("_id"));
+				msg.removeData("[print]");
+				msg.removeData("[jsp]");
+				msg.addData("[redirect]", "/tasks/"+tid);
+				return;
+			}
 		}
+		
 		
 		//--------------------------------
 		//创建产品
@@ -251,10 +270,10 @@ public class EGame extends Action {
 		}
 		//加入真正的公司名称
 		pmap.put("cpName", Company.egameIds.get(pmap.get("cpId").toString()));
-		//是否为此产品的首次测试
-		boolean isOld = Product.dao.checkId(pid);
-		pmap.put("task_type", (isOld)?"1":"0");
-		if (pmap.get("payType").indexOf("根据关卡或道具计费")>-1) {
+		//默认为此产品的首次测试,添加操作时会进行判断
+		//boolean isOld = Product.dao.checkId(pid);
+		pmap.put("task_type", "0");
+		if (pmap.get("payType").indexOf("关卡或道具")>-1) {
 			//获取短代信息
 			ArrayList<HashMap<String,String>> fee = getFee(pid);
 			if (fee != null) {
@@ -294,7 +313,7 @@ public class EGame extends Action {
 	 * @param msg
 	 * @return
 	 */
-	private long parsePID(HttpServletRequest req,KObject user,HttpActionMsg msg){
+	private static long parsePID(HttpServletRequest req,KObject user,HttpActionMsg msg){
 		Object pidobj = user.getProp("pid");
 		long pid = 0;
 		if (!StringUtil.isDigits(pidobj)) {

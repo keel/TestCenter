@@ -331,14 +331,18 @@ function feeInfo(fee,to){
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <div class="aboxContent" style="padding:20px;">
-<div>
-产品名称：<span class="blueBold"><%=one.getName() %></span> 
-公司：<span class="blueBold"><%=product.getProp("company") %></span><br />
-</div>
+
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-    	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span>联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> 接口调测情况: <span id="task_p_acc_v" class="blueBold"><%=product.getProp("netPort") %></span></div> 
+    <div class="inBoxLine">
+产品名称：<span class="blueBold"><%=one.getName() %></span> 
+公司：<span class="blueBold"><%=product.getProp("company") %></span> 
+<%if(one.getType() == 0 || one.getType() == 1){ %>
+测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
+<%} %>
+</div>
+    	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> <!-- 接口调测情况: <span id="task_p_acc_v" class="blueBold"><- %=product.getProp("netPort") -%></span> --></div> 
     	<div class="inBoxLine"> 计费点情况: <br /><span id="task_p_fee_v" class="hide"><%=product.getProp("feeInfo") %></span><div id="feeInfoTable"></div></div> 
     	<%if(Integer.parseInt(product.getProp("sys").toString())==2){%>
     	<div class="inBoxLine">测试入口URL: <span id="task_p_url_v" class="blueBold"><%=product.getUrl()%></span></div> 
@@ -524,7 +528,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <div id="finish">
 <%//由权限为4的人确认到准备上线状态
 int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
-if(isOnline==0 && (userType==4 || userType==99)){ %>
+if(isOnline==0 && (userType==4 || userType==99) && state == 1){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
 <label for="tu_pass">确认测试结果：</label>
 <select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />

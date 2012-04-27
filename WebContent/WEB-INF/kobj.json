@@ -191,6 +191,9 @@
 					"col":"PID","unique":false,"asc":false,"type":"type","intro":"product id"
 				},
 				{
+					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
+				},
+				{
 					"col":"name","unique":false,"asc":false,"type":"type","intro":"task name"
 				},
 				{
@@ -248,6 +251,12 @@
 				},
 				{
 					"col":"company","def":"","len":0,"required":false,"type":0,"intro":"公司(与product中的一致)"
+				},
+				{
+					"col":"testTimes","def":0,"len":0,"required":false,"type":1,"intro":"测试次数"
+				},
+				{
+					"col":"updateTime","def":0,"len":0,"required":false,"type":4,"intro":"更新时间"
 				}
 			],
 			"intro":"测试任务"
@@ -407,6 +416,9 @@
 				},
 				{
 					"col":"gameClass","def":"","len":0,"required":false,"type":0,"intro":"游戏类型"
+				},
+				{
+					"col":"updateTime","def":0,"len":0,"required":false,"type":4,"intro":"更新时间"
 				}
 			],
 			"intro":"产品"

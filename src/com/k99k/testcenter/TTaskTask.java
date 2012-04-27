@@ -452,9 +452,9 @@ public class TTaskTask extends Action {
 				log.error("deal upload files failed. task ID:"+tid);
 			}
 		}
-		//如果非首次创建的产品(type==2)，更新待反馈状态
+		//如果非首次创建的产品(type==1)，更新待反馈状态
 		int type = StringUtil.isDigits(msg.getData("tType"))?Integer.parseInt(msg.getData("tType").toString()):0;
-		if (type == 2 && pid>0) {
+		if (type == 1 && pid>0) {
 			//先找到之前待反馈任务
 			query = new HashMap<String, Object>(4);
 			set = new HashMap<String, Object>(4);
@@ -481,6 +481,19 @@ public class TTaskTask extends Action {
 				set.put("$inc", inc);
 				TUser.dao.update(query, set, false, true);
 			}
+		}
+		//更新产品的测试次数
+		int testTimes = StringUtil.isDigits(msg.getData("testTimes"))?Integer.parseInt(msg.getData("testTimes").toString()):0;
+		query = new HashMap<String, Object>(2);
+		query.put("_id", pid);
+		set = new HashMap<String, Object>(4);
+		HashMap<String,Object> update = new HashMap<String, Object>(4);
+		update.put("testTimes", testTimes);
+		update.put("updateTime", System.currentTimeMillis());
+		set.put("$set", update);
+		re = Product.dao.updateOne(query, set);
+		if (!re) {
+			log.error("Update testTimes on Product when add new task. PID:"+pid+" TID:"+tid);
 		}
 	}
 }

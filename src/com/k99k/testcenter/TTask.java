@@ -82,7 +82,8 @@ public class TTask extends Action {
 			}
 		}else if(subact.equals("add")){
 			msg.addData("sub", subact);
-			this.toAdd(u, httpmsg);
+			EGame.newtask(req, u, httpmsg,true);
+			//this.toAdd(u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			this.one(subact, req, u, httpmsg);
 		}else if(subact.equals("a_a")){
@@ -93,8 +94,6 @@ public class TTask extends Action {
 			this.exec(req, u, httpmsg);
 		}else if(subact.equals("a_send")){
 			this.send(req, u, httpmsg);
-//		}else if(subact.equals("a_comm")){
-//			this.comm(req, u, httpmsg);
 		}else if(subact.equals("a_summary")){
 			this.summary(req, u, httpmsg);
 		}else if(subact.equals("a_finish")){
@@ -103,8 +102,6 @@ public class TTask extends Action {
 			this.backToCreator(req, u, httpmsg);
 		}else if(subact.equals("a_online")){
 			this.online(req, u, httpmsg);
-//		}else if(subact.equals("a_u")){
-//			this.update(req, u, httpmsg);
 		}else if(subact.equals("a_d")){
 			this.del(req, u, httpmsg);
 		}else if(subact.equals("a_drop")){
@@ -613,6 +610,7 @@ public class TTask extends Action {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
+		update.put("updateTime", System.currentTimeMillis());
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
@@ -898,14 +896,29 @@ public class TTask extends Action {
 			return;
 		}
 		long pid = Long.parseLong(String.valueOf(json.get("_id")));
+		//测试次数
+		int testTimes = 1;
+		//测试类型
+		int tType = Integer.parseInt(task_type_h);
 		if (json.containsKey("newp")) {
 			json.remove("newp");
 			//FIXME 在数据库中创建Product后就再不会更新了，需要有一处可以再次从EGame更新Product
-			if (!Product.dao.checkId(pid)) {
+			HashMap<String,Object> q = new HashMap<String, Object>(2);
+			q.put("_id", pid);
+			ArrayList<HashMap<String, Object>> product = Product.dao.query(q, StaticDao.prop_testTimes, StaticDao.prop_id_desc, 0, 1, null);
+			if (product == null || product.size() == 0) {
+				json.put("testTimes", 1);
 				int re = Product.add(json);
 				if(re!=0){
 					JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
 					return;
+				}
+			}else{
+				Object ttso = product.get(0).get("testTimes");
+				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				testTimes = tts + 1;
+				if (tType == 0) {
+					tType = 1;
 				}
 			}
 		}
@@ -923,13 +936,17 @@ public class TTask extends Action {
 		task.setLevel(taskLevel);
 		task.setProp("PID", pid);
 		task.setProp("company", json.get("company").toString());
-		task.setType(Integer.parseInt(task_type_h));
+		task.setType(tType);
+		if (tType == 0 || tType == 1) {
+			task.setProp("testTimes", testTimes);
+		}
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
 		log.put("user", u.getName());
 		log.put("info", "创建任务 - "+task_info);
 		Object[] logs = new Object[]{log};
 		task.setProp("log", logs);
+		task.setProp("updateTime", System.currentTimeMillis());
 		task.setId(dao.getIdm().nextId());
 		if(!dao.save(task)){
 			JOut.err(500,"E500"+ Err.ERR_ADD_TASK_FAIL, msg);
@@ -942,6 +959,7 @@ public class TTask extends Action {
 		atask.addData("tType", task.getType());
 		atask.addData("operatorId", operator.getId());
 		atask.addData("pid", pid);
+		atask.addData("testTimes", testTimes);
 		atask.addData("creatorName", u.getName());
 		atask.addData("act", "add");
 		if (json.containsKey("files")) {
@@ -975,41 +993,41 @@ public class TTask extends Action {
 		}
 	}
 	
-	/**
-	 * 通过EGAME接口获取产品信息并转到增加页
-	 * @param u
-	 * @param msg
-	 */
-	private void toAdd(KObject u,HttpActionMsg msg){
-		if (u.getType() < 1) {
-			//权限不够
-			JOut.err(401, msg);
-			return;
-		}
-		String opid = msg.getHttpReq().getParameter("pid");
-		if (!StringUtil.isDigits(opid)) {
-			JOut.err(403, msg);
-			return;
-		}
-		long pid = Long.parseLong(opid);
-		//直接从接口获取产品
-		HashMap<String,String> pmap = EGame.getProduct(pid);
-		if (pmap == null) {
-			//接口获取失败
-			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
-			return;
-		}
-		if (pmap.get("payType").equals("根据关卡或道具计费")) {
-			//获取短代信息
-			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
-			if (fee != null) {
-				msg.addData("fee", fee);
-			}
-		}
-		msg.addData("u", u);
-		msg.addData("pmap", pmap);
-		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
-	}
+//	/**
+//	 * 通过EGAME接口获取产品信息并转到增加页
+//	 * @param u
+//	 * @param msg
+//	 */
+//	private void toAdd(KObject u,HttpActionMsg msg){
+//		if (u.getType() < 1) {
+//			//权限不够
+//			JOut.err(401, msg);
+//			return;
+//		}
+//		String opid = msg.getHttpReq().getParameter("pid");
+//		if (!StringUtil.isDigits(opid)) {
+//			JOut.err(403, msg);
+//			return;
+//		}
+//		long pid = Long.parseLong(opid);
+//		//直接从接口获取产品
+//		HashMap<String,String> pmap = EGame.getProduct(pid);
+//		if (pmap == null) {
+//			//接口获取失败
+//			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
+//			return;
+//		}
+//		if (pmap.get("payType").equals("根据关卡或道具计费")) {
+//			//获取短代信息
+//			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+//			if (fee != null) {
+//				msg.addData("fee", fee);
+//			}
+//		}
+//		msg.addData("u", u);
+//		msg.addData("pmap", pmap);
+//		msg.addData("[jsp]", "/WEB-INF/tc/task_add.jsp");
+//	}
 	
 	/**
 	 * 转到增加页
