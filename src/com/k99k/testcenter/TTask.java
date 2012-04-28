@@ -165,6 +165,7 @@ public class TTask extends Action {
 			ActionMsg atask = new ActionMsg("tTaskTask");
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
+			atask.addData("pid", task.getProp("PID"));
 			atask.addData("operator", task.getProp("operator").toString());
 			atask.addData("creator", creator);
 			atask.addData("act", "back");
@@ -283,6 +284,7 @@ public class TTask extends Action {
 			ActionMsg atask = new ActionMsg("tTaskTask");
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
+			atask.addData("pid", task.getProp("PID"));
 			atask.addData("oid", operator.getId());
 			atask.addData("uName", task.getProp("operator").toString());
 			atask.addData("act", "appoint");
@@ -570,6 +572,7 @@ public class TTask extends Action {
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		q.put("_id", tid);
+		KObject task = dao.findOne(tid);
 		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
 			update.put("operator", task_operator);
@@ -579,7 +582,7 @@ public class TTask extends Action {
 			//不通过,状态置为待反馈
 			update.put("state", TASK_STATE_NEED_MOD);
 			//long pid = (Long)(dao.findOne(tid).getProp("PID"));
-			KObject task = dao.findOne(tid);
+			
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
 			task_info = "未通过 - "+task_info;
@@ -624,6 +627,7 @@ public class TTask extends Action {
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
 			atask.addData("re", tuRE);
+			atask.addData("pid", task.getProp("PID"));
 			atask.addData("info", task_info);
 			atask.addData("operator", task_operator);
 			atask.addData("uid", u.getId());
@@ -697,6 +701,7 @@ public class TTask extends Action {
 				}
 			}
 			update.put("operator", task_operator);
+			update.put("state", TASK_STATE_TEST);
 		}else{
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;

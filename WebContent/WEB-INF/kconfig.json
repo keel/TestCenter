@@ -183,6 +183,10 @@
 			"localPath":"F:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
+			"_actName":"ana",
+			"_class":"com.k99k.testcenter.Analysis"
+		},
+		{
 			"_actName":"end",
 			"_class":"com.k99k.testcenter.End"
 		}

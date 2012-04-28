@@ -97,6 +97,25 @@ public class TTaskTask extends Action {
 		set.put("$push", pull);
 		set.put("$inc", inc);
 		TUser.dao.updateOne(query, set);
+		//更新产品状态
+		Object po = msg.getData("pid");
+		if (StringUtil.isDigits(po)) {
+			long pid = Long.parseLong(msg.getData("pid").toString());
+			query = new HashMap<String, Object>(2);
+			query.put("_id", pid);
+			set = new HashMap<String, Object>(4);
+			HashMap<String,Object> update = new HashMap<String, Object>(4);
+			update.put("updateTime", System.currentTimeMillis());
+			update.put("state", TTask.TASK_STATE_REJECT);
+			set.put("$set", update);
+			boolean re = Product.dao.updateOne(query, set);
+			if (!re) {
+				log.error("Update states failed on Product when reject task. PID:"+pid+" TID:"+tid);
+			}
+		}else{
+			log.error("Update states failed on Product when reject task. no PID!  TID:"+tid);
+			
+		}
 	}
 	
 	/**
@@ -232,7 +251,25 @@ public class TTaskTask extends Action {
 			}
 			
 		}
-		
+		//更新产品状态
+		Object po = msg.getData("pid");
+		if (StringUtil.isDigits(po)) {
+			long pid = Long.parseLong(msg.getData("pid").toString());
+			HashMap<String, Object> query = new HashMap<String, Object>(2);
+			query.put("_id", pid);
+			HashMap<String, Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> update = new HashMap<String, Object>(4);
+			update.put("updateTime", System.currentTimeMillis());
+			update.put("state", re);
+			set.put("$set", update);
+			boolean re1 = Product.dao.updateOne(query, set);
+			if (!re1) {
+				log.error("Update states failed on Product when appoint task. PID:"+pid+" TID:"+tid);
+			}
+		}else{
+			log.error("Update states failed on Product when appoint task. no PID!  TID:"+tid);
+			
+		}
 		
 	}
 	
@@ -365,6 +402,7 @@ public class TTaskTask extends Action {
 		String userName = (String)msg.getData("uName");
 		long operatorId = (Long)msg.getData("oid");
 		long tid = (Long)msg.getData("tid");
+		
 		//处理已办
 		HashMap<String,Object> query = new HashMap<String, Object>(2);
 		query.put("name", userName);
@@ -384,6 +422,26 @@ public class TTaskTask extends Action {
 		set.put("$push", pull);
 		set.put("$inc", inc);
 		TUser.dao.updateOne(query, set);
+		//更新产品状态
+		Object po = msg.getData("pid");
+		if (StringUtil.isDigits(po)) {
+			long pid = Long.parseLong(msg.getData("pid").toString());
+			query = new HashMap<String, Object>(2);
+			query.put("_id", pid);
+			set = new HashMap<String, Object>(4);
+			HashMap<String,Object> update = new HashMap<String, Object>(4);
+			update.put("updateTime", System.currentTimeMillis());
+			update.put("state", TTask.TASK_STATE_TEST);
+			set.put("$set", update);
+			boolean re = Product.dao.updateOne(query, set);
+			if (!re) {
+				log.error("Update states failed on Product when appoint task. PID:"+pid+" TID:"+tid);
+			}
+		}else{
+			log.error("Update states failed on Product when appoint task. no PID!  TID:"+tid);
+			
+		}
+		
 	}
 	/**
 	 * 删除任务,将此任务涉及的未处理用户清空
@@ -490,6 +548,7 @@ public class TTaskTask extends Action {
 		HashMap<String,Object> update = new HashMap<String, Object>(4);
 		update.put("testTimes", testTimes);
 		update.put("updateTime", System.currentTimeMillis());
+		update.put("state", TTask.TASK_STATE_NEW);
 		set.put("$set", update);
 		re = Product.dao.updateOne(query, set);
 		if (!re) {

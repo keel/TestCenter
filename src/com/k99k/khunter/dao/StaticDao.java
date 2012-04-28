@@ -15,6 +15,8 @@ import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.DataSourceInterface;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
+import com.k99k.testcenter.Product;
+import com.k99k.testcenter.TTask;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
@@ -40,6 +42,9 @@ public class StaticDao extends MongoDao {
 	static DaoInterface tcNewsDao;
 	static DaoInterface phoneDao;
 	static DaoInterface phoneGroupDao;
+	static DaoInterface productDao;
+	static DaoInterface taskDao;
+	static DaoInterface taskUnitDao;
 	
 	/**
 	 * {level:-1,_id:-1}
@@ -87,6 +92,9 @@ public class StaticDao extends MongoDao {
 		tcNewsDao = DaoManager.findDao("TCNewsDao");
 		phoneDao = DaoManager.findDao("TCPhoneDao");
 		phoneGroupDao = DaoManager.findDao("TCPhoneGroupDao");
+		productDao = DaoManager.findDao("TCProductDao");
+		taskDao = DaoManager.findDao("TCTaskDao");
+		taskUnitDao = DaoManager.findDao("TCTestUnitDao");
 	}
 	
 	public static final KObject checkUser(String name,String pwd){
@@ -319,6 +327,65 @@ public class StaticDao extends MongoDao {
 //		return false;
 //	}
 	
+	/**
+	 * 时间段测试情况分析查询
+	 * @param start 起始毫秒数
+	 * @param end 结束毫秒数
+	 * @return json string
+	 */
+	public static final String analysisPeriod(long start,long end){
+		StringBuilder sb = new StringBuilder();
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		HashMap<String,Object> period = new HashMap<String, Object>(4);
+		period.put("$gte", start);
+		period.put("$lte", end);
+		q.put("updateTime", period);
+		
+		//构造json
+		sb.append("{");
+		//通过状态数，部分通过状态数，待反馈状态，待测，测试中，放弃
+		q.put("state", TTask.TASK_STATE_PASS);
+		int pass = productDao.count(q);
+		sb.append("\"pass\":").append(pass).append(",");
+		q.put("state", TTask.TASK_STATE_PASS_PART);
+		int pass_part = productDao.count(q);
+		sb.append("\"pass_part\":").append(pass_part).append(",");
+		q.put("state", TTask.TASK_STATE_NEED_MOD);
+		int need_back = productDao.count(q);
+		sb.append("\"need_back\":").append(need_back).append(",");
+		q.put("state", TTask.TASK_STATE_TEST);
+		int testing = productDao.count(q);
+		sb.append("\"testing\":").append(testing).append(",");
+		q.put("state", TTask.TASK_STATE_DROP);
+		int droped = productDao.count(q);
+		sb.append("\"droped\":").append(droped).append(",");
+		//测试总数
+		int sum = pass + pass_part + need_back + testing + droped;
+		sb.append("\"sum\":").append(sum).append(",");
+		
+		//测试任务数,已创建任务但还未执行,等于接收到的新任务数
+		q.put("state", TTask.TASK_STATE_NEW);
+		int willDo = taskDao.count(q);
+		sb.append("\"taskWillDo\":").append(willDo).append(",");
+		//测试任务数,正在执行中
+		q.put("state", TTask.TASK_STATE_TEST);
+		int taskTesting = taskDao.count(q);
+		sb.append("\"taskTesting\":").append(taskTesting).append(",");
+		HashMap<String,Object> doneQ = new HashMap<String, Object>(2);
+		doneQ.put("$gt", TTask.TASK_STATE_TEST);
+		q.put("state", doneQ);
+		int taskDone = taskDao.count(q);
+		sb.append("\"taskDone\":").append(taskDone).append(",");
+		
+		
+		//执行过的测试单元数
+		doneQ.put("$gt", 0);
+		q.put("state", doneQ);
+		int tuDone = taskUnitDao.count(q);
+		sb.append("\"tuDone\":").append(tuDone).append("}");
+		
+		return sb.toString();
+	}
 
 	
 }
