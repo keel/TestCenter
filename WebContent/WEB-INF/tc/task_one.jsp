@@ -528,7 +528,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <div id="finish">
 <%//由权限为4的人确认到准备上线状态
 int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
-if(isOnline==0 && (userType==4 || userType==99) && state == 1){ %>
+if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
 <label for="tu_pass">确认测试结果：</label>
 <select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />

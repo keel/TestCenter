@@ -359,8 +359,8 @@ public class StaticDao extends MongoDao {
 		q.put("state", TTask.TASK_STATE_DROP);
 		int droped = productDao.count(q);
 		sb.append("\"droped\":").append(droped).append(",");
-		//测试总数
-		int sum = pass + pass_part + need_back + testing + droped;
+		//测试总数,除去放弃的
+		int sum = pass + pass_part + need_back + testing;
 		sb.append("\"sum\":").append(sum).append(",");
 		
 		//测试任务数,已创建任务但还未执行,等于接收到的新任务数

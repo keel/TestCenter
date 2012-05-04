@@ -41,26 +41,41 @@ public class Analysis extends Action {
 			return super.act(msg);
 		}
 		if (subact.equals("")) {
-			//this.list(req, u, httpmsg);
+			this.toAna(req, u, httpmsg);
 		}else if(subact.equals("week")){
-			
+			this.week(req, u, httpmsg);
 		}else if(subact.equals("day")){
-			//this.find(req, u, httpmsg);
+			this.day(req, u, httpmsg);
+		}else if(subact.equals("month")){
+			this.month(req, u, httpmsg);
 		}else if(subact.equals("period")){
 			this.period(req, u, httpmsg);
 		}
-//			else if (StringUtil.isDigits(subact)) {
-//			
-//		}else if(subact.equals("a_a")){
-//			
-//		}else if(subact.equals("a_u")){
-//			
-//		}else if(subact.equals("a_d")){
-//			
-//		}else if(subact.equals("a_s")){
-//			
-//		}
 		return super.act(msg);
+	}
+	
+	
+	private void toAna(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		msg.addData("u", u);
+		msg.addData("[jsp]", "/WEB-INF/tc/ana.jsp");
+	}
+	
+	private void week(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		msg.addData("u", u);
+		msg.addData("time", "week");
+		msg.addData("[jsp]", "/WEB-INF/tc/ana.jsp");
+	}
+	
+	private void day(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		msg.addData("u", u);
+		msg.addData("time", "day");
+		msg.addData("[jsp]", "/WEB-INF/tc/ana.jsp");
+	}
+	
+	private void month(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		msg.addData("u", u);
+		msg.addData("time", "month");
+		msg.addData("[jsp]", "/WEB-INF/tc/ana.jsp");
 	}
 	
 	private void period(HttpServletRequest req,KObject u,HttpActionMsg msg){

@@ -34,7 +34,16 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_topic_pub"><a href="<%=prefix %>/topic/pub" >公共讨论</a></li>
 <li id="side_topic_company"><a href="<%=prefix %>/topic/company" >我的产品</a></li>
 </ul>
-
+<%
+if(type>=4){
+%>
+<div>统计查询</div>
+<ul>
+<li id="side_dayreport"><a href="<%=prefix %>/ana/day" >日报表</a></li>
+<li id="side_weekreport"><a href="<%=prefix %>/ana/week" >周报表</a></li>
+<li id="side_monthreport"><a href="<%=prefix %>/ana/month" >月报表</a></li>
+</ul>
+<%};%>
 <div>相关文档</div>
 <ul>
 <li id="side_topic_doc_proc"><a href="<%=prefix %>/topic/doc/proc" >流程说明</a></li>
@@ -43,18 +52,7 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_topic_doc_api"><a href="<%=prefix %>/topic/doc/api" >电信接口</a></li>
 </ul>
 
-<%
-if(type>=4){
-%>
-<div>统计查询</div>
-<ul>
-<li id="side_dayreport"><a href="<%=prefix %>/report/day" >日报表</a></li>
-<li id="side_weekreport"><a href="<%=prefix %>/report/week" >周报表</a></li>
-<li id="side_monthreport"><a href="<%=prefix %>/report/month" >月报表</a></li>
-</ul>
-<%};
-if(type>=5){
-%>
+<%if(type>=5){%>
 <div>数据维护</div>
 <ul>
 <li id="side_admin_handset"><a href="<%=prefix %>/admin/handset" >终端信息</a></li>

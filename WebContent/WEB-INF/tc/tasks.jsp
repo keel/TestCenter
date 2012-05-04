@@ -92,7 +92,7 @@ if(usertype>1){
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">待办人</th><th style="width:50px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
 </tr>
 <%
 if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
