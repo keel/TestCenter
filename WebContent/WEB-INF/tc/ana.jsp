@@ -28,21 +28,15 @@ long start = 0;
 long end = System.currentTimeMillis();
 Calendar cal = Calendar.getInstance(); 
 if(timeFlag.equals("day")){
-	cal.set(Calendar.HOUR_OF_DAY, 0);
-	cal.set(Calendar.MINUTE, 0);
-	cal.set(Calendar.SECOND, 0);
 }else if(timeFlag.equals("week")){
 	int day_of_week = cal.get(Calendar.DAY_OF_WEEK) - 2;  
     cal.add(Calendar.DATE, -day_of_week); 
-    cal.set(Calendar.HOUR_OF_DAY, 0);
-	cal.set(Calendar.MINUTE, 0);
-	cal.set(Calendar.SECOND, 0);
 }else if(timeFlag.equals("month")){
 	cal.set(Calendar.DATE, 1);
-	cal.set(Calendar.HOUR_OF_DAY, 0);
-	cal.set(Calendar.MINUTE, 0);
-	cal.set(Calendar.SECOND, 0);
 }
+cal.set(Calendar.HOUR_OF_DAY, 0);
+cal.set(Calendar.MINUTE, 0);
+cal.set(Calendar.SECOND, 0);
 start = cal.getTimeInMillis();
 out.print(JSPOut.out("head0","0",timeFlagName));%>
 <link rel="stylesheet" href="<%=sPrefix %>/css/default.css" type="text/css" media="screen" />

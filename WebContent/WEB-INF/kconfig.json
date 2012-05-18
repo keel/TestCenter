@@ -16,16 +16,6 @@
 			"pwd":"jsGame_1810",
 			"maxWaitTime":5000,
 			"connectionsPerHost":30
-		},
-		"tc2":{
-			"_dbType":"mongodb",
-			"ip":"127.0.0.1",
-			"port":27017,
-			"dbName":"tc2",
-			"user":"keel",
-			"pwd":"jsGame_1810",
-			"maxWaitTime":5000,
-			"connectionsPerHost":30
 		}
 	},
 	"daos":{
@@ -41,10 +31,10 @@
 	"tasks":{
 		"taskMapInitSize":50000,
 		"exePool":{
-			"corePoolSize":10,
-			"maximumPoolSize":200,
+			"corePoolSize":20,
+			"maximumPoolSize":500,
 			"keepAliveTime":30000,
-			"queueSize":150
+			"queueSize":300
 		},
 		"ratePoolSize":5,
 		"scheduledPoolSize":10

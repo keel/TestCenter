@@ -32,8 +32,10 @@ public class RejectedTaskHandler implements RejectedExecutionHandler {
 	 */
 	@Override
 	public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-		// 进行日志记录，然后抛弃任务执行
-		log.error("TASK Aborted! task:"+r.toString());
+		//使用原线程来执行
+		executor.execute(r);
+		// 进行日志记录
+		log.error("TASK redo! task:"+r.toString());
 		StringBuilder sb = new StringBuilder();
 		sb.append("ThreadPoolExecutor :").append(this.name).append("\n");
 		sb.append("[ isShutdown:").append(executor.isShutdown());

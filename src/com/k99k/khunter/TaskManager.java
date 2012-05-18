@@ -3,9 +3,12 @@
  */
 package com.k99k.khunter;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -88,11 +91,12 @@ public final class TaskManager {
 		
 
 	//exePool的相关参数如下
-	private static int corePoolSize = 10;
-	private static int maximumPoolSize = 200;
-	private static long keepAliveTime = 3000L;
-	private static int queueSize = 100;
-	private static ArrayBlockingQueue<Runnable> arrBlockQueue = new ArrayBlockingQueue<Runnable>(queueSize);
+	private static int corePoolSize = 20;
+	private static int maximumPoolSize = 300;
+	private static long keepAliveTime = 30000L;
+	private static int queueSize = 300;
+	private static ArrayBlockingQueue<Runnable> arrBlockQueue = new ArrayBlockingQueue<Runnable>(queueSize,true);
+	private static LinkedBlockingQueue<Runnable> linkBlockQueue = new LinkedBlockingQueue<Runnable>();
 	
 	/**
 	 * 立即执行任务的多线程线程池
@@ -101,7 +105,7 @@ public final class TaskManager {
 			corePoolSize,
 			maximumPoolSize,
 			keepAliveTime,TimeUnit.MILLISECONDS,
-			arrBlockQueue,
+			linkBlockQueue,
 			new RejectedTaskHandler("exePool")
 	);
 	
@@ -345,7 +349,8 @@ public final class TaskManager {
 									corePoolSize,
 									maximumPoolSize,
 									keepAliveTime,TimeUnit.MILLISECONDS,
-									arrBlockQueue,
+									//arrBlockQueue
+									linkBlockQueue,
 									new RejectedTaskHandler("exePool")
 							);
 						}
@@ -418,12 +423,32 @@ public final class TaskManager {
 	}
 	
 	public static void main(String[] args) {
-		String webRoot = "f:/works/workspace_keel/KHunter/WebContent/WEB-INF/";
+		String webRoot = "f:/works/workspace_keel/TestCenter/WebContent/WEB-INF/";
 		String jsonFilePath = webRoot+"kconfig.json";
 		String classPath = webRoot+"classes/";
-		ActionManager.init(jsonFilePath, classPath);
-		TaskManager.init(jsonFilePath, classPath);
+		HTManager.init(jsonFilePath);
 		
+		String tJson = "{\"task\":\"TTaskTask-appoint_491\",\"msg\":{\"act\":\"tTaskTask\",\"next\":null,\"data\":{\"uName\":\"曹雨\",\"[taskType]\":1,\"oid\":9,\"pid\":231636,\"tid\":491,\"act\":\"appoint\"}}}";
+		HashMap tj = (HashMap) JSON.read(tJson);
+		if (tj!=null) {
+			String tName = tj.get("task").toString();
+			ActionMsg msg = new ActionMsg(tName);
+			msg.setActitonName("tTaskTask");
+			HashMap m = (HashMap) ((HashMap) tj.get("msg")).get("data");
+			Iterator it = m.entrySet().iterator();
+			while (it.hasNext()) { 
+			    Map.Entry entry = (Map.Entry) it.next(); 
+			    String key = entry.getKey().toString(); 
+			    Object val = entry.getValue(); 
+			    msg.addData(key, val);
+			} 
+			
+			TaskManager.makeNewTask(tName, msg);
+		}
+		
+		
+		
+		/*
 		ActionMsg msg = new ActionMsg("testLog");
 		msg.addData(TASK_TYPE, TASK_TYPE_SCHEDULE_POOL);
 		msg.addData(TASK_DELAY, 5000);
@@ -443,6 +468,8 @@ public final class TaskManager {
  		} catch (InterruptedException e) {
  		}
  		System.out.println("cancel newTaskTest2:"+TaskManager.cancelTask("newTaskTest2"));
+ 		*/
+ 		
 	}
 	
 }

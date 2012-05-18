@@ -71,6 +71,8 @@ public class Task implements Runnable{
 		actionMsg.addData("task_"+this.name, new Date().toString());
 		//清除taskMap的引用 
 		TaskManager.removeFromTaskMap(this.name);
+		
+		//System.out.println("task done:"+this.name);
 	}
 
 	
