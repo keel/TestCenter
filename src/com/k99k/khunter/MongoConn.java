@@ -4,15 +4,22 @@
 package com.k99k.khunter;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.k99k.tools.CnToSpell;
+import com.k99k.tools.JSON;
+import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.MongoOptions;
@@ -46,7 +53,7 @@ public final class MongoConn implements DataSourceInterface{
 		//init();
 	}
 	
-	/*
+
 	public static void main(String[] args) {
 		//test for mongolab.com test
 		MongoConn mongo = new MongoConn();
@@ -57,61 +64,104 @@ public final class MongoConn implements DataSourceInterface{
 		mongo.setUser("keel");
 		mongo.setPwd("jsGame_1810");
 		if (mongo.init()) {
-			//DBCollection conn = mongo.getColl("cp1");
-			DBCollection co = mongo.getColl("TCCompany");
-			DBCollection cu = mongo.getColl("TCUser");
-			DBCursor cur = cu.find();
-			long i = 8;
+			//-----------------------新公司导入----------------
+//			DBCollection co = mongo.getColl("TCCompany");
+//			DBCollection cu = mongo.getColl("TCUser");
+//			//在TCUser中的新公司的_id开始
+//			long userStart = 382;
+//			DBCursor cur = cu.find(new BasicDBObject("_id",new BasicDBObject("$gte",userStart)));
+//			//TCCompany中的新公司_id
+//			long i = 383;
+//			while (cur.hasNext()) {
+//				//System.out.println(cur.next());
+//				DBObject co2 = new BasicDBObject();
+//				DBObject cc = (DBObject) cur.next();
+//				String mainUser = cc.get("name").toString();
+//				String name = cc.get("company").toString();
+//				
+//				co2.put("_id", i);
+//				co2.put("shortName", CnToSpell.getLetter(name));
+//				co2.put("mainUser", mainUser);
+//				co2.put("name", name);
+//				co2.put("state", 0);
+//				co2.put("level", 0);
+//				co2.put("type", 0);
+//				co2.put("version", 1);
+//				
+//				co.save(co2);
+//				
+//				System.out.println(co2);
+//				
+//				i++;
+//			}
+			//-----------------------新公司导入结束----------------
+			//--------------------------------
+			
+			DBCollection co = mongo.getColl("TCTestUnit");
+			DBCursor cur = co.find(new BasicDBObject(),new BasicDBObject("re",1));
 			while (cur.hasNext()) {
-				//System.out.println(cur.next());
-				DBObject co2 = new BasicDBObject();
-				DBObject cc = (DBObject) cur.next();
-				String mainUser = cc.get("name").toString();
-				String name = cc.get("company").toString();
-				
-				co2.put("_id", i);
-				co2.put("shortName", CnToSpell.getLetter(name));
-				co2.put("mainUser", mainUser);
-				co2.put("name", name);
-				co2.put("state", 0);
-				co2.put("level", 0);
-				co2.put("type", 0);
-				co2.put("version", 1);
-				
-				co.save(co2);
-				
-				//conn.save(cc);
-				System.out.println(co2);
-				
-				
-				
-//				cc.put("name", cpName);
-//				cc.put("mainUser", cpid);
-//				cc.put("cpId", cpid);
-//				cc.removeField("cpid");
-//				cc.removeField("cpName");
-				co.save(cc);
-				
-//				cc.put("_id", i);
-//				cc.put("name", cpid);
-//				cc.put("type", 11);
-//				cc.put("phoneNumber", "");
-//				cc.put("pwd", "egame");
-//				cc.put("company", cpName);
-//				cc.put("egameID", cpid);
-//				cc.removeField("cpid");
-//				cc.removeField("cpName");
-//				cc.removeField("shortName");
-//				cu.save(cc);
-				
-				//System.out.println(cc);
-				i++;
+				BasicDBObject c = (BasicDBObject) cur.next();
+				if (c.containsField("re")) {
+					long id = c.getLong("_id");
+					BasicDBList cc = (BasicDBList) c.get("re");
+					if (cc != null && !cc.isEmpty()) {
+						Iterator<Object> it = cc.iterator();
+						boolean willUpdate = false;
+						while (it.hasNext()) {
+							DBObject m = (DBObject) it.next();
+							if (Integer.parseInt(m.get("re").toString()) == 9) {
+								m.put("re", 3L);
+							}
+							willUpdate = true;
+						}
+						if (willUpdate) {
+							co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("re",cc)));
+						}
+					}
+				}
 			}
+			System.out.println("TCTestUnit ok.");
+			co = mongo.getColl("TCTask");
+			cur = co.find(new BasicDBObject(),new BasicDBObject("result",1));
+			while (cur.hasNext()) {
+				BasicDBObject c = (BasicDBObject) cur.next();
+				if (c.containsField("result")) {
+					String restr = (String) c.get("result");
+					long id = Long.parseLong(c.getString("_id"));
+					HashMap<String,Object> re = (HashMap<String, Object>) JSON.read(restr);
+					if (re!=null && !re.isEmpty()) {
+						Iterator<Entry<String,Object>> it = re.entrySet().iterator();
+						while (it.hasNext()) {
+							Entry<String,Object> e = it.next();
+							String key = e.getKey();
+							Object oe = e.getValue();
+							if (oe instanceof String) {
+								continue;
+							}
+							ArrayList ls = (ArrayList)oe;
+							Iterator<Object> it2 = ls.iterator();
+							while(it2.hasNext()){
+								HashMap r = (HashMap)it2.next();
+								if (r.containsKey("re")) {
+									int ree =  Integer.parseInt(r.get("re").toString());
+									if (ree == 9) {
+										r.put("re", 3);
+									}
+								}
+							}
+						}
+					}
+					co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("result",JSON.write(re))));
+				}
+			}
+			System.out.println("TCTask ok.");
+			mongo.close();
 		}else{
 			System.out.println("err!");
 		}
+		
 	}
-	*/
+	
 	/**
 	 * @param ip
 	 * @param port

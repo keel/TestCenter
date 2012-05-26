@@ -55,7 +55,8 @@ public class TTask extends Action {
 	public static final int TASK_STATE_PAUSE = 5;
 	public static final int TASK_STATE_CONFIRM = 6;
 	public static final int TASK_STATE_BACKED = 8;
-	public static final int TASK_STATE_REJECT = 7;
+	public static final int TASK_STATE_REJECT = 7;//废弃,直接用TASK_STATE_NEED_MOD
+	public static final int TASK_STATE_BACKTOGROUPLEADER = -3;
 	
 
 	/* (non-Javadoc)
@@ -151,7 +152,7 @@ public class TTask extends Action {
 		q.put("_id", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>();
 		set.put("operator", creator);
-		set.put("state", TASK_STATE_REJECT);
+		set.put("state", TASK_STATE_NEED_MOD);
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
@@ -411,6 +412,10 @@ public class TTask extends Action {
 				return;
 			}
 			ArrayList<HashMap<String,Object>> res = TestCase.checkJson(sys, json);
+			if (res == null) {
+				JOut.err(403,"E403"+ Err.ERR_JSON+"c", msg);
+				return;
+			}
 			HashMap<String,Object> result = res.remove(0);
 			int state = Integer.parseInt(result.get("re").toString());
 			
@@ -421,6 +426,7 @@ public class TTask extends Action {
 			sett.put("state", state);
 			sett.put("re", res);
 			sett.put("rank", rank);
+			sett.put("updateTime", System.currentTimeMillis());
 			if (StringUtil.isStringWithLen(files, 2)) {
 				sett.put("attachs", files);
 			}
@@ -577,16 +583,16 @@ public class TTask extends Action {
 			//通过或部分通过
 			update.put("operator", task_operator);
 			update.put("isOnline", 1);
-			task_info = "通过 - "+task_info;
-		}else if(tuRE==9){
+			task_info = "通过 : "+task_info;
+		}else if(tuRE==TASK_STATE_NEED_MOD){
 			//不通过,状态置为待反馈
 			update.put("state", TASK_STATE_NEED_MOD);
 			//long pid = (Long)(dao.findOne(tid).getProp("PID"));
 			
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
-			task_info = "未通过 - "+task_info;
-		}else if(tuRE==-3){
+			task_info = "未通过 : "+task_info;
+		}else if(tuRE==TASK_STATE_BACKTOGROUPLEADER){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
 			slice.put("$slice", -1);
@@ -683,7 +689,7 @@ public class TTask extends Action {
 		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
 			update.put("state", TASK_STATE_DROP);
-		}else if(tuRE==-3){
+		}else if(tuRE==TASK_STATE_BACKTOGROUPLEADER){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
 			slice.put("_id", 1);
@@ -720,7 +726,7 @@ public class TTask extends Action {
 			atask.addData("tid", tid);
 			atask.addData("uid", u.getId());
 			atask.addData("re", tuRE);
-			if (tuRE==-3) {
+			if (tuRE==TASK_STATE_BACKTOGROUPLEADER) {
 				atask.addData("operator", task_operator);
 			}
 			atask.addData("act", "online");

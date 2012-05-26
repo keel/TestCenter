@@ -100,7 +100,7 @@ if(state==TTask.TASK_STATE_CONFIRM && userType>1){%>
 		if(v!=2 && v!=4){
 			$("#task_operator").hide();
 			var next = "";
-			if (v==9){
+			if (v==3){
 				next = "<%=product.getProp("company") %>";
 			}else if(v==-3){
 				var ll = $("#infos").find(".inBoxLine");
@@ -318,6 +318,7 @@ function feeInfo(fee,to){
 <div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> 
 当前状态: <span id="cState" class="blueBold"><%=one.getProp("state") %></span> 
 待办人：<span id="operator" class="blueBold"><%=one.getProp("operator") %></span> 
+任务ID: <span id="cState" class="blueBold"><%=one.getId() %></span> 
 <%if(userType>1){ 
 	StringBuilder sb1 = new StringBuilder("优先级：<span id=\"cLevel\" class=\"");
 	if(one.getLevel()==0){sb1.append("blueBold\">普通");}else{sb1.append("redBold\">").append(one.getLevel());}
@@ -446,7 +447,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 }else if(state==TTask.TASK_STATE_TEST && tus !=null && !tus.isEmpty() && userType >= 2){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
+	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
 	Iterator<KObject> it = tus.iterator();
 	boolean wapfix = false;
 	while(it.hasNext()){
@@ -468,7 +469,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	out.print(sb);
 %>
 <div class="inBox hide" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">
     
     </div>
@@ -492,7 +493,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	if(userType > 1){
 	String file = "";int i=0;
 	StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
+	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
 	Iterator<KObject> it = tus.iterator();
 	boolean wapfix = false;
 	while(it.hasNext()){
@@ -516,7 +517,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 	
 %>
 <div class="inBox" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">
     
     </div>
@@ -531,7 +532,7 @@ int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one
 if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
 <label for="tu_pass">确认测试结果：</label>
-<select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="9">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
+<select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="3">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
 下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><span id="task_next"></span><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
@@ -560,7 +561,7 @@ else if(userType==99) { %>
 //待反馈情况,厂家查看
 }else if((state==TTask.TASK_STATE_NEED_MOD && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
 <div class="inBox" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>) </span></div> 
+    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
     <div class="inBoxContent" id="fCases">
     
     </div>

@@ -246,7 +246,7 @@ public class EGame extends Action {
 //		HashMap<String,Object> column = new HashMap<String, Object>(2);
 //		column.put("_id", 1);
 		if (!isReply) {
-			ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, null, 0, 1, null);
+			ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, StaticDao.prop_id_desc, 0, 1, null);
 			if (re != null && re.size() >0) {
 				long tid = (Long)(re.get(0).get("_id"));
 				msg.removeData("[print]");

@@ -379,7 +379,7 @@ public class StaticDao extends MongoDao {
 		
 		
 		//执行过的测试单元数
-		doneQ.put("$gt", 0);
+		doneQ.put("$gt", TTask.TASK_STATE_NEW);
 		q.put("state", doneQ);
 		int tuDone = taskUnitDao.count(q);
 		sb.append("\"tuDone\":").append(tuDone).append("}");

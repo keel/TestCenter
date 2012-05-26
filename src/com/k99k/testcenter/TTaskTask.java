@@ -106,7 +106,7 @@ public class TTaskTask extends Action {
 			set = new HashMap<String, Object>(4);
 			HashMap<String,Object> update = new HashMap<String, Object>(4);
 			update.put("updateTime", System.currentTimeMillis());
-			update.put("state", TTask.TASK_STATE_REJECT);
+			update.put("state", TTask.TASK_STATE_NEED_MOD);
 			set.put("$set", update);
 			boolean re = Product.dao.updateOne(query, set);
 			if (!re) {
@@ -167,7 +167,7 @@ public class TTaskTask extends Action {
 		int re = (Integer)msg.getData("re");
 		long uid = (Long)msg.getData("uid");
 		String info = msg.getData("info").toString();
-		if (re != -3) {
+		if (re != TTask.TASK_STATE_BACKTOGROUPLEADER) {
 			//处理已办,更新所有未测的TestUnit所涉及的测试人员,将待办任务去除
 			HashMap<String,Object> query = new HashMap<String, Object>(4);
 			//query.put("_id", userid);
@@ -213,7 +213,7 @@ public class TTaskTask extends Action {
 			
 		}
 		
-		if (re == 9) {
+		if (re == TTask.TASK_STATE_NEED_MOD) {
 			//发出邮件和短信通知
 			KObject task = TTask.dao.findOne(tid);
 			HashMap<String,Object> q = new HashMap<String, Object>(2);
