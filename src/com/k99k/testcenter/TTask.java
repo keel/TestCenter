@@ -500,10 +500,13 @@ public class TTask extends Action {
 			StringBuilder sb = new StringBuilder("");
 			while (it.hasNext()) {
 				KObject tu = (KObject) it.next();
-				//未通过或部分通过的TU
-				if (tu.getState()>2) {
+				//未通过或部分通过的TU,//通过的也有可能不通过的项目
+				//if (tu.getState()>2) {
 					//取得re中的原因
 					ArrayList<HashMap<String,Object>> reList = (ArrayList<HashMap<String,Object>>) tu.getProp("re");
+					if (reList == null || reList.isEmpty()) {
+						continue;
+					}
 					Iterator<HashMap<String,Object>> itr = reList.iterator();
 					while (itr.hasNext()) {
 						HashMap<String,Object> re = itr.next();
@@ -523,7 +526,7 @@ public class TTask extends Action {
 					if (StringUtil.isStringWithLen(tu.getProp("attachs"), 2)) {
 						sb.append(",").append(tu.getProp("attachs"));
 					}
-				}
+				//}
 			}
 			if (sb.length()>0) {
 				res.put("attachs", sb.toString());

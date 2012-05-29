@@ -236,7 +236,7 @@ function feeInfo(fee,to){
 </div>
 <%} 
 StringBuilder sb = new StringBuilder();
-sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu3'>待反馈</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)</span></div><div class='inBoxContent'><div class='file_upload' style='background-color:#FFF;'><span class='tu");
+sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu3'>待反馈</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div class='file_upload' style='background-color:#FFF;'><span class='tu");
 sb.append(one.getState()).append("'>").append(one.getProp("phone")).append("</span> ");
 Object o_f = one.getProp("fileId");
 if(sys!=2 && StringUtil.isDigits(o_f)){
@@ -251,7 +251,7 @@ sb.append("</div></div></div>");
 out.print(sb);
 %>
 <div class="inBox" id="testCases">
-    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu9'>未通过</span>)  <%if(canSave){%><span><a href="javascript:setAll(2,true);" class="aButton">全设为通过</a> <a href="javascript:setAll(0,true);" class="aButton">全设为未测</a> <a href="javascript:setAll(0,false);" class="aButton">未处理设为未测</a> <a href="javascript:setAll(2,false);" class="aButton">未处理设为通过</a></span><%}%></span></div> 
+    <div class="inBoxTitle">测试项 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)  <%if(canSave){%><span><a href="javascript:setAll(2,true);" class="aButton">全设为通过</a> <a href="javascript:setAll(0,true);" class="aButton">全设为未测</a> <a href="javascript:setAll(0,false);" class="aButton">未处理设为未测</a> <a href="javascript:setAll(2,false);" class="aButton">未处理设为通过</a></span><%}%></span></div> 
     <div class="inBoxContent">
     <%
     StringBuilder s = new StringBuilder();

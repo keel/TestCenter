@@ -226,7 +226,7 @@ function summary(){
 	}).error(function(){abox("汇总任务问题","<div class='reErr'>汇总任务问题失败! &nbsp;"+close+"</div>");});
 }
 function showSummary(data){
-	if(!data || data=="" || data.length==0){abox("汇总任务问题","处理完成,测试未发现任何问题. &nbsp;"+close);return;}
+	if(!data || data=="" || data.length==0){return;}
 	for ( var i in data) {
 		if(i=="attachs"){
 			var attachs = "<div>测试附件:",at=data[i].split(",");
@@ -318,7 +318,7 @@ function feeInfo(fee,to){
 <div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> 
 当前状态: <span id="cState" class="blueBold"><%=one.getProp("state") %></span> 
 待办人：<span id="operator" class="blueBold"><%=one.getProp("operator") %></span> 
-任务ID: <span id="cState" class="blueBold"><%=one.getId() %></span> 
+任务ID: <span id="cId" class="blueBold"><%=one.getId() %></span> 
 <%if(userType>1){ 
 	StringBuilder sb1 = new StringBuilder("优先级：<span id=\"cLevel\" class=\"");
 	if(one.getLevel()==0){sb1.append("blueBold\">普通");}else{sb1.append("redBold\">").append(one.getLevel());}
@@ -569,8 +569,8 @@ else if(userType==99) { %>
 <br />
 <div id="feedback">
 <%if(userType == 1 || userType ==99){ %>
-<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&ismy=true":"")%>" class="aButton">修改完成再次提交</a>
-<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
+<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
+<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
 <a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
@@ -583,7 +583,6 @@ else if(userType==99) { %>
 <%}%>
 </div>
 
-<!-- <%=userType+"|"+state%> -->
 
 <div id="hide" class="hide"></div>
 </div>
