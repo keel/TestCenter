@@ -147,7 +147,7 @@ function showOpt(){
 	$(".caseOpt").each(function(i){
 		this.cid = this.id.split("_")[1];
 		var me = $(this);
-		me.append("<a href='javascript:ere("+this.cid+",0);' class=\"aButton\">未测</a><a href='javascript:ere("+this.cid+",2);' class=\"aButton\">通过</a><a href='javascript:ere("+this.cid+",4);' class=\"aButton\">部分通过</a><a href='javascript:ere("+this.cid+",9);' class=\"aButton\">不通过</a>");
+		me.append("<a href='javascript:ere("+this.cid+",0);' class=\"aButton\">未测</a><a href='javascript:ere("+this.cid+",2);' class=\"aButton\">通过</a><a href='javascript:ere("+this.cid+",4);' class=\"aButton\">部分通过</a><a href='javascript:ere("+this.cid+",3);' class=\"aButton\">不通过</a>");
 	});
 }
 function feeInfo(fee,to){

@@ -134,18 +134,18 @@ public final class MongoConn implements DataSourceInterface{
 	
 
 	public static void main(String[] args) {
-		MongoConn mongo = new MongoConn();
-		mongo.importNewCompany("202.102.40.43", "C61001");
+//		MongoConn mongo = new MongoConn();
+//		mongo.importNewCompany("202.102.40.43", "C61001");
 		
 		//test for mongolab.com test
-//		MongoConn mongo = new MongoConn();
-//		mongo.setIp("202.102.40.43");
-//		mongo.setPort(27017);
-//		//mongo.setPort(27137);
-//		mongo.setDbName("tc");
-//		mongo.setUser("keel");
-//		mongo.setPwd("jsGame_1810");
-//		if (mongo.init()) {
+		MongoConn mongo = new MongoConn();
+		mongo.setIp("202.102.40.43");
+		mongo.setPort(27017);
+		//mongo.setPort(27137);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
 			//-----------------------新公司导入----------------
 //			DBCollection co = mongo.getColl("TCCompany");
 //			DBCollection cu = mongo.getColl("TCUser");
@@ -179,71 +179,71 @@ public final class MongoConn implements DataSourceInterface{
 			//-----------------------新公司导入结束----------------
 			//-----------------修正测试不通过状态9为3---------------
 			
-//			DBCollection co = mongo.getColl("TCTestUnit");
-//			DBCursor cur = co.find(new BasicDBObject(),new BasicDBObject("re",1));
-//			while (cur.hasNext()) {
-//				BasicDBObject c = (BasicDBObject) cur.next();
-//				if (c.containsField("re")) {
-//					long id = c.getLong("_id");
-//					BasicDBList cc = (BasicDBList) c.get("re");
-//					if (cc != null && !cc.isEmpty()) {
-//						Iterator<Object> it = cc.iterator();
-//						boolean willUpdate = false;
-//						while (it.hasNext()) {
-//							DBObject m = (DBObject) it.next();
-//							if (Integer.parseInt(m.get("re").toString()) == 9) {
-//								m.put("re", 3L);
-//							}
-//							willUpdate = true;
-//						}
-//						if (willUpdate) {
-//							co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("re",cc)));
-//						}
-//					}
-//				}
-//			}
-//			System.out.println("TCTestUnit ok.");
-//			co = mongo.getColl("TCTask");
-//			cur = co.find(new BasicDBObject(),new BasicDBObject("result",1));
-//			while (cur.hasNext()) {
-//				BasicDBObject c = (BasicDBObject) cur.next();
-//				if (c.containsField("result")) {
-//					String restr = (String) c.get("result");
-//					long id = Long.parseLong(c.getString("_id"));
-//					HashMap<String,Object> re = (HashMap<String, Object>) JSON.read(restr);
-//					if (re!=null && !re.isEmpty()) {
-//						Iterator<Entry<String,Object>> it = re.entrySet().iterator();
-//						while (it.hasNext()) {
-//							Entry<String,Object> e = it.next();
-//							String key = e.getKey();
-//							Object oe = e.getValue();
-//							if (oe instanceof String) {
-//								continue;
-//							}
-//							ArrayList ls = (ArrayList)oe;
-//							Iterator<Object> it2 = ls.iterator();
-//							while(it2.hasNext()){
-//								HashMap r = (HashMap)it2.next();
-//								if (r.containsKey("re")) {
-//									int ree =  Integer.parseInt(r.get("re").toString());
-//									if (ree == 9) {
-//										r.put("re", 3);
-//									}
-//								}
-//							}
-//						}
-//					}
-//					co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("result",JSON.write(re))));
-//				}
-//			}
-//			System.out.println("TCTask ok.");
+			DBCollection co = mongo.getColl("TCTestUnit");
+			DBCursor cur = co.find(new BasicDBObject(),new BasicDBObject("re",1));
+			while (cur.hasNext()) {
+				BasicDBObject c = (BasicDBObject) cur.next();
+				if (c.containsField("re")) {
+					long id = c.getLong("_id");
+					BasicDBList cc = (BasicDBList) c.get("re");
+					if (cc != null && !cc.isEmpty()) {
+						Iterator<Object> it = cc.iterator();
+						boolean willUpdate = false;
+						while (it.hasNext()) {
+							DBObject m = (DBObject) it.next();
+							if (Integer.parseInt(m.get("re").toString()) == 9) {
+								m.put("re", 3L);
+							}
+							willUpdate = true;
+						}
+						if (willUpdate) {
+							co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("re",cc)));
+						}
+					}
+				}
+			}
+			System.out.println("TCTestUnit ok.");
+			co = mongo.getColl("TCTask");
+			cur = co.find(new BasicDBObject(),new BasicDBObject("result",1));
+			while (cur.hasNext()) {
+				BasicDBObject c = (BasicDBObject) cur.next();
+				if (c.containsField("result")) {
+					String restr = (String) c.get("result");
+					long id = Long.parseLong(c.getString("_id"));
+					HashMap<String,Object> re = (HashMap<String, Object>) JSON.read(restr);
+					if (re!=null && !re.isEmpty()) {
+						Iterator<Entry<String,Object>> it = re.entrySet().iterator();
+						while (it.hasNext()) {
+							Entry<String,Object> e = it.next();
+							String key = e.getKey();
+							Object oe = e.getValue();
+							if (oe instanceof String) {
+								continue;
+							}
+							ArrayList ls = (ArrayList)oe;
+							Iterator<Object> it2 = ls.iterator();
+							while(it2.hasNext()){
+								HashMap r = (HashMap)it2.next();
+								if (r.containsKey("re")) {
+									int ree =  Integer.parseInt(r.get("re").toString());
+									if (ree == 9) {
+										r.put("re", 3);
+									}
+								}
+							}
+						}
+					}
+					co.update(new BasicDBObject("_id",id), new BasicDBObject("$set",new BasicDBObject("result",JSON.write(re))));
+				}
+			}
+			System.out.println("TCTask ok.");
 			//-----------------修正测试不通过状态9为3 结束---------------
 			
-//			mongo.close();
-//		}else{
-//			System.out.println("err!");
-//		}
-//		
+			mongo.close();
+		}else{
+			System.out.println("err!");
+		}
+		
 	}
 	
 	/**
