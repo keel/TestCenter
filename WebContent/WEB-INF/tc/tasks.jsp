@@ -95,7 +95,7 @@ if(usertype>1){
 <th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
 </tr>
 <%
-if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
+if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
 else{
 	StringBuilder sb = new StringBuilder();
 	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","驳回","已反馈"};

@@ -274,9 +274,12 @@ function online(){
 }
 function pre(i){
 	if(i==1){
-		$.post("<%=prefix %>/tasks/a_back", $("#p_form").serialize() ,function(data) {
-			if(data=="ok"){alert("已退回创建者");window.location = $.prefix+$.taskUrl;};
-		});
+		var r=confirm("确认驳回此产品,退回创建者吗？");
+		if(r){
+			$.post("<%=prefix %>/tasks/a_back", $("#p_form").serialize() ,function(data) {
+				if(data=="ok"){alert("已退回创建者");window.location = $.prefix+$.taskUrl;};
+			});
+		}
 	}
 }
 function dropTask(id){
@@ -440,7 +443,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
-<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(1);" class="aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
+<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(1);" class="bgred aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
 </div>
 
 <%//转发TestUnit,或在TestUnit完成后汇总
@@ -555,7 +558,7 @@ else if(userType==99) { %>
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
-<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认已上线</a>
+<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>
 <%} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 

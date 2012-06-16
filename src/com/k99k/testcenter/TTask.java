@@ -698,8 +698,8 @@ public class TTask extends Action {
 			slice.put("_id", 1);
 			slice.put("creatorName", 1);
 			HashMap<String,Object> last = new HashMap<String, Object>(2);
-			last.put("log", -1);
-			slice.put("$slice", last);
+			last.put("$slice", -1);
+			slice.put("log", last);
 			HashMap<String,Object> lastLog = dao.query(q, slice, null, 0, 0, null).get(0);
 			if (lastLog != null) {
 				ArrayList<HashMap<String,Object>> logs = (ArrayList<HashMap<String, Object>>) lastLog.get("log");
@@ -710,6 +710,7 @@ public class TTask extends Action {
 				}
 			}
 			update.put("operator", task_operator);
+			update.put("isOnline", 0);
 			update.put("state", TASK_STATE_TEST);
 		}else{
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);

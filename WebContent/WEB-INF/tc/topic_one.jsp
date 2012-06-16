@@ -157,11 +157,11 @@ if(comms != null && !comms.isEmpty()) {
 		sb.append(" </div><div><pre class=\"t_text\">").append(comm.getProp("text"));
 		sb.append("</pre></div></div>\r\n");
 	}
-	sb.append("<div id=\"pageNav\" style=\"padding:5px 20px;\"></div>");
 	out.print(sb);
 }
 if(StringUtil.objToNonNegativeInt(one.getProp("lock")) < 1){
 %>
+<div id="pageNav" style="padding:5px 20px;"></div>
 <div id="reply" style="padding:10px 20px;border-top:1px dotted #ccc;">
 <form action='<%=prefix+"/comm/"+one.getId()+"/a_a" %>' id="replyForm">
 <div class="bold">发表回复：</div>

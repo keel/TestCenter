@@ -60,6 +60,7 @@ input.error,textarea.error{ border: 1px dotted red; }
 label.error{color:red;width:300px;text-align:left;display:block;}
 .tx_center{text-align:center;}
 .red{color:red;}
+.bgred{background-color:red;}
 .black{color:#000;}
 .bold{font-weight: bold;}
 .txtRight{text-align: right;}

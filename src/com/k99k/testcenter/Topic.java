@@ -401,7 +401,7 @@ public class Topic extends Action {
 	 */
 	private void myCompany(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
 		msg.addData("title", "公司产品讨论");
-		HashMap<String,Object> q = StaticDao.prop_topic_company;
+		HashMap<String,Object> q = (HashMap<String, Object>) StaticDao.prop_topic_company.clone();
 		if (u.getType()<2) {
 			String company = u.getProp("company").toString();
 			q.put("company", company);
