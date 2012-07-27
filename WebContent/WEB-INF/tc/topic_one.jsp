@@ -162,6 +162,7 @@ if(comms != null && !comms.isEmpty()) {
 if(StringUtil.objToNonNegativeInt(one.getProp("lock")) < 1){
 %>
 <div id="pageNav" style="padding:5px 20px;"></div>
+<%if(user.getType() > 0) {%>
 <div id="reply" style="padding:10px 20px;border-top:1px dotted #ccc;">
 <form action='<%=prefix+"/comm/"+one.getId()+"/a_a" %>' id="replyForm">
 <div class="bold">发表回复：</div>
@@ -169,7 +170,8 @@ if(StringUtil.objToNonNegativeInt(one.getProp("lock")) < 1){
 <a class="aButton" href="javascript:aSubmit();" id="replyBT" style="margin-top:5px;">提交回复</a>
 </form>
 </div>
-<%} %>
+<%} 
+} %>
 </div>
 <div class="aboxSub2"><a href="<%=lo%>" class="aButton">返回列表</a></div>
 </div>

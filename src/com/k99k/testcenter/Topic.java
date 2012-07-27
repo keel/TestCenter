@@ -67,8 +67,16 @@ public class Topic extends Action {
 		String subsub = (pathArr.length <= r+1) ? "" : pathArr[r+1];
 		KObject u = Auth.checkCookieLogin(httpmsg);
 		if (u == null) {
-			msg.addData("[redirect]", "/login");
-			return super.act(msg);
+			u = new KObject();
+			u.setName("访客");
+			u.setLevel(0);
+			u.setState(0);
+			u.setType(0);
+			u.setProp("company", "");
+			u.setProp("newNews", 0);
+			u.setProp("newTasks", 0);
+//			msg.addData("[redirect]", "/login");
+//			return super.act(msg);
 		}
 		if (subact.equals("pub")) {
 			this.pub(subact,req, u, httpmsg);
@@ -78,19 +86,25 @@ public class Topic extends Action {
 			this.doc(subact,subsub, req, u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			this.one(subact, req, u, httpmsg);
-		}else if(subact.equals("add")){
-			String subsub2 = (pathArr.length <= r+2) ? "" : pathArr[r+2];
-			this.toAdd(subsub,subsub2, u, req, httpmsg);
-		}else if(subact.equals("a_a")){
-			this.add(req, u, httpmsg);
-		}else if(subact.equals("a_u")){
-			this.update(req, u, httpmsg);
-		}else if(subact.equals("a_d")){
-			this.del(req, u, httpmsg);
 		}else if(subact.equals("a_s")){
 			this.search(subact,req, u, httpmsg);
 		}else{
-			JOut.err(404, httpmsg);
+			if (u.getType() < 1) {
+				msg.addData("[redirect]", "/login");
+				return super.act(msg);
+			}
+			if(subact.equals("add")){
+				String subsub2 = (pathArr.length <= r+2) ? "" : pathArr[r+2];
+				this.toAdd(subsub,subsub2, u, req, httpmsg);
+			}else if(subact.equals("a_a")){
+				this.add(req, u, httpmsg);
+			}else if(subact.equals("a_u")){
+				this.update(req, u, httpmsg);
+			}else if(subact.equals("a_d")){
+				this.del(req, u, httpmsg);
+			}else{
+				JOut.err(404, httpmsg);
+			}	
 		}
 		return super.act(msg);
 	}

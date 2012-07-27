@@ -103,7 +103,7 @@ pJSON.synUrl = '<%=pmap.get("synUrl")%>';
 String feeInfo = "";
 if(fee !=null){
 	feeInfo = JSON.write(fee);
-	out.print("pJSON.feeInfo = '"+feeInfo+"';");
+	out.print("pJSON.feeInfo = '"+feeInfo.replaceAll("'", "\'")+"';");
 }else{
 	out.print("pJSON.feeInfo = '';");
 }

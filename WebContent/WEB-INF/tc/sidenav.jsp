@@ -12,6 +12,8 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_mis"><a href="http://202.102.39.9/MIS/" >返回管理平台</a></li>
 <li id="side_website"><a href="http://game.189.cn" target="_blank">爱游戏门户</a></li>
 </ul>
+<%if(type>0){%>
+
 <div>用户信息</div>
 <ul>
 <li id="side_pwd"><a href="<%=prefix %>/user/edit" >修改用户信息</a></li>
@@ -28,11 +30,13 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 <li id="side_task"><a href="<%=prefix %>/tasks" >任务管理</a></li>
 <!--  <li id="side_product"><a href="<%=prefix %>/products" >产品管理</a></li>  -->
 </ul>
-
+<%}%>
 <div>讨论</div>
 <ul>
 <li id="side_topic_pub"><a href="<%=prefix %>/topic/pub" >公共讨论</a></li>
+<%if(type>0){%>
 <li id="side_topic_company"><a href="<%=prefix %>/topic/company" >我的产品</a></li>
+<%}%>
 </ul>
 <%
 if(type>=4){

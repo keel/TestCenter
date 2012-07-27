@@ -454,27 +454,27 @@ public class EGame extends Action {
 	 */
 	public static void main(String[] args) {
 		
-		EGame.companyUrl = "http://202.102.111.22:8080/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
-		EGame.productUrl = "http://202.102.111.22:8080/MIS/v/entitytest/products?startIndex=0&pageSize=1";
-		EGame.handsetUrl = "http://202.102.111.22:8080/MIS/v/entitytest/models?startIndex=0&pageSize=1";
-		EGame.feeUrl = "http://202.102.111.22:8080/MIS/v/entitytest/consumecodes";
+		EGame.companyUrl = "http://202.102.39.9:81/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
+		EGame.productUrl = "http://202.102.39.9:81/MIS/v/entitytest/products?startIndex=0&pageSize=1";
+		EGame.handsetUrl = "http://202.102.39.9:81/MIS/v/entitytest/models?startIndex=0&pageSize=1";
+		EGame.feeUrl = "http://202.102.39.9:81/MIS/v/entitytest/consumecodes";
 		
 		
-		String comId = "C11040";
-		long pid = 228503;
-		String mod = "E63V";
-		long feePid = 142;
-		
-		HashMap<String,String> re = null;
-		
-		re = getCompany(comId);
-		System.out.println(JSON.writeFormat(re));
-		re = getProduct(pid);
-		System.out.println(JSON.writeFormat(re));
-		re = getHandset(mod);
-		System.out.println(JSON.writeFormat(re));
+//		String comId = "C11040";
+//		long pid = 228503;
+//		String mod = "E63V";
+		long feePid = 234709;
+//		
+//		HashMap<String,String> re = null;
+//		
+//		re = getCompany(comId);
+//		System.out.println(JSON.writeFormat(re));
+//		re = getProduct(pid);
+//		System.out.println(JSON.writeFormat(re));
+//		re = getHandset(mod);
+//		System.out.println(JSON.writeFormat(re));
 		ArrayList<HashMap<String,String>> li = getFee(feePid);
-		System.out.println(JSON.writeFormat(li,2));
+		System.out.println(JSON.write(li));
 		
 		
 	}
