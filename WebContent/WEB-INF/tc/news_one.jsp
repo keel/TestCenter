@@ -36,7 +36,7 @@ function showHtml(target) {
 	s=s.replace( /(\[red\])((.|\s)*?)(\[\/red\])/ig ,"<span class='red'>$2</span>") ;
 	s=s.replace( /(\[blue\])((.|\s)*?)(\[\/blue\])/ig ,"<span class='blueA'>$2</span>") ;
 	s=s.replace( /(\[img\])((.|\s)*?)(\[\/img\])/ig ,"<img src='$2' />") ;
-	s=s.replace( /(\[url=(.[^\[]*)\])(.*?)(\[\/url\])/ig ," <a href='$2' target='_blank'class='bold blueA'>$3</a> ") ;
+	s=s.replace( /(\[url=(.[^\[]*)\])(.*?)(\[\/url\])/ig ," <a href='$2' target='_blank'class='blueA'>$3</a> ") ;
 	pa.append($("<div>"+s+"</div>"));
 }
 $(function(){

@@ -53,6 +53,15 @@ function del(id){
 	}
 	return;
 }
+function comm_del(id){
+	var r=confirm("确认删除此条回复吗？");
+	if (r==true){
+		$.post("<%=prefix %>/comm/"+id+"/a_d", "id="+id ,function(data) {
+			if(data=="ok"){alert("删除成功");window.location = $.lo;}else{alert("删除失败!");};
+		});
+	}
+	return;
+}
 function showHtml(target) {
 	var s = $(target).html(),pa = $(target).parent();;
 	$(target).remove();
@@ -64,7 +73,7 @@ function showHtml(target) {
 	s=s.replace( /(\[red\])((.|\s)*?)(\[\/red\])/ig ,"<span class='red'>$2</span>") ;
 	s=s.replace( /(\[blue\])((.|\s)*?)(\[\/blue\])/ig ,"<span class='blueA'>$2</span>") ;
 	s=s.replace( /(\[img\])((.|\s)*?)(\[\/img\])/ig ,"<img src='$2' />") ;
-	s=s.replace( /(\[url=(.[^\[]*)\])(.*?)(\[\/url\])/ig ," <a href='$2' target='_blank'class='bold blueA'>$3</a> ") ;
+	s=s.replace( /(\[url=(.[^\[]*)\])(.*?)(\[\/url\])/ig ," <a href='$2' target='_blank'class='blueA'>$3</a> ") ;
 	pa.append($("<div>"+s+"</div>"));
 }
 function aSubmit(){
@@ -102,7 +111,7 @@ $(function(){
 	    rules: {
 	        c_text:{
 	            required:true,
-	            rangelength:[6,2000]
+	            rangelength:[6,8000]
 	        }
 	    }
 	});
@@ -158,7 +167,8 @@ if(comms != null && !comms.isEmpty()) {
 		sb.append(comm.getCreatorName()).append("</a>  发表于  <span class=\"blue bold\">").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",comm.getCreateTime()));
 		sb.append("</span> ");
 		if(user.getType()>10 || comm.getCreatorName().equals(user.getName())){
-			sb.append("[<a href='").append(prefix).append("/comm/").append(comm.getId()).append("/update'>编辑</a>]");
+			sb.append("[<a href='").append(prefix).append("/comm/").append(comm.getId()).append("/update'>编辑</a> | ");
+			sb.append("<a href='javascript:comm_del(").append(comm.getId()).append(");'>删除</a>]");
 		}
 		sb.append(" </div><div><pre class=\"t_text\">").append(comm.getProp("text"));
 		sb.append("</pre></div></div>\r\n");

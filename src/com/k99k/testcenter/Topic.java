@@ -206,7 +206,11 @@ public class Topic extends Action {
 		}
 		// 评论列表
 		HashMap<String,Object> query = new HashMap<String, Object>();
+		HashMap<String,Object> state_normal = new HashMap<String, Object>(2);
+		state_normal.put("$gte", 0);
 		query.put("TPID", id);
+		query.put("state", state_normal);
+		
 		comm.queryPage(query, req,msg);
 		
 		msg.addData("[jsp]", "/WEB-INF/tc/topic_one.jsp");

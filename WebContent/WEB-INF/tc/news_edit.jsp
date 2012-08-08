@@ -42,7 +42,7 @@ $('#news_form').validate({
         },
         news_text:{
             required:true,
-            rangelength:[6,2000]
+            rangelength:[6,8000]
         }
     }
 });

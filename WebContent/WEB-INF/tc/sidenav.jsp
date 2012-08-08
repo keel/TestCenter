@@ -9,7 +9,7 @@ int tt = (StringUtil.isDigits(request.getParameter("tt")))? Integer.parseInt(req
 %><div id="sideNav">
 <div>导航</div>
 <ul>
-<li id="side_mis"><a href="http://202.102.39.9/MIS/" >返回管理平台</a></li>
+<li id="side_mis"><a href="http://202.102.39.9/MIS/" target="_blank">商务管理平台</a></li>
 <li id="side_website"><a href="http://game.189.cn" target="_blank">爱游戏门户</a></li>
 </ul>
 <%if(type>0){%>
@@ -48,6 +48,7 @@ if(type>=4){
 <li id="side_monthreport"><a href="<%=prefix %>/ana/month" >月报表</a></li>
 </ul>
 <%};%>
+<!-- 
 <div>相关文档</div>
 <ul>
 <li id="side_topic_doc_proc"><a href="<%=prefix %>/topic/doc/proc" >流程说明</a></li>
@@ -55,7 +56,7 @@ if(type>=4){
 <li id="side_topic_doc_faq"><a href="<%=prefix %>/topic/doc/faq" >适配常见问题</a></li>
 <li id="side_topic_doc_api"><a href="<%=prefix %>/topic/doc/api" >电信接口</a></li>
 </ul>
-
+ -->
 <%if(type>=5){%>
 <div>数据维护</div>
 <ul>

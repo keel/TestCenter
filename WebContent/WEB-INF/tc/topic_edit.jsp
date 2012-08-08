@@ -67,7 +67,7 @@ $('#topic_form').validate({
         },
         t_text:{
             required:true,
-            rangelength:[6,2000]
+            rangelength:[6,8000]
         }
     }
 });
