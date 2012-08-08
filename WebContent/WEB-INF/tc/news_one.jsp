@@ -30,7 +30,13 @@ function showHtml(target) {
 	$(target).remove();
 	s=s.replace(/\x20/g,"&nbsp;");
 	s=s.replace(/\n/g,"<br />") ;
-	s=s.replace( /(http[s]?:\/\/[\w-:\/]*(\.[\w-:\/]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
+	//s=s.replace( /(http[s]?:\/\/[\w-:\/]*(\.[\w-:\/]*)+)/ig ,"<a href='$1' target='_blank'>$1</a>") ;
+	s=s.replace( /(\[pre\])((.|\s)*?)(\[\/pre\])/ig ,"<pre>$2</pre>") ;
+	s=s.replace( /(\[b\])((.|\s)*?)(\[\/b\])/ig ,"<span class='bold'>$2</span>") ;
+	s=s.replace( /(\[red\])((.|\s)*?)(\[\/red\])/ig ,"<span class='red'>$2</span>") ;
+	s=s.replace( /(\[blue\])((.|\s)*?)(\[\/blue\])/ig ,"<span class='blueA'>$2</span>") ;
+	s=s.replace( /(\[img\])((.|\s)*?)(\[\/img\])/ig ,"<img src='$2' />") ;
+	s=s.replace( /(\[url=(.[^\[]*)\])(.*?)(\[\/url\])/ig ," <a href='$2' target='_blank'class='bold blueA'>$3</a> ") ;
 	pa.append($("<div>"+s+"</div>"));
 }
 $(function(){

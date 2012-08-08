@@ -148,7 +148,22 @@ public final class MongoConn implements DataSourceInterface{
 
 	public static void main(String[] args) {
 		String[] cps = new String[]{
-				"C11114"
+				"C11145",
+				"C11138"
+//				"C11144",
+//				"C11143",
+//				"C11142",
+//				"C31019",
+//				"C61004",
+//				"C32058",
+//				"C32057",
+//				"C11141",
+//				"C11140",
+//				"C11139",
+//				"C12007",
+//				"C11137",
+//				"C32056",
+//				"C44051"
 		};
 		MongoConn.importNewCompany("202.102.40.43", cps);
 		
