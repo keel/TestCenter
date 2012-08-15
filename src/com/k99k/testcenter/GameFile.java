@@ -117,6 +117,7 @@ public class GameFile extends Action {
 					servletOS.close();
 					return super.act(msg);
 				} catch (IOException e) {
+					e.printStackTrace();
 					log.error("Gamefile download failed:"+f);
 					JOut.err(404, "文件下载失败", httpmsg);
 					return super.act(msg);

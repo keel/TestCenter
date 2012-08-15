@@ -50,7 +50,7 @@ $('#consoleLogin').validate({
 
 <div style=" position: relative;width: 380px;margin: 0 auto;padding:150px 0 0 0;">
 	<div id="loginTitle" style="width:380px;font-size:120%;padding:10px 0;text-align: center;">
-		Test Center
+		爱游戏产品测试
 	</div>
 <form action="<%=prefix %>/auth/login" method="post" id="consoleLogin">
 	<p><label for="uName">用户名:</label><br />

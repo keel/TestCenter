@@ -919,7 +919,10 @@ public class TTask extends Action {
 			json.remove("newp");
 			//FIXME 在数据库中创建Product后就再不会更新了，需要有一处可以再次从EGame更新Product
 			HashMap<String,Object> q = new HashMap<String, Object>(2);
+			HashMap<String,Object> qn = new HashMap<String, Object>(2);
+			qn.put("$gte", 0);
 			q.put("_id", pid);
+			q.put("state", qn);
 			ArrayList<HashMap<String, Object>> product = Product.dao.query(q, StaticDao.prop_testTimes, StaticDao.prop_id_desc, 0, 1, null);
 			if (product == null || product.size() == 0) {
 				json.put("testTimes", 1);

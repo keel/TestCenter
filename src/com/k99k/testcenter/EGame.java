@@ -399,6 +399,8 @@ public class EGame extends Action {
 		if (re.equals("")) {
 			return null;
 		}
+		//替换掉\"号
+		re = re.replaceAll("\\\\\\\"", "“");
 		Object j = JSON.read(re);
 		try {
 			if (j instanceof HashMap) {
@@ -463,7 +465,7 @@ public class EGame extends Action {
 //		String comId = "C11040";
 //		long pid = 228503;
 //		String mod = "E63V";
-		long feePid = 234709;
+		long feePid = 235540;
 //		
 //		HashMap<String,String> re = null;
 //		
@@ -475,7 +477,6 @@ public class EGame extends Action {
 //		System.out.println(JSON.writeFormat(re));
 		ArrayList<HashMap<String,String>> li = getFee(feePid);
 		System.out.println(JSON.write(li));
-		
 		
 	}
 
