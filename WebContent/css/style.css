@@ -73,6 +73,9 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .blueA{color:blue;}
 .greenBold{color:#25ac1e;font-weight: bold;}
 .purpleBold{color:#e316e3;font-weight: bold;}
+.topicLv3{color:red;font-weight: bold;}
+.topicLv2{color:#e316e3;font-weight: bold;}
+.topicLv1{color:blue;font-weight: bold;}
 .re{background-color: #fbf9ea;border: 1px solid red;padding:20px;}
 .hotEditTA{height:100px;}
 .fullA{display:block;width:100%;}

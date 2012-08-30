@@ -230,6 +230,7 @@ public class Topic extends Action {
 		String t_lock = req.getParameter("t_lock");
 		String files = req.getParameter("news_files");
 		String topic_id = req.getParameter("topic_id");
+		String updateTime = req.getParameter("updateTime");
 		if (!StringUtil.isDigits(topic_id) || 
 			!StringUtil.isStringWithLen(t_name, 1) || 
 			!StringUtil.isStringWithLen(t_text, 1) 
@@ -254,6 +255,9 @@ public class Topic extends Action {
 		kobj.setName(name);
 		kobj.setProp("text", text);
 		kobj.setProp("lock", lock);
+		if (StringUtil.isDigits(updateTime)) {
+			kobj.setProp("updateTime", updateTime);
+		}
 		if (StringUtil.isStringWithLen(files, 1)) {
 			boolean enc = true;
 			try {
@@ -326,6 +330,7 @@ public class Topic extends Action {
 		kobj.setProp("lock", lock);
 		kobj.setCreatorName(u.getName());
 		kobj.setCreatorId(u.getId());
+		kobj.setProp("updateTime", System.currentTimeMillis());
 		if (StringUtil.isStringWithLen(t_tags, 1)) {
 			boolean enc = true;
 			try {
@@ -439,7 +444,7 @@ public class Topic extends Action {
 		String pz_str = req.getParameter("pz");
 		int page = StringUtil.isDigits(p_str)?Integer.parseInt(p_str):1;
 		int pz = StringUtil.isDigits(pz_str)?Integer.parseInt(pz_str):this.pageSize;
-		ArrayList<KObject> list = dao.queryByPage(page,pageSize,query, null, StaticDao.prop_level_id_desc, null);
+		ArrayList<KObject> list = dao.queryByPage(page,pageSize,query, null, StaticDao.prop_level_updateTime_id_desc, null);
 		msg.addData("u", u);
 		msg.addData("list", list);
 		msg.addData("pz", pz);

@@ -21,9 +21,7 @@ import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.HttpActionMsg;
 import com.k99k.tools.StringUtil;
 import com.k99k.khunter.JOut;
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+import com.sun.image.codec.jpeg.*;
 
 /**
  * 文件上传动作类
@@ -232,7 +230,6 @@ public class Uploader extends Action {
             BufferedImage bid = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_RGB);
             bid.getGraphics().drawImage(bis,0,0,nw,nh,null);
             FileOutputStream out = new FileOutputStream(targetPicPath);
-            
             JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
             JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
             jep.setQuality(0.9f, true);

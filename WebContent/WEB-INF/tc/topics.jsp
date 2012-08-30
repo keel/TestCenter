@@ -97,7 +97,7 @@ else{
 		sb.append(prefix).append("/topic/").append(gg.getId());
 		sb.append("' class='fullA");
 		if(gg.getLevel()>0){
-			sb.append(" purpleBold'>(重要) ");
+			sb.append(" topicLv").append(gg.getLevel()).append("'>(重要) ");
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getCreatorName()).append("'>").append(gg.getCreatorName()).append("</a></td>");

@@ -56,9 +56,6 @@
 					"col":"TID","unique":false,"asc":false,"type":"type","intro":"TID"
 				},
 				{
-					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
-				},
-				{
 					"col":"PID","unique":false,"asc":false,"type":"type","intro":"PID"
 				},
 				{

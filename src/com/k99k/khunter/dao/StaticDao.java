@@ -51,6 +51,7 @@ public class StaticDao extends MongoDao {
 	 */
 	public static final BasicDBObject prop_level_id_desc = new BasicDBObject("level",-1).append("_id",-1);
 
+	
 	/**
 	 * {level:-1,_id:1}
 	 */
@@ -59,12 +60,16 @@ public class StaticDao extends MongoDao {
 //	 * {level:-1,state:-1,_id:1}
 //	 */
 //	public static final BasicDBObject prop_level_state_id_asc = new BasicDBObject("level",-1).append("state",-1).append("_id",1);
+	/**
+	 * {level:-1,updateTime:-1,_id:-1}
+	 */
+	public static final BasicDBObject prop_level_updateTime_id_desc = new BasicDBObject("level",-1).append("updateTime", -1).append("_id",-1);
 
 	
 	/**
-	 * {$inc:{commsCount:1}}
+	 * {$inc:{commsCount:1},$set:{updateTime:System.currentTimeMillis()}}
 	 */
-	public static final BasicDBObject prop_topic_comm_inc = new BasicDBObject("$inc",new BasicDBObject("commsCount",1));
+	public static final BasicDBObject prop_topic_comm_inc = new BasicDBObject("$inc",new BasicDBObject("commsCount",1)).append("$set",new BasicDBObject("updateTime", System.currentTimeMillis()));
 
 	/**
 	 * {gFile:1,fileId:1,phone:1}

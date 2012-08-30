@@ -147,37 +147,39 @@ public final class MongoConn implements DataSourceInterface{
 	
 
 	public static void main(String[] args) {
-		String[] cps = new String[]{
-				"C11145",
-				"C11138"
-//				"C11144",
-//				"C11143",
-//				"C11142",
-//				"C31019",
-//				"C61004",
-//				"C32058",
-//				"C32057",
-//				"C11141",
-//				"C11140",
-//				"C11139",
-//				"C12007",
-//				"C11137",
-//				"C32056",
-//				"C44051"
-		};
-		MongoConn.importNewCompany("202.102.40.43", cps);
+//		String[] cps = new String[]{
+//				"C22003",
+//				"C11146",
+//				"C11147",
+//				"C11148",
+//				"C11149",
+//				"C32060",
+//				"C11150",
+//				"C32061",
+//				"C31020"
+//		};
+//		MongoConn.importNewCompany("202.102.40.43", cps);
 		
 		
 		
 		//test for mongolab.com test
-//		MongoConn mongo = new MongoConn();
+		MongoConn mongo = new MongoConn();
+		mongo.setIp("127.0.0.1");
 //		mongo.setIp("202.102.40.43");
-//		mongo.setPort(27017);
-//		//mongo.setPort(27137);
-//		mongo.setDbName("tc");
-//		mongo.setUser("keel");
-//		mongo.setPwd("jsGame_1810");
-//		if (mongo.init()) {
+		mongo.setPort(27017);
+		//mongo.setPort(27137);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
+			DBCollection co = mongo.getColl("TCTopic");
+			DBCursor cur = co.find();
+			while (cur.hasNext()) {
+				DBObject cc = (DBObject) cur.next();
+				cc.put("updateTime", Long.parseLong(cc.get("createTime").toString()));
+				co.save(cc);
+			}
+		}
 			//-----------------------新公司导入----------------
 //			DBCollection co = mongo.getColl("TCCompany");
 //			DBCollection cu = mongo.getColl("TCUser");
