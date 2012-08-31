@@ -60,9 +60,9 @@ if(type>=4){
 <%if(type>=5){%>
 <div>数据维护</div>
 <ul>
+<li id="side_admin_user"><a href="<%=prefix %>/admin/user" >用户管理</a></li>
 <li id="side_admin_handset"><a href="<%=prefix %>/admin/handset" >终端信息</a></li>
 <li id="side_admin_company"><a href="<%=prefix %>/admin/company" >厂商信息</a></li>
-<li id="side_admin_user"><a href="<%=prefix %>/admin/user" >用户管理</a></li>
 <li id="side_admin_product"><a href="<%=prefix %>/admin/product" >产品库*</a></li>
 <%
 if(type>=6){

@@ -991,19 +991,50 @@ public class TTask extends Action {
 	
 	
 	private void search(String subact,HttpServletRequest req,KObject u,HttpActionMsg msg){
+		int hasKey = 1;
+		String key = req.getParameter("k");
+		String state = req.getParameter("searchState");
+		String com = req.getParameter("com");
 		if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
-			String key = null;
+			
 //			try {
-//				//TODO 针对tomcatURL编码转换
+//				// 针对tomcatURL编码转换
 //				key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
-				key = req.getParameter("k").trim();
+//				key = req.getParameter("k").trim();
 //			} catch (UnsupportedEncodingException e) {
 //				e.printStackTrace();
 //			}
+			hasKey = hasKey*2;
+		}
+		if (StringUtil.isDigits(state)) {
+			hasKey = hasKey*3;
+		}
+		if (StringUtil.isStringWithLen(req.getParameter("com"), 1)) {
+			hasKey = hasKey*5;
+		}
+		if (hasKey>1) {
+			
 			HashMap<String,Object> query = new HashMap<String, Object>(2);
-			Pattern p = Pattern.compile(key);
-			query.put("name", p);
-			query.putAll(StaticDao.prop_state_normal);
+			
+			if (hasKey%2 == 0) {
+				Pattern p = Pattern.compile(key.trim());
+				query.put("name", p);
+			}
+			if (hasKey % 5 == 0) {
+				Pattern p = Pattern.compile(com.trim());
+				query.put("company", p);
+			}
+			boolean stateNormal = true;
+			if (hasKey % 3 == 0) {
+				int st = Integer.parseInt(state);
+				if (st != 99) {
+					query.put("state",st );
+					stateNormal = false;
+				}
+			}
+			if(stateNormal){
+				query.putAll(StaticDao.prop_state_normal);
+			}
 			this.queryPage(query,subact, req, u, msg);
 			return;
 		}else{

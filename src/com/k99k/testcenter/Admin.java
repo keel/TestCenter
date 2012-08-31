@@ -85,24 +85,9 @@ public class Admin extends Action {
 		if(subsub.equals("")){
 			msg.addData("[jsp]", "/WEB-INF/tc/user_search.jsp");
 		}
-		//修改
-		else if(subsub.equals("update")){
-			if (StringUtil.isDigits(req.getParameter("uid"))) {
-				long uid = Long.parseLong(req.getParameter("uid"));
-				KObject one = TUser.dao.findOne(uid);
-				if (one== null || one.getState() == -1) {
-					JOut.err(404, msg);
-					return;
-				}
-				//产品
-				msg.addData("one", one);
-				msg.addData("[jsp]", "/WEB-INF/tc/user_edit.jsp");
-			}
-		}
 		//新增
 		else if(subsub.equals("add")){
-			msg.addData("[jsp]", "/WEB-INF/tc/user_add.jsp");
-			
+			this.addUser(subact, subsub, req, u, msg);
 		}
 		//搜索
 		else if(subsub.equals("search")){
@@ -111,8 +96,54 @@ public class Admin extends Action {
 		else{
 			msg.addData("[jsp]", "/WEB-INF/tc/user_search.jsp");
 		}
-		
-		
+	}
+	
+	private void addUser(String subact,String subsub,HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String uName = req.getParameter("uName");
+		String uCom = req.getParameter("uCom");
+		String uHand = req.getParameter("uHand");
+		String uMail = req.getParameter("uMail");
+		String uQQ = req.getParameter("uQQ");
+		String uType = req.getParameter("uType");
+		String uInfo = req.getParameter("uInfo");
+		String uPass = req.getParameter("uPass");
+		if (StringUtil.isStringWithLen(uName, 2)
+				&& 	StringUtil.isStringWithLen(uCom, 2)
+				&& 	StringUtil.isStringWithLen(uHand, 11)
+				&& 	StringUtil.isStringWithLen(uMail, 2)
+				&& 	StringUtil.isDigits(uType)
+				&& 	StringUtil.isStringWithLen(uPass, 2)
+				) {
+			uName = uName.trim();
+			uCom = uCom.trim();
+			uHand = uHand.trim();
+			uMail = uMail.trim();
+			uInfo = StringUtil.isStringWithLen(uInfo, 1) ? uInfo : "";
+			uQQ = StringUtil.isStringWithLen(uQQ, 1) ? uQQ : "";
+			int userType = Integer.parseInt(uType);
+			uPass = uPass.trim();
+			KObject one = new KObject();
+			one.setCreateTime(System.currentTimeMillis());
+			one.setInfo(uInfo);
+			one.setLevel(0);
+			one.setName(uName);
+			one.setState(0);
+			one.setType(userType);
+			one.setProp("company", uCom);
+			one.setProp("email", uMail);
+			one.setProp("groupID", 0);
+			one.setProp("groupLeader", 0);
+			one.setProp("newNews", 0);
+			one.setProp("newTasks", 0);
+			one.setProp("phoneNumber", uHand);
+			one.setProp("pwd", uPass);
+			one.setProp("qq", uQQ);
+			if (TUser.dao.add(one)) {
+				msg.addData("[print]", "ok");
+				return;
+			}
+		}
+		msg.addData("[print]", "err");
 	}
 	
 	private void searchUser(String subact,String subsub,HttpServletRequest req,KObject u,HttpActionMsg msg){

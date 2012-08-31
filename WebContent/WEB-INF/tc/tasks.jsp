@@ -39,12 +39,17 @@ function del(id){
 	return;
 }
 function search(){
-	var k = $("#search_key").val();
-	var lo = "<%=prefix %>/tasks/";
+	var k = $("#search_key").val(),s=$("#searchState").val(),c=$("#search_com").val();
+	var lo = "<%=prefix %>/tasks/",lo2=lo+"a_s?a=0";
 	if($.isMy){lo+="my/";};
-	if(k!=null && $.trim(k).length>1){
-		window.location=lo+"a_s?k="+k;
-	}else{window.location=lo;}
+	if(k!=null && $.trim(k).length>=1){
+		lo2=lo2+"&k="+$.trim(k);
+	} if(s!=null && $.trim(s).length>=1 && s != "99"){
+		lo2=lo2+"&searchState="+$.trim(s);
+	} if(c!=null && $.trim(c).length>=1){
+		lo2=lo2+"&com="+$.trim(c);
+	}
+	window.location=lo2;
 }
 $(function(){
 	var tar = ($.isMy) ? "#side_mytask a" : "#side_task a";
@@ -56,7 +61,12 @@ $(function(){
 	});
 	pageNav.fn = function(p,pn){
 	    if(p != <%=p%>){
-	    	window.location = "<%=prefix%>/tasks"+($.isMy?"/my":"")+"?p="+p+"&pz="+<%=pz%>;
+	    	var lo = window.location.href;
+	    	lo = lo.replace(/[\?|\&]p=[\d]+\&pz=[\d]+/g,"");
+	    	if(lo.indexOf("?")<0){lo+="?";}else{lo+="&";};
+	    	lo=lo+"p="+p+"&pz="+<%=pz%>;
+	    	//window.location = "<%=prefix%>/tasks"+($.isMy?"/my":"")+"?p="+p+"&pz="+<%=pz%>;
+	    	window.location = lo;
 	    }
 	};
 	pageNav.go(<%=p%>,<%=pn%>);
@@ -79,9 +89,15 @@ $(function(){
 
 		<div id="mainContent">
 <div class="search">
-查询:<select><option value="title">任务名</option></select> <input id="search_key" type="text" /><a href="javascript:search();" class="aButton">搜索</a>
+任务名:<input id="search_key" type="text" /> 
+<%int usertype = user.getType();
+if(usertype>1){
+%>
+公司:<input id="search_com" type="text" /> 
+<%} %>
+状态:<select id="searchState" name="searchState"><option value="99">全部</option><option value="0">待测</option><option value="1">测试中</option><option value="2">通过</option><option value="3">待反馈</option><option value="4">部分通过</option><option value="5">暂停</option><option value="6">结果确认中</option><option value="8">已反馈</option></select>
+<a href="javascript:search();" class="aButton">搜索</a>
 <%
-int usertype = user.getType();
 boolean canEdit = (usertype>=4);
 String ismy = (sub.equals("my")) ? "?ismy=true" : "";
 if(usertype>1){
@@ -114,7 +130,7 @@ else{
 		if(gg.getLevel()>0){
 			sb.append(" purpleBold'>(重要) ");
 		}else{sb.append("'>");}
-		sb.append(gg.getName()).append("</a></td><td style='font-size:12px;'>").append(gg.getProp("company"));
+		sb.append(gg.getName()).append("</a></td><td style='font-size:12px;'><a href='").append(prefix).append("/user/one?c=").append(gg.getProp("company")).append("'>").append(gg.getProp("company"));
 		sb.append("</td><td>").append(gg.getProp("testTimes"));
 		sb.append("</td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getProp("operator")).append("'>").append(gg.getProp("operator"));
 		sb.append("</a></td><td>").append(states[gg.getState()]).append("</td>");

@@ -128,8 +128,12 @@ $(function(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle"><div><%=one.getName() %></div> </div>
-<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <%=one.getCreatorName() %> &nbsp; 发表于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",one.getCreateTime()) %>  </div>
-<%if(user.getType()>10){ 
+<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <a href="<%=prefix %>/user/one?u=<%=one.getCreatorName() %>"><%=one.getCreatorName() %></a> &nbsp; 发表于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",one.getCreateTime()) %>  </div>
+<%
+if(user.getType() >= 1){
+	out.append("<a href=\"#commHere\" class=\"aButton\">回复</a>");
+}
+if(user.getType()>10){ 
 	String ggid = String.valueOf(one.getId());
 	String edit = prefix+"/topic/"+ggid+"?edit=true";
 %>
@@ -182,6 +186,7 @@ if(StringUtil.objToNonNegativeInt(one.getProp("lock")) < 1){
 <div id="reply" style="padding:10px 20px;border-top:1px dotted #ccc;">
 <form action='<%=prefix+"/comm/"+one.getId()+"/a_a" %>' id="replyForm">
 <div class="bold">发表回复：</div>
+<a name="commHere"></a>
 <textarea rows="3" cols="3" style="height:100px;" name="c_text"></textarea><br />
 <a class="aButton" href="javascript:aSubmit();" id="replyBT" style="margin-top:5px;">提交回复</a>
 </form>

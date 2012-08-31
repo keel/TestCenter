@@ -341,7 +341,7 @@ function feeInfo(fee,to){
     <div class="inBoxContent">
     <div class="inBoxLine">
 产品名称：<span class="blueBold"><%=one.getName() %></span> 
-公司：<span class="blueBold"><%=product.getProp("company") %></span> 
+公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>
 <%if(one.getType() == 0 || one.getType() == 1){ %>
 测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
 <%} %>

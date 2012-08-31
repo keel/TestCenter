@@ -153,7 +153,7 @@ public class TUser extends Action  {
 				JOut.err(404, msg);
 				return;
 			}
-			//产品
+			//用户
 			msg.addData("u", u);
 			msg.addData("one", one);
 			
@@ -163,7 +163,26 @@ public class TUser extends Action  {
 			}else{
 				msg.addData("[jsp]", "/WEB-INF/tc/user_one.jsp");
 			}
-		}else{
+		}
+		//从公司名查主用户
+		else if(StringUtil.isStringWithLen(req.getParameter("c"), 1)){
+			String comName = req.getParameter("c").trim();
+			KObject com = Company.dao.findOne(comName);
+			if (com == null || com.getState() == -1) {
+				JOut.err(404, msg);
+				return;
+			}
+			String mainUserName = com.getProp("mainUser").toString();
+			KObject one = dao.findOne(mainUserName);
+			if (one == null || one.getState() == -1) {
+				JOut.err(404, msg);
+				return;
+			}
+			msg.addData("u", u);
+			msg.addData("one", one);
+			msg.addData("[jsp]", "/WEB-INF/tc/user_one.jsp");
+		}
+		else{
 			JOut.err(401, msg);
 		}
 	}

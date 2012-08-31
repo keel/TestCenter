@@ -16,14 +16,17 @@ out.print(JSPOut.out("head0","0","用户管理"));%>
 <script src="<%=sPrefix %>/js/pagenav.min.js" type="text/javascript"></script>
 <script type="text/javascript">
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
+var isAdd = false;
 $(function(){
-	$("#side_gg a").addClass("sideON");
+	$("#side_admin_user a").addClass("sideON");
 	//处理请求
 	$.validator.dealAjax = {
 		bt:$("#submitBT"),
 		loading:function(){$("#re").text("请稍候...");},
 		ok:function(data){
-			if(data != "null"){
+			if(isAdd){
+				$("#re").text(data);
+			}else if(data != "null"){
 				showRE(data);
 			}else{$("#re").text("无此用户.");};
 		},
@@ -71,6 +74,45 @@ function showRE(data){
 function searchU(){
 	$("#u_search").submit();
 };
+function addU(){
+	isAdd = true;
+	var t = "<select id='uType' name='uType'><option value='1'>厂商</option><option value='2'>测试员</option><option value='3'>组长</option><option value='4'>协调</option><option value='11'>管理员</option></select>";
+	var a = "<tr><td>密码:</td> <td> <input type=\"text\" id=\"uPass\" name=\"uPass\" /></tr><tr><tr><td>用户类型:</td> <td> "+t+"</tr><tr><td>QQ号:</td> <td> <input type=\"text\" id=\"uQQ\" name=\"uQQ\" /></tr><tr><td>Info:</td> <td> <input type=\"text\" id=\"uInfo\" name=\"uInfo\" /></tr>";
+	$("#uTable").append(a);
+	$("#btg1").hide();$("#btg2").show();
+	$('#u_search').validate({
+	    rules: {
+	    	uName:{
+	             rangelength:[2,20],required:true
+	         },
+	         uCom:{
+	             rangelength:[2,20],required:true
+	         },
+	         uPass:{
+	             rangelength:[5,20],required:true
+	         },
+	         uQQ:{
+	        	 number:true,rangelength:[3,20],required:true
+	         },
+	    	uHand:{
+	         	isMobile:true,required:true
+	         },
+	         uMail:{
+	             email:true,required:true
+	         },
+	         uType:{
+	        	 number:true,required:true
+	         }
+	    }
+	});
+	$("#u_search").attr("action","user/add");
+};
+function addUser(){
+	var r=confirm("确认添加用户吗？");
+	if (r==true){
+		$("#u_search").submit();
+	}
+}
 </script>
 <%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -87,14 +129,20 @@ function searchU(){
 </div>
 <div class="aboxContent" style="padding:20px;">
 <form name="u_search" id="u_search" action="user/search" method="post">
-<div><label for="uName">用户名:</label><br /> <input type="text" id="uName" name="uName" /></div>
-<div><label for="uCom">公司名:</label><br /> <input type="text" id="uCom" name="uCom" /></div>
-<div><label for="uHand">手机号码:</label><br /> <input type="text" id="uHand" name="uHand" /></div>
-<div><label for="uMail">电子邮箱:</label><br /> <input type="text" id="uMail" name="uMail" /></div>
+<table id="uTable">
+<tr><td>用户名:</td> <td><input type="text" id="uName" name="uName" /></td></tr>
+<tr><td>公司名:</td> <td> <input type="text" id="uCom" name="uCom" /></tr>
+<tr><td>手机号码:</td> <td> <input type="text" id="uHand" name="uHand" /></tr>
+<tr><td>电子邮箱:</td> <td> <input type="text" id="uMail" name="uMail" /></tr>
+</table>
 </form>
 <br />
-<div><a id="submitBT" href="javascript:searchU();" class="aButton tx_center">搜索用户</a> &amp; <a href="javascript:addU();" class="aButton tx_center">添加用户</a></div>
+<div id="btg1"><a id="submitBT" href="javascript:searchU();" class="aButton tx_center">搜索用户</a> &nbsp;&nbsp; <a href="javascript:addU();" class="aButton tx_center">添加用户</a></div>
+<div id="btg2" class="hide"><a href="javascript:addUser();" class="aButton tx_center">添加用户</a> &nbsp;&nbsp; <a href="javascript:window.location.reload();" class="aButton tx_center">返回搜索</a></div>
 <br />
+<div>
+
+</div>
 </div>
 </div>
 <div id="re"></div>
