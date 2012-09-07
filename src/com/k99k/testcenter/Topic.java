@@ -113,7 +113,7 @@ public class Topic extends Action {
 		if (StringUtil.isStringWithLen(req.getParameter("k"), 1)) {
 			String key = null;
 //			try {
-				//TODO 针对tomcatURL编码转换
+				// 针对tomcatURL编码转换
 				//key = new String(req.getParameter("k").getBytes("ISO-8859-1"),"utf-8").trim();
 				key = req.getParameter("k").trim();
 //			} catch (UnsupportedEncodingException e) {

@@ -145,26 +145,114 @@ public final class MongoConn implements DataSourceInterface{
 		mongo.close();
 	}
 	
+	/**
+	 * 引入新CP
+	 * @param ip
+	 * @param cpid
+	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static final void importNewCompany2(String ip,String[] cpid){
+		MongoConn mongo = new MongoConn();
+		mongo.setIp(ip);
+		mongo.setPort(27017);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
+			DBCollection coc = mongo.getColl("TCCompany");
+			DBCollection cuc = mongo.getColl("TCUser");
+			//确定数据库表中的最大id
+			DBCursor cur = cuc.find(new BasicDBObject(),new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
+			long lastId = 0;
+			if (cur.hasNext()) {
+				DBObject cc = (DBObject) cur.next();
+				lastId = Long.parseLong(cc.get("_id").toString())+1;
+			}
+			cur = coc.find(new BasicDBObject(),new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
+			long lastcId = 0;
+			if (cur.hasNext()) {
+				DBObject cc = (DBObject) cur.next();
+				lastcId = Long.parseLong(cc.get("_id").toString())+1;
+			}
+			//插入对象
+			for (int i = 0; i < cpid.length; i++) {
+				//获取公司接口信息
+				String url = "http://202.102.39.18:9087/Business/entitytest/cps.do?cpId="+cpid[i];
+				String comInfo = Net.getUrlContent(url, 3000, false, "utf-8");
+				if (!StringUtil.isStringWithLen(comInfo, 10)) {
+					System.out.println("获取公司接口数据失败:"+cpid[i]);
+					continue;
+				}
+				
+				HashMap<String,Object> comMap = (HashMap<String, Object>) JSON.read(comInfo);
+				comMap = (HashMap<String, Object>) (((ArrayList)comMap.get("rows")).get(0));
+				if (comMap ==  null || comMap.isEmpty()) {
+					System.out.println("此公司不存在或无法从接口获取:"+cpid[i]);
+					continue;
+				}
+				
+				DBObject co = new BasicDBObject();
+				co.put("name", cpid[i]);
+				co.put("pwd", "egame");
+				co.put("type", 1);
+				co.put("level", 0);
+				co.put("info", comMap.get("cnName").toString());
+				co.put("phoneNumber", comMap.get("linkPhone").toString());
+				co.put("email", comMap.get("linkEmail").toString());
+				co.put("company", comMap.get("shortName").toString());
+				co.put("newNews", 0);
+				co.put("newTasks", 0);
+				co.put("qq", "");
+				co.put("state", 0);
+				co.put("groupID", 0);
+				co.put("groupLeader", 0);
+				
+				//更新TCUser
 
+				co.put("_id", lastId);
+				cuc.save(co);
+				//更新TCCompany
+				
+				DBObject co2 = new BasicDBObject();
+				String mainUser = co.get("name").toString();
+				String name = co.get("company").toString();
+				co2.put("_id", lastcId);
+				co2.put("shortName", CnToSpell.getLetter(name));
+				co2.put("mainUser", mainUser);
+				co2.put("name", name);
+				co2.put("state", 0);
+				co2.put("level", 0);
+				co2.put("type", 0);
+				co2.put("version", 1);
+				coc.save(co2);
+				System.out.println("add ok:"+cpid[i]+" _id-u:"+lastId+" _id-c:"+lastcId);
+				lastId++;
+				lastcId++;
+			}
+			
+		}
+		
+		mongo.close();
+	}
+	
+	
 	public static void main(String[] args) {
-//		String[] cps = new String[]{
-//				"C22003",
-//				"C11146",
-//				"C11147",
-//				"C11148",
-//				"C11149",
-//				"C32060",
-//				"C11150",
-//				"C32061",
-//				"C31020"
-//		};
-//		MongoConn.importNewCompany("202.102.40.43", cps);
+		String[] cps = new String[]{
+				"C33008",
+				"C44053",
+				"C11157",
+				"C11158",
+				"C32062",
+				"C11132",
+				"C11128"
+		};
+		MongoConn.importNewCompany("202.102.40.43", cps);
 		
 		
-		
+	/*	
 		//test for mongolab.com test
 		MongoConn mongo = new MongoConn();
-		mongo.setIp("127.0.0.1");
+//		mongo.setIp("127.0.0.1");
 //		mongo.setIp("202.102.40.43");
 		mongo.setPort(27017);
 		//mongo.setPort(27137);
@@ -179,7 +267,7 @@ public final class MongoConn implements DataSourceInterface{
 				cc.put("updateTime", Long.parseLong(cc.get("createTime").toString()));
 				co.save(cc);
 			}
-		}
+		}*/
 			//-----------------------新公司导入----------------
 //			DBCollection co = mongo.getColl("TCCompany");
 //			DBCollection cu = mongo.getColl("TCUser");

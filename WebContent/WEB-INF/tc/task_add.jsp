@@ -39,11 +39,11 @@ $(function(){
 	$(tar).addClass("sideON");
 	
 //处理产品信息
-pJSON.company = '<%=pmap.get("cpName")%>';
+pJSON.company = '<%=pmap.get("venderShortName")%>';
 pJSON.name = '<%=pmap.get("name")%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
-String netType = "3";Object gType = pmap.get("gameType");
+String netType = "3";Object gType = pmap.get("gameClass");
 if(gType.equals("单机游戏")){
 	netType = "0";
 }else if(gType.equals("联网游戏")){
@@ -58,7 +58,7 @@ out.print(netType+";");
 pJSON._id = <%=pmap.get("gameId")%>;
 pJSON.newp = 2;
 pJSON.sys = <% 
-String sys = "6";Object os = pmap.get("gameOS");
+String sys = "6";Object os = pmap.get("gameOs");
 if(os.equals("JAVA")){
 	sys = "0";
 }else if(os.equals("Android")){
@@ -77,7 +77,7 @@ if(os.equals("JAVA")){
 out.print(sys+";");
 %>
 pJSON.type = <% 
-String type = "0";Object pType = pmap.get("payType");Object isPack = pmap.get("packageFlag");
+String type = "0";Object pType = pmap.get("feeType");Object isPack = pmap.get("packageFlag");
 if(!isPack.equals("0")){
 	type = "4";
 }else if(pType.equals("根据关卡或道具计费")){
@@ -93,12 +93,12 @@ if(!isPack.equals("0")){
 }
 out.print(type+";");
 %>
-pJSON.url = '<%=pmap.get("wapUrl")%>';
+pJSON.url = '<%=pmap.get("visitURL")%>';
 pJSON.gameClass = '<%=pmap.get("gameClass")%>';
-pJSON.cpID = '<%=pmap.get("cpID")%>';
+pJSON.cpID = '<%=pmap.get("venderCode")%>';
 pJSON.communityGame = <%=pmap.get("communityGame")%>;
 pJSON.serviceFeeType = '<%=pmap.get("serviceFeeType")%>';
-pJSON.synUrl = '<%=pmap.get("synUrl")%>';
+pJSON.synUrl = '<%=pmap.get("syncURL")%>';
 <%
 String feeInfo = "";
 if(fee !=null){

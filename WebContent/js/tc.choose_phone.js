@@ -1,5 +1,5 @@
 //-----------机型选择,要求页面中有#hide和#fu_[i]的实体包列表-------------------
-var phoneType = {0:"其他",1:"240x320",2:"320x480",3:"480x800",4:"480x854",5:"960x540"};
+var phoneType = {0:"其他",1:"240x320",2:"320x480",3:"480x800",4:"480x854",5:"960x540",10:"主机型"};
 var allPData = [];
 var aaData = [],gMap={};
 var cGroup = 1;
@@ -29,7 +29,7 @@ function selectPhone(i){
 			aaData = sData.aa;
 			$("#phone_fast").keyup(function(e){scPh(e);});
 			addP2Group(data);
-			addGG(aaData);
+			//addGG(aaData);
 			//aboxClose();
 		});
 	}else{clearIn();

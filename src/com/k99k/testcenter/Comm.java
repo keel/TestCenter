@@ -200,7 +200,12 @@ public class Comm extends Action {
 			//更新topic
 			HashMap<String,Object> q = new HashMap<String, Object>(2);
 			q.put("_id", tpId);
-			boolean re2 = Topic.dao.updateOne(q, StaticDao.prop_topic_comm_inc);
+			HashMap<String,Object> updateTime = new HashMap<String, Object>(2);
+			HashMap<String,Object> set = new HashMap<String, Object>(2);
+			updateTime.put("updateTime", System.currentTimeMillis());
+			set.put("$set", updateTime);
+			set.putAll(StaticDao.prop_topic_comm_inc);
+			boolean re2 = Topic.dao.updateOne(q, set);
 			if (!re2) {
 				JOut.err(500,"E500"+Err.ERR_COMM_ADD_COUNT, msg);
 			}else{
