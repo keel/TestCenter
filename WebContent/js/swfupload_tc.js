@@ -25,7 +25,7 @@ function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url){
 
 	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif",  
      file_types_description :(f_types_say)?f_types_say: "上传文件", 
-	file_size_limit :(f_size)?f_size: "123000"
+	file_size_limit :(f_size)?f_size: "223000"
 	//,debug:true
 	
 	});

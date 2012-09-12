@@ -301,7 +301,7 @@ public class StaticDao extends MongoDao {
 	        		//900+id作为g的序号
 //					sb.append(",{\"g\":").append(900+Integer.parseInt(m.get("_id").toString()));
 //					sb.append(",\"n\":\"").append(m.get("name")).append("\",\"d\":[");
-	        		//sb2.append("\"").append(m.get("name")).append("\":[");
+	        		sb2.append("\"").append(m.get("name")).append("\":[");
 					Iterator<String> it = li.iterator();
 					while (it.hasNext()) {
 						String ph = it.next();
@@ -315,7 +315,8 @@ public class StaticDao extends MongoDao {
 	        if (sys==2) {
 	        	sb.append(sb1);
 			}
-	        sb.append("]},{\"g\":10,\"d\":[").append(sb2).append("}]}");
+	        sb.append("]}],\"aa\":{").append(sb2).append("}}");
+	        //sb.append("]},{\"g\":10,\"d\":[").append(sb2).append("}]}");
 	        return sb.toString();
 		} catch (Exception e) {
 			log.error("queryGroupJson error!", e);

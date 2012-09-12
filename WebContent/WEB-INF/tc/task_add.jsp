@@ -40,10 +40,10 @@ $(function(){
 	
 //处理产品信息
 pJSON.company = '<%=pmap.get("venderShortName")%>';
-pJSON.name = '<%=pmap.get("name")%>';
+pJSON.name = '<%=pmap.get("gameName")%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
-String netType = "3";Object gType = pmap.get("gameClass");
+String netType = "3";Object gType = pmap.get("gameTypeName");
 if(gType.equals("单机游戏")){
 	netType = "0";
 }else if(gType.equals("联网游戏")){
@@ -55,10 +55,10 @@ if(gType.equals("单机游戏")){
 }
 out.print(netType+";");
 %>
-pJSON._id = <%=pmap.get("gameId")%>;
+pJSON._id = <%=String.valueOf(pmap.get("gameId"))%>;
 pJSON.newp = 2;
 pJSON.sys = <% 
-String sys = "6";Object os = pmap.get("gameOs");
+String sys = "6";Object os = pmap.get("gameOSName");
 if(os.equals("JAVA")){
 	sys = "0";
 }else if(os.equals("Android")){
@@ -77,27 +77,25 @@ if(os.equals("JAVA")){
 out.print(sys+";");
 %>
 pJSON.type = <% 
-String type = "0";Object pType = pmap.get("feeType");Object isPack = pmap.get("packageFlag");
-if(!isPack.equals("0")){
+String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("packageFlag");
+if(!isPack.toString().equals("0")){
 	type = "4";
-}else if(pType.equals("根据关卡或道具计费")){
+}else if(pType.indexOf("关卡或道具")>=0){
 	type = "1";
-}else if(pmap.get("serviceFeeType").equals("点数支付")){
-	type = "2";
-}else if(pType.equals("下载时按次计费")){
+}else if(pType.indexOf("下载")>=0){ //下载时按次计费
 	type = "3";
-}else if(pType.equals("免费")){
+}else if(pType.indexOf("免费")>=0){
 	type = "0";
-}else if(pType.equals("包月计费")){
+}else if(pType.indexOf("包月")>=0){
 	type = "5";
 }
 out.print(type+";");
 %>
 pJSON.url = '<%=pmap.get("visitURL")%>';
-pJSON.gameClass = '<%=pmap.get("gameClass")%>';
+pJSON.gameClass = '<%=pmap.get("gameClassName")%>';
 pJSON.cpID = '<%=pmap.get("venderCode")%>';
-pJSON.communityGame = <%=pmap.get("communityGame")%>;
-pJSON.serviceFeeType = '<%=pmap.get("serviceFeeType")%>';
+pJSON.communityGame = <%=String.valueOf(pmap.get("isSNSGame"))%>;
+pJSON.serviceFeeType = '<%=pmap.get("feeTypeName")%>';
 pJSON.synUrl = '<%=pmap.get("syncURL")%>';
 <%
 String feeInfo = "";
@@ -157,7 +155,7 @@ function feeInfo(fee,to){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
 			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumecodename+"</td><td>"+this.fee+"</td><td>"+this.consumecodedsc+"</td><td>"+this.paychanel+"</td><td>"+this.triger+"</td><td>"+this.memo+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumecodename+"','"+this.notecode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";
@@ -187,9 +185,10 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=pmap.get("gameId") %></span> 产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("name") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOS") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("cpId") %></span></div> 
-    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payType") %></span>计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("serviceFeeType") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameType") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameClass") %></span></div> 
-    	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=pmap.get("synUrl") %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=pmap.get("wapUrl") %></span></div>
+   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=String.valueOf(pmap.get("gameId")) %></span> 
+   		产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("gameName") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOSName") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("venderCode") %></span></div> 
+    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span> 计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("feeTypeName") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
+    	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("synUrl"), 1)?pmap.get("synUrl"):"" %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("wapUrl"), 1)?pmap.get("wapUrl"):"" %></span></div>
     	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="hide"><%=feeInfo %></span><div id="feeInfoTable"></div></div>
 
     </div>
@@ -201,7 +200,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
 			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过100M,按住<span class="purpleBold">Ctrl键</span>可一次选择多个文件上传</span>
+			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过200M,按住<span class="purpleBold">Ctrl键</span>可一次选择多个文件上传</span>
 		</div>
 		<div id="upFiles"></div>
 		<br /><a href="javascript:filesSet();" class="aButton">确定</a> 

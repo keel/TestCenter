@@ -236,18 +236,101 @@ public final class MongoConn implements DataSourceInterface{
 	}
 	
 	
-	public static void main(String[] args) {
-		String[] cps = new String[]{
-				"C33008",
-				"C44053",
-				"C11157",
-				"C11158",
-				"C32062",
-				"C11132",
-				"C11128"
-		};
-		MongoConn.importNewCompany("202.102.40.43", cps);
+	/**
+	 * 平台升级割接,增加机型组支持
+	 * @param ip
+	 */
+	public static void newEgame(String ip){
+		String[] pGroup = {"华为C8500", "中兴N600", "中兴N606", "三星I559", "华为C8600", "酷派D539", "华为C8650+", "中兴N760", "三星I579", "三星I909MR", "酷派5855", "摩托XT800", "摩托XT800+", "摩托XT882", "摩托XT928"};
+		long[] pGroupEgameId = {1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147, 1148, 1149, 1150, 1151, 1152, 1153, 1154};
+		//获取原phone表中的记录,改为机型组的信息，再加入表中
+		HashMap<String,Long> newPG = new HashMap<String, Long>();
+		for (int i = 0; i < pGroup.length; i++) {
+			newPG.put(pGroup[i], pGroupEgameId[i]);
+		}
+		try {
+			MongoConn mongo = new MongoConn();
+			mongo.setIp(ip);
+			mongo.setPort(27017);
+			mongo.setDbName("tc");
+			mongo.setUser("keel");
+			mongo.setPwd("jsGame_1810");
+			if (mongo.init()) {
+				DBCollection coll = mongo.getColl("TCPhone");
+				DBCursor cur = null;
+				BasicDBObject q = new BasicDBObject();
+				cur = coll.find(q).sort(new BasicDBObject("_id",-1)).limit(1);
+				long maxId = 0;
+				if (cur.hasNext()) {
+					maxId = (Long) cur.next().get("_id");
+				}
+				System.out.println("TCPhone maxId:"+maxId);
+				
+				cur = coll.find(q);
+				while (cur.hasNext()) {
+					DBObject c = cur.next();
+					String cn = (String) c.get("name");
+					//对"华为C8650+"单独处理
+					if (cn.equals("华为C8650")) {
+						maxId++;
+						c.put("_id", maxId);
+						c.put("name", "华为C8650+");
+						c.put("shortName", "C8650+");
+						c.put("egameId", 1866);
+						coll.insert(c);
+						System.out.println(maxId+" add:"+c.get("name"));
+						maxId++;
+						c.removeField("_id");
+						c.put("name", "#华为C8650+");
+						c.put("group", 10);
+						c.put("egameId", newPG.get("华为C8650+"));
+						c.put("_id", maxId);
+						coll.insert(c);
+						System.out.println(maxId+" add:"+c.get("name"));
+					}else if (newPG.containsKey(cn)) {
+						c.removeField("_id");
+						c.put("name", "#" + cn);
+						c.put("group", 10);
+						c.put("egameId", newPG.get(cn));
+						maxId++;
+						c.put("_id", maxId);
+						coll.insert(c);
+						System.out.println(maxId+" add:"+c.get("name"));
+					}
+
+				}
+				// 更新TCPhoneGroup表的android主机型
+				coll = mongo.getColl("TCPhoneGroup");
+				String[] pGroupS = new String[pGroup.length];
+				for (int i = 0; i < pGroup.length; i++) {
+					pGroupS[i] ="#"+pGroup[i];
+				}
+				q = new BasicDBObject("_id", 2L);
+				BasicDBObject set = new BasicDBObject();
+				BasicDBObject update = new BasicDBObject();
+				set.put("phone", pGroupS);
+				update.put("$set", set);
+				coll.update(q, update);
+				//fee信息变更
+			}
+			System.out.println("finished-----");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
+		
+	}
+	
+	
+	public static void main(String[] args) {
+//		String[] cps = new String[]{
+//				"C11105"
+//		};
+//		MongoConn.importNewCompany("202.102.40.43", cps);
+		
+		String ip = "127.0.0.1";
+		
+		MongoConn.newEgame(ip);
 		
 	/*	
 		//test for mongolab.com test

@@ -230,10 +230,11 @@ public class Uploader extends Action {
             BufferedImage bid = new BufferedImage(nw, nh, BufferedImage.TYPE_INT_RGB);
             bid.getGraphics().drawImage(bis,0,0,nw,nh,null);
             FileOutputStream out = new FileOutputStream(targetPicPath);
-            JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
-            JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
-            jep.setQuality(0.9f, true);
-            encoder.encode(bid,jep);
+            //FIXME 图片处理在jdk7下以下四行报错,jdk6下需要解除以下四行
+//			JPEGImageEncoder encoder = JPEGCodec.createJPEGEncoder(out);
+//			JPEGEncodeParam jep = JPEGCodec.getDefaultJPEGEncodeParam(bid);
+//			jep.setQuality(0.9f, true);
+//			encoder.encode(bid,jep);
             out.close();
             
             //ato.filter(bis,bid);

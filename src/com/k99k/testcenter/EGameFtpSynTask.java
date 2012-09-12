@@ -96,7 +96,7 @@ public class EGameFtpSynTask extends Action {
 			int isGroup = 0;
 			if (phone.substring(0,1).equals("#")) {
 				isGroup = 1;
-				phone = phone.substring(1);
+				//phone = phone.substring(1);
 			}
 			
 			//以fileId从TCGameFile中找到真实文件名

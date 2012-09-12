@@ -269,11 +269,11 @@ public class EGame extends Action {
 			return;
 		}
 		//加入真正的公司名称
-		pmap.put("cpName", Company.egameIds.get(pmap.get("cpId").toString()));
+		pmap.put("cpName", Company.egameIds.get(pmap.get("venderCode").toString()));
 		//默认为此产品的首次测试,添加操作时会进行判断
 		//boolean isOld = Product.dao.checkId(pid);
 		pmap.put("task_type", "0");
-		if (pmap.get("payType").indexOf("关卡或道具")>-1) {
+		if (String.valueOf(pmap.get("payType")).equals("2")) {
 			//获取短代信息
 			ArrayList<HashMap<String,String>> fee = getFee(pid);
 			if (fee != null) {
@@ -400,7 +400,7 @@ public class EGame extends Action {
 			return null;
 		}
 		//替换掉\"号
-		re = re.replaceAll("\\\\\\\"", "“");
+		re = re.replaceAll("\\\\\\\"", "“").replaceAll("\\\\", ",");
 		Object j = JSON.read(re);
 		try {
 			if (j instanceof HashMap) {
@@ -456,10 +456,15 @@ public class EGame extends Action {
 	 */
 	public static void main(String[] args) {
 		
-		EGame.companyUrl = "http://202.102.39.9:81/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
-		EGame.productUrl = "http://202.102.39.9:81/MIS/v/entitytest/products?startIndex=0&pageSize=1";
-		EGame.handsetUrl = "http://202.102.39.9:81/MIS/v/entitytest/models?startIndex=0&pageSize=1";
-		EGame.feeUrl = "http://202.102.39.9:81/MIS/v/entitytest/consumecodes";
+//		EGame.companyUrl = "http://202.102.39.9:81/MIS/v/entitytest/cps?startIndex=0&pageSize=1";
+//		EGame.productUrl = "http://202.102.39.9:81/MIS/v/entitytest/products?startIndex=0&pageSize=1";
+//		EGame.handsetUrl = "http://202.102.39.9:81/MIS/v/entitytest/models?startIndex=0&pageSize=1";
+//		EGame.feeUrl = "http://202.102.39.9:81/MIS/v/entitytest/consumecodes";
+		
+		EGame.companyUrl = "http://202.102.39.18:9087/Business/entitytest/cps.do?a=1";
+		EGame.productUrl = "http://202.102.39.18:9087/Business/entitytest/products.do?startIndex=0&pageSize=10";
+		EGame.handsetUrl = "http://202.102.39.18:9087/Business/entitytest/models.do?a=1";
+		EGame.feeUrl = "http://202.102.39.18:9087/Business/entitytest/consumecodes.do";
 		
 		
 //		String comId = "C11040";
