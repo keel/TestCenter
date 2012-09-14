@@ -297,7 +297,7 @@ function feeInfo(fee,to){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
 			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumecodename+"</td><td>"+this.fee+"</td><td>"+this.consumecodedsc+"</td><td>"+this.paychanel+"</td><td>"+this.triger+"</td><td>"+this.memo+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumecodename+"','"+this.notecode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";

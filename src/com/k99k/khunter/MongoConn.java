@@ -311,7 +311,162 @@ public final class MongoConn implements DataSourceInterface{
 				set.put("phone", pGroupS);
 				update.put("$set", set);
 				coll.update(q, update);
+				System.out.println("phoneGroup updated.");
 				//fee信息变更
+				coll = mongo.getColl("TCProduct");
+				q = new BasicDBObject();
+				cur = coll.find(q);
+				while (cur.hasNext()) {
+					DBObject c = cur.next();
+					String feeInfo = null;
+					if (c.get("feeInfo") instanceof BasicDBList) {
+						feeInfo = JSON.write(c);
+					}else{
+						feeInfo = (String) c.get("feeInfo");
+					}
+					feeInfo = feeInfo.replace("\"id\":", "\"consumeId\":");
+					feeInfo = feeInfo.replace("\"consumecode\":", "\"consumeCode\":");
+					feeInfo = feeInfo.replace("\"consumecodedsc\":", "\"description\":");
+					feeInfo = feeInfo.replace("\"consumecodename\":", "\"consumeName\":");
+					feeInfo = feeInfo.replace("\"fee\":", "\"price\":");
+					feeInfo = feeInfo.replace("\"memo\":", "\"feeType\":");
+					feeInfo = feeInfo.replace("\"notecode\":", "\"smcode\":");
+					feeInfo = feeInfo.replace("\"paychanel\":", "\"buyGuide\":");
+					feeInfo = feeInfo.replace("\"serviceid\":", "\"gameId\":");
+					feeInfo = feeInfo.replace("\"triger\":", "\"trigerCondition\":");
+					feeInfo = feeInfo.replace("\"typeflag\":", "\"consumeTypeName\":");
+					c.put("feeInfo", feeInfo);
+					coll.save(c);
+				}
+				System.out.println("feeInfo updated.");
+				
+				//testCase增加
+				BasicDBObject[] newCases = {
+						new BasicDBObject("name","游戏安装").append("caseId", 1).append("level", 10).append("info", "1.1	能正常安装游戏到测试终端。<br /> 1.2	Android单机游戏安装时验证权限，一般要求不能有“网络通讯”、“短信接收”、“访问通讯录”等无关权限。如有特殊情况(如嵌入爱游戏SDK等)需要在提交测试时说明。<br /> 1.3	如果是需要加载数据包的单机游戏，允许“网络通讯”权限，允许游戏第一次运行时联网下载数据包。<br /> 1.4	安装完成后手机中只能出现一个游戏图标。").append("state", 0),
+						new BasicDBObject("name","游戏启动").append("caseId", 2).append("level", 10).append("info", "2.1	运行游戏程序，在启动中无长时间停顿和异常挂起。<br /> 2.2	游戏启动进入主画面耗时3秒以上，需提供进度提示。<br /> 2.3	开机界面中应出现“爱游戏”LOGO，不能出现其它运营商LOGO。").append("state", 0),
+						new BasicDBObject("name","游戏名称").append("caseId", 3).append("level", 10).append("info", "3.1	游戏安装后在手机内显示的程序名称、游戏运行时显示名称应与在爱游戏平台申报的名称以及游戏内容一致。").append("state", 0),
+						new BasicDBObject("name","游戏菜单").append("caseId", 4).append("level", 2).append("info", "4.1	游戏“更多游戏”链接的指向游戏平台。<br /> 4.2	游戏帮助：游戏玩法的详细说明，帮助中必须包含：应用中文说明、按键说明。<br /> 4.3	关于:包含应用中文名称、应用类型、公司名称、客服电话、免责声明、版本号。").append("state", 0),
+						new BasicDBObject("name","屏幕适配").append("caseId", 5).append("level", 10).append("info", "5.1	屏幕画面与测试终端适配，不影响游戏运行和操作，游戏功能项必须全部完整显示，并保证完整的视觉效果。").append("state", 0),
+						new BasicDBObject("name","游戏使用").append("caseId", 6).append("level", 10).append("info", "6.1	各功能键使用（触摸）正常；能正常打开菜单进行操作；在游戏操作中无报错、死机、反应过慢、自动退出等异常情况。<br /> 6.2	特殊功能：如终端支持重力感应，且在游戏中有应用，按操作说明能正常游戏。比如支持横竖屏切换，适配正常，游戏进度正常。如终端支持GPS，且游戏有调用GPS模块，按操作说明能正常游戏，如产生流量资费需要先提示说明。<br /> 6.3	游戏声音：游戏暂停时不能有游戏声音，如果有声音开关必须能正常使用。<br /> 6.4	游戏内输入文字等信息时，能正常调用输入法正常输入。<br /> 6.5	JAVA游戏在触屏手机上使用必须有虚拟键盘。").append("state", 0),
+						new BasicDBObject("name","游戏文字及内容信息安全").append("caseId", 7).append("level", 10).append("info", "7.1	游戏中所有提示、对话、说明均为中文。<br /> 7.2	无乱码，无明显文字错误。<br /> 7.3	无粗口及涉嫌淫秽、赌博、暴力、政治等文字内容；<br /> 7.4	游戏中不能存在与本游戏无关的宣传广告和链接。").append("state", 0),
+						new BasicDBObject("name","游戏中断").append("caseId", 8).append("level", 10).append("info", "8.1	游戏运行中手机待机、关闭屏幕、手机来电或有其他优先操作，游戏必须暂停。<br /> 8.2	游戏中手机来电时，来电提示正常。接听、挂断电话等操作后，返回游戏，游戏正常运行。<br /> 8.3	游戏中手机来短信时，短信提示正常。回复短信后，返回游戏，游戏正常运行。").append("state", 0),
+						new BasicDBObject("name","计费").append("caseId", 9).append("level", 10).append("info", "9.1	游戏计费必须与平台申报的计费点完全一致，无重复计费及扣费差异（多扣或少扣）。<br /> 9.2	Android游戏必须使用短代SDK。").append("state", 0),
+						new BasicDBObject("name","游戏退出").append("caseId", 10).append("level", 10).append("info", "10.1	可使用菜单退出或使用手机自带退出键退出，如果有需要保存进度的游戏必须提供保存功能，退出后可继续游戏。").append("state", 0),
+						new BasicDBObject("name","游戏卸载").append("caseId", 11).append("level", 10).append("info", "11.1	能正常卸载已经安装的游戏。").append("state", 0),
+						new BasicDBObject("name","WAP游戏").append("caseId", 12).append("level", 10).append("info", "12.1	游戏登录时必须使用爱游戏登录(同步)接口。<br /> 12.2	必须有帮助说明。<br /> 12.3	必须有“返回爱游戏”链接。<br /> 12.4	游戏内不能有指向游戏以外的链接（指向爱游戏平台除外）。").append("state", 0)
+						
+				};
+//				HashMap<Long,BasicDBObject> newCaseMap = new HashMap<Long, BasicDBObject>();
+//				newCaseMap.put(3L, newCases[0]);
+//				newCaseMap.put(4L, newCases[1]);
+//				newCaseMap.put(6L, newCases[2]);
+//				newCaseMap.put(10L, newCases[3]);
+//				newCaseMap.put(7L, newCases[4]);
+//				newCaseMap.put(8L, newCases[5]);
+//				newCaseMap.put(13L, newCases[6]);
+//				newCaseMap.put(15L, newCases[7]);
+//				newCaseMap.put(16L, newCases[8]);
+//				newCaseMap.put(17L, newCases[9]);
+//				newCaseMap.put(18L, newCases[10]);
+//				newCaseMap.put(999L, newCases[11]);
+//				
+//				newCaseMap.put(20L, newCases[0]);
+//				newCaseMap.put(21L, newCases[1]);
+//				newCaseMap.put(23L, newCases[2]);
+//				newCaseMap.put(26L, newCases[3]);
+//				newCaseMap.put(24L, newCases[4]);
+//				newCaseMap.put(25L, newCases[5]);
+//				newCaseMap.put(29L, newCases[6]);
+//				newCaseMap.put(31L, newCases[7]);
+//				newCaseMap.put(32L, newCases[8]);
+//				newCaseMap.put(33L, newCases[9]);
+//				newCaseMap.put(34L, newCases[10]);
+				
+				coll = mongo.getColl("TCTestCase");
+				//将老所有的state改为-1
+				q = new BasicDBObject();
+				set = new BasicDBObject();
+				update = new BasicDBObject(); 
+				set.put("state", -1);
+				update.put("$set", set);
+				coll.update(q, update,false,true);
+				System.out.println("old TCTestCase'state updated.");
+				//添加新的TestCase
+				int mId = 36;
+				for (int i = 0; i < newCases.length; i++) {
+					newCases[i].append("type", 0);
+					newCases[i].append("_id", mId);
+					coll.insert(newCases[i]);
+					mId++;
+				}
+				for (int i = 0; i < newCases.length; i++) {
+					newCases[i].append("type", 1);
+					newCases[i].append("_id", mId);
+					coll.insert(newCases[i]);
+					mId++;
+				}
+				System.out.println("new TCTestCase added.");
+				//更新老的结果记录
+				HashMap<String,String> repla = new HashMap<String, String>();
+				repla.put("1", "");
+				repla.put("2", "");
+				repla.put("3", "");
+				repla.put("4", "");
+				repla.put("5", "");
+				repla.put("6", "");
+				repla.put("7", "");
+				repla.put("8", "");
+				repla.put("9", "");
+				repla.put("10", "");
+				repla.put("11", "");
+				repla.put("12", "");
+				repla.put("13", "");
+				repla.put("14", "");
+				repla.put("15", "");
+				repla.put("16", "");
+				repla.put("17", "");
+				repla.put("18", "");
+				repla.put("19", "");
+				repla.put("20", "");
+				repla.put("21", "");
+				repla.put("22", "");
+				repla.put("23", "");
+				repla.put("24", "");
+				repla.put("25", "");
+				repla.put("26", "");
+				repla.put("27", "");
+				repla.put("28", "");
+				repla.put("29", "");
+				repla.put("30", "");
+				repla.put("31", "");
+				repla.put("32", "");
+				repla.put("33", "");
+				repla.put("34", "");
+				
+				coll = mongo.getColl("TCTestUnit");
+				q = new BasicDBObject();
+				cur = coll.find(q);
+				while (cur.hasNext()) {
+					DBObject c = cur.next();
+					if (c.get("re")!=null ) {
+						BasicDBList ls = (BasicDBList) c.get("re");
+						if (ls.size()>0) {
+							for (int i = 0; i < ls.size(); i++) {
+								DBObject r = (DBObject) ls.get(i);
+								
+							}
+						}
+					}
+				}
+				System.out.println("TCTestUnit updated.");
+				coll = mongo.getColl("TCTask");
+				q = new BasicDBObject();
+				cur = coll.find(q);
+				while (cur.hasNext()) {
+					
+				}
+				System.out.println("TCTask updated.");
+				
 			}
 			System.out.println("finished-----");
 		} catch (Exception e) {
@@ -324,7 +479,7 @@ public final class MongoConn implements DataSourceInterface{
 	
 	public static void main(String[] args) {
 //		String[] cps = new String[]{
-//				"C11105"
+//				"C11107"
 //		};
 //		MongoConn.importNewCompany("202.102.40.43", cps);
 		

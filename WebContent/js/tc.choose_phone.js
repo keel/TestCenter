@@ -1,5 +1,5 @@
 //-----------机型选择,要求页面中有#hide和#fu_[i]的实体包列表-------------------
-var phoneType = {0:"其他",1:"240x320",2:"320x480",3:"480x800",4:"480x854",5:"960x540"};
+var phoneType = {0:"其他",1:"240x320",2:"320x480",3:"480x800",4:"480x854",5:"960x540",10:"主机型"};
 var allPData = [];
 var aaData = [],gMap={};
 var cGroup = 1;
@@ -29,7 +29,7 @@ function selectPhone(i){
 			aaData = sData.aa;
 			$("#phone_fast").keyup(function(e){scPh(e);});
 			addP2Group(data);
-			addGG(aaData);
+			//addGG(aaData);
 			//aboxClose();
 		});
 	}else{clearIn();
@@ -113,14 +113,16 @@ function createPhg(d){
 	return p;	
 }
 function addP2Group(data){
+	var max = 0;
 	for ( var i = 1; i < data.length; i++) {
 		var gg = $("<div id='g"+data[i].g+"'></div>");
 		for(var j = 0,k=data[i].d.length;j<k;j++){
-			createPh(i,j,data[i].d[j]).appendTo(gg);
+			max = data[i].g;
+			createPh(max+1,j,data[i].d[j]).appendTo(gg);
 		}
 		gg.hide().appendTo($("#td_out"));
 	}
-	showGroup(0);
+	showGroup(max);
 }
 function chooseAll(){
 	$("#g"+cGroup).find(".phone").each(function(){var a=this.id.split("_");io(a[1],a[2]);});

@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.IO;
 import com.k99k.tools.StringUtil;
@@ -114,7 +115,7 @@ public class EGameFtpSynTask extends Action {
 		try {
 			IO.writeTxt(fsb.toString(), "utf-8", csv);
 		} catch (IOException e) {
-			log.error("EGameFtpSynTask faild. ERR_EGAME_FTP_WRITE_CONFIG.");
+			log.error("EGameFtpSynTask faild.writeTxt error. ");
 			return super.act(msg);
 		}
 		f2f.put(csv, remotePath+"config.csv");
@@ -129,6 +130,11 @@ public class EGameFtpSynTask extends Action {
 			fc.disconnect(true);
 		} catch (Exception e) {
 			log.error("uploadFiles error.", e);
+			log.error("Will try again after 30min:"+msg.getActitonName());
+			msg.removeData(TaskManager.TASK_TYPE);
+			msg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_SCHEDULE_POOL);
+			msg.addData(TaskManager.TASK_DELAY, 30*60*1000);
+			TaskManager.makeNewTask("egameFtp-"+tid+"-"+System.currentTimeMillis(), msg);
 			return super.act(msg);
 		}
 		return super.act(msg);

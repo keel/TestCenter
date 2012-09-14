@@ -48,10 +48,10 @@ public class TestCase extends Action {
 	 */
 	private static String[] casesJson = new String[50];
 	
-	/**
-	 * 所有系统的关键case数量
-	 */
-	private static int[] caseKeys= new int[50];
+//	/**
+//	 * 所有系统的关键case数量
+//	 */
+//	private static int[] caseKeys= new int[50];
 	
 	/**
 	 * 初始化所有的TestCase并缓存起来
@@ -71,7 +71,7 @@ public class TestCase extends Action {
 			//type表示系统：0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other
 			int type = kobj.getType();
 			if (cases[type] == null) {
-				caseKeys[type] = ks;
+//				caseKeys[type] = ks;
 				cases[type] = new KObject[50];
 				ks=0;
 			}
