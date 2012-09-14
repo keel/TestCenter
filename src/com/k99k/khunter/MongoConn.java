@@ -408,40 +408,39 @@ public final class MongoConn implements DataSourceInterface{
 				System.out.println("new TCTestCase added.");
 				//更新老的结果记录
 				HashMap<String,String> repla = new HashMap<String, String>();
-				repla.put("1", "");
-				repla.put("2", "");
-				repla.put("3", "");
-				repla.put("4", "");
-				repla.put("5", "");
-				repla.put("6", "");
-				repla.put("7", "");
-				repla.put("8", "");
-				repla.put("9", "");
-				repla.put("10", "");
-				repla.put("11", "");
-				repla.put("12", "");
-				repla.put("13", "");
-				repla.put("14", "");
-				repla.put("15", "");
-				repla.put("16", "");
-				repla.put("17", "");
-				repla.put("18", "");
-				repla.put("19", "");
-				repla.put("20", "");
-				repla.put("21", "");
-				repla.put("22", "");
-				repla.put("23", "");
-				repla.put("24", "");
-				repla.put("25", "");
-				repla.put("26", "");
-				repla.put("27", "");
-				repla.put("28", "");
-				repla.put("29", "");
-				repla.put("30", "");
-				repla.put("31", "");
-				repla.put("32", "");
-				repla.put("33", "");
-				repla.put("34", "");
+				repla.put("1", "1");
+				repla.put("2", "1");
+				repla.put("3", "1");
+				repla.put("4", "2");
+				repla.put("6", "3");
+				repla.put("7", "5");
+				repla.put("8", "6");
+				repla.put("9", "6");
+				repla.put("10", "4");
+				repla.put("11", "4");
+				repla.put("12", "4");
+				repla.put("13", "7");
+				repla.put("14", "8");
+				repla.put("15", "8");
+				repla.put("16", "9");
+				repla.put("17", "10");
+				repla.put("18", "11");
+				repla.put("19", "1");
+				repla.put("20", "1");
+				repla.put("21", "2");
+				repla.put("22", "2");
+				repla.put("23", "3");
+				repla.put("24", "5");
+				repla.put("25", "6");
+				repla.put("26", "4");
+				repla.put("27", "4");
+				repla.put("28", "4");
+				repla.put("29", "7");
+				repla.put("30", "8");
+				repla.put("31", "8");
+				repla.put("32", "9");
+				repla.put("33", "10");
+				repla.put("34", "11");
 				
 				coll = mongo.getColl("TCTestUnit");
 				q = new BasicDBObject();
@@ -453,19 +452,49 @@ public final class MongoConn implements DataSourceInterface{
 						if (ls.size()>0) {
 							for (int i = 0; i < ls.size(); i++) {
 								DBObject r = (DBObject) ls.get(i);
-								
+								String rr = String.valueOf(r.get("caseId"));
+								if (repla.containsKey(rr)) {
+									r.put("caseId", repla.get(rr));
+								}
 							}
+							//c.put("re", ls);
+							coll.save(c);
 						}
 					}
 				}
 				System.out.println("TCTestUnit updated.");
-				coll = mongo.getColl("TCTask");
-				q = new BasicDBObject();
-				cur = coll.find(q);
-				while (cur.hasNext()) {
-					
-				}
-				System.out.println("TCTask updated.");
+//				coll = mongo.getColl("TCTask");
+//				q = new BasicDBObject();
+//				cur = coll.find(q);
+//				while (cur.hasNext()) {
+//					DBObject c =  cur.next();
+//					String re = (String)c.get("result");
+//					if (StringUtil.isStringWithLen(re, 2)) {
+//						HashMap<String,Object> result = (HashMap<String, Object>) JSON.read(re);
+//						if (result == null) {
+//							System.out.println(re);
+//							continue;
+//						}
+//						HashMap<String,Object> nr = new HashMap<String, Object>();
+//						Iterator<Entry<String, Object>> it = result.entrySet().iterator();
+//						while (it.hasNext()) {
+//							Entry<String, Object> entry = it.next();
+//							String k = entry.getKey().toString();
+//							if (repla.containsKey(k)) {
+//								String n = repla.get(k);
+//								ArrayList<HashMap<String,Object>> l = (ArrayList<HashMap<String, Object>>) entry.getValue();
+//								for (int i = 0; i < l.size(); i++) {
+//									HashMap<String,Object> m = l.get(i);
+//									m.put("caseId", n);
+//								}
+//								nr.put(n, l);
+//							}
+//						}
+//						c.put("result", JSON.write(nr));
+//						coll.save(c);
+//					}
+//				}
+//				System.out.println("TCTask updated.");
 				
 			}
 			System.out.println("finished-----");
