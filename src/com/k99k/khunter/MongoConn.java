@@ -506,6 +506,38 @@ public final class MongoConn implements DataSourceInterface{
 	}
 	
 	
+	public static void updatePGroup(String ip){
+		String[] pGroup = {"华为C8500", "中兴N600", "中兴N606", "三星I559", "华为C8600", "酷派D539", "华为C8650+", "中兴N760", "三星I579", "三星I909MR", "酷派5855", "摩托XT800", "摩托XT800+", "摩托XT882", "摩托XT928"};
+		HashMap<String,String> map = new HashMap<String, String>();
+		for (int i = 0; i < pGroup.length; i++) {
+			map.put(pGroup[i], pGroup[i]);
+		}
+		MongoConn mongo = new MongoConn();
+		mongo.setIp(ip);
+		mongo.setPort(27017);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
+			DBCollection coll = mongo.getColl("TCTestUnit");
+			DBCursor cur = null;
+			BasicDBObject q = new BasicDBObject();
+			BasicDBObject state = new BasicDBObject("$gt",2000L);
+			q.put("TID", state);
+			cur = coll.find(q);
+			while (cur.hasNext()) {
+				DBObject c = cur.next();
+				String p = c.get("phone").toString();
+				if (map.containsKey(p)) {
+					c.put("phone", "#"+p);
+					coll.save(c);
+				}
+			}
+		}
+		
+		
+	}
+	
 	public static void main(String[] args) {
 //		String[] cps = new String[]{
 //				"C11107"
@@ -513,8 +545,10 @@ public final class MongoConn implements DataSourceInterface{
 //		MongoConn.importNewCompany("202.102.40.43", cps);
 		
 		String ip = "127.0.0.1";
+//		ip = "202.102.40.43";
 		
-		MongoConn.newEgame(ip);
+		MongoConn.updatePGroup(ip);
+		System.out.println("--------end------");
 		
 	/*	
 		//test for mongolab.com test

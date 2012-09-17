@@ -147,17 +147,17 @@ function showOpt(){
 	$(".caseOpt").each(function(i){
 		this.cid = this.id.split("_")[1];
 		var me = $(this);
-		me.append("<a href='javascript:ere("+this.cid+",0);' class=\"aButton\">未测</a><a href='javascript:ere("+this.cid+",2);' class=\"aButton\">通过</a><a href='javascript:ere("+this.cid+",4);' class=\"aButton\">部分通过</a><a href='javascript:ere("+this.cid+",3);' class=\"aButton\">不通过</a>");
+		me.append("<a href='javascript:ere("+this.cid+",0);' class=\"aButton\">未测</a><a href='javascript:ere("+this.cid+",2);' class=\"aButton\">通过</a><a href='javascript:ere("+this.cid+",4);' class=\"aButton\">部分通过</a><a href='javascript:ere("+this.cid+",9);' class=\"aButton\">不通过</a>");
 	});
 }
 function feeInfo(fee,to){
-	if(fee != ''){
+	if(fee != '' && fee.indexOf('{')>0){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
 			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumecodename+"</td><td>"+this.fee+"</td><td>"+this.consumecodedsc+"</td><td>"+this.paychanel+"</td><td>"+this.triger+"</td><td>"+this.memo+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumecodename+"','"+this.notecode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";
