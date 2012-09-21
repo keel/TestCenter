@@ -128,7 +128,7 @@ $(function(){
 		<div id="mainContent">
 <div class="abox">
 <div class="aboxTitle"><div><%=one.getName() %></div> </div>
-<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <a href="<%=prefix %>/user/one?u=<%=one.getCreatorName() %>"><%=one.getCreatorName() %></a> &nbsp; 发表于： <%=StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",one.getCreateTime()) %>  </div>
+<div class="aboxSub"><div style="color:#6E747B;float:left;padding-top:7px;"> <a href="<%=prefix %>/user/one?u=<%=one.getCreatorName() %>"><%=one.getCreatorName() %></a> &nbsp; 发表于： <%=StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",one.getCreateTime()) %>  </div>
 <%
 if(user.getType() >= 1){
 	out.append("<a href=\"#commHere\" class=\"aButton\">回复</a>");
@@ -168,7 +168,7 @@ if(comms != null && !comms.isEmpty()) {
 	while(it.hasNext()){
 		KObject comm = it.next();
 		sb.append("<div class=\"comm\" id=\"c_").append(comm.getId()).append("\"><div class=\"commTitle\"><a href=\"").append(prefix).append("/user/one?u=").append(comm.getCreatorName()).append("\" class=\"sideON\">");
-		sb.append(comm.getCreatorName()).append("</a>  发表于  <span class=\"blue bold\">").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",comm.getCreateTime()));
+		sb.append(comm.getCreatorName()).append("</a>  发表于  <span class=\"blue bold\">").append(StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",comm.getCreateTime()));
 		sb.append("</span> ");
 		if(user.getType()>10 || comm.getCreatorName().equals(user.getName())){
 			sb.append("[<a href='").append(prefix).append("/comm/").append(comm.getId()).append("/update'>编辑</a> | ");

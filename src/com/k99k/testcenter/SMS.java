@@ -41,6 +41,8 @@ public class SMS extends Action {
 			if (StringUtil.isStringWithLen(dests[i], 10)) {
 				if(!Sms.sendOne(dests[i], content)){
 					log.error("SMS send error. dest:"+dests[i]+" content:"+content);
+				}else{
+					log.info("SMS sent to:[" + dests[i] + "][" + content + "]");
 				}
 			}else{
 				log.error("SMS dest is empty. passed. content:"+content);

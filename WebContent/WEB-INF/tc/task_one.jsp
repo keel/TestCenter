@@ -406,8 +406,8 @@ else if(product.getProp("sys").toString().equals("2") && one.getState()==0 && us
     	    	
     	    	Iterator<HashMap<String,Object>> itl = logs.iterator();
     	    	while(itl.hasNext()){
-    	    		HashMap<String,Object> log = itl.next();StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"));
-    	    		sb2.append("<div class='inBoxLine'>").append(log.get("user")).append(" ").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"))).append(" ");
+    	    		HashMap<String,Object> log = itl.next();StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",(Long)log.get("time"));
+    	    		sb2.append("<div class='inBoxLine'>").append(log.get("user")).append(" ").append(StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",(Long)log.get("time"))).append(" ");
     	    		if(userType>1){
     	    			sb2.append(log.get("info"));
     	    		}else{

@@ -15,6 +15,7 @@ import com.k99k.khunter.HttpActionMsg;
 import com.k99k.khunter.JOut;
 import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
@@ -33,7 +34,7 @@ public class Admin extends Action {
 	}
 	
 	private int pageSize = 30;
-
+	
 	/**
 	 * @return the pageSize
 	 */
@@ -140,6 +141,18 @@ public class Admin extends Action {
 			one.setProp("qq", uQQ);
 			if (TUser.dao.add(one)) {
 				msg.addData("[print]", "ok");
+				ActionMsg atask = new ActionMsg("sms");
+				atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+				atask.addData("dests", new String[]{uHand});
+				atask.addData("content", "您好,爱游戏产品测试系统帐号已开通，请在"+uMail+"中查看帐号信息。");
+				TaskManager.makeNewTask("sms Task-addUser:"+uName+System.currentTimeMillis(), atask);
+				
+				ActionMsg atask1 = new ActionMsg("email");
+				atask1.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+				atask1.addData("dests", new String[]{uMail});
+				atask1.addData("content", "您好：\r\n\r\n用户名:\r\n"+uName+"\r\n密码:\r\n"+uPass+"\r\n\r\n请注意帐号安全，此帐号由申请公司申请人负全部安全责任。");
+				atask1.addData("subject", "爱游戏产品测试系统帐号已开通");
+				TaskManager.makeNewTask("email Task-addUser:"+uName+System.currentTimeMillis(), atask1);
 				return;
 			}
 		}

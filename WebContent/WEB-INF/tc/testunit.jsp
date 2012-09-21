@@ -224,8 +224,8 @@ function feeInfo(fee,to){
     			StringBuilder sb2 = new StringBuilder();
     	    	Iterator<HashMap<String,Object>> itl = logs.iterator();
     	    	while(itl.hasNext()){
-    	    		HashMap<String,Object> log = itl.next();StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"));
-    	    		sb2.append("<div class='inBoxLine'>").append(log.get("user")).append(" ").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",(Long)log.get("time"))).append(" ");
+    	    		HashMap<String,Object> log = itl.next();StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",(Long)log.get("time"));
+    	    		sb2.append("<div class='inBoxLine'>").append(log.get("user")).append(" ").append(StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",(Long)log.get("time"))).append(" ");
     	    		sb2.append(log.get("info")).append("</div>");
     	    	}
     	    	out.print(sb2);

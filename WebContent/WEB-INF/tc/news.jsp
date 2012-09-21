@@ -99,7 +99,7 @@ else{
 		if(gg.getLevel()>0){
 			sb.append(" purpleBold'>(置顶) ");
 		}else{sb.append("'>");}
-		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd hh:mm:ss",gg.getCreateTime()));
+		sb.append(gg.getName()).append("</a></td><td>").append(StringUtil.getFormatDateString("yyyy-MM-dd HH:mm:ss",gg.getCreateTime()));
 		sb.append("</td><td>").append(gg.getCreatorName()).append("</td>");
 		if(usertype>10){
 			sb.append("<td><a href='").append(prefix).append("/news/").append(gg.getId());

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.tools.StringUtil;
 
 /**
  * 公告发布的任务
@@ -45,6 +46,16 @@ public class NewsTask extends Action {
 		if (!re) {
 			log.error("update all users unread news failed. news ID:"+ggId);
 		}
+		
+		//短信通知
+		if (StringUtil.isStringWithLen(msg.getData("notice"), 1)) {
+			
+		}
+		
+		//邮件通知
+		
+		
+		
 		return super.act(msg);
 	}
 	
