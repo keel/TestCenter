@@ -9,7 +9,11 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.TaskManager;
 import com.k99k.tools.StringUtil;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 /**
  * 公告发布的任务
@@ -47,14 +51,41 @@ public class NewsTask extends Action {
 			log.error("update all users unread news failed. news ID:"+ggId);
 		}
 		
-		//短信通知
-		if (StringUtil.isStringWithLen(msg.getData("notice"), 1)) {
+		if (StringUtil.isDigits(msg.getData("notice"))) {
+			int way = Integer.parseInt(String.valueOf(msg.getData("notice")));
+			String smsContent = String.valueOf(msg.getData("notice_sms"));
+			String emailContent = String.valueOf(msg.getData("notice_email"));
+			String emailSubject = String.valueOf(msg.getData("notice_subject"));
+			int type = Integer.parseInt(String.valueOf(msg.getData("userType")));
+			
+			DBCursor cur = TUser.dao.getColl().find(new BasicDBObject("state",0).append("type", type));
+			
+			while (cur.hasNext()) {
+				DBObject c = cur.next();
+				String phone = (String) c.get("phoneNumber");
+				String email = (String) c.get("email");
+				//短信通知
+				if (way % 2 == 0) {
+					ActionMsg atask = new ActionMsg("sms");
+					atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+					atask.addData("dests", new String[]{phone});
+					atask.addData("content", smsContent);
+					TaskManager.makeNewTask("sms Task-newsNotice:"+phone+System.currentTimeMillis(), atask);
+				}
+				//邮件通知
+				if (way % 3 == 0) {
+					ActionMsg atask1 = new ActionMsg("email");
+					atask1.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
+					atask1.addData("dests", new String[]{email});
+					atask1.addData("content", emailContent);
+					atask1.addData("subject", emailSubject);
+					TaskManager.makeNewTask("email Task-newsNotice:"+email+System.currentTimeMillis(), atask1);
+				}
+				
+			}
+			
 			
 		}
-		
-		//邮件通知
-		
-		
 		
 		return super.act(msg);
 	}

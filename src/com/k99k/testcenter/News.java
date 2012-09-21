@@ -151,7 +151,20 @@ public class News extends Action {
 				if (dao.save(kobj)) {
 					re = String.valueOf(kobj.getId());
 					msg.addData("[print]", re);
+					
 					ActionMsg task = new ActionMsg("newsTask");
+					//是否添加短信和邮件通知,2的合数为短信,3的合数为邮件
+					String notice = req.getParameter("notice");
+					String sms = StringUtil.isStringWithLen(req.getParameter("sms"), 3) ? req.getParameter("sms") : name;
+					//通知的用户类型
+					String userType = req.getParameter("userType");
+					if (StringUtil.isDigits(notice) && StringUtil.isDigits(userType)) {
+						task.addData("notice", Integer.parseInt(notice));
+						task.addData("notice_sms", sms);
+						task.addData("notice_email", text);
+						task.addData("notice_subject", name);
+						task.addData("userType", Integer.parseInt(userType));
+					}
 					task.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 					task.addData("newsId", kobj.getId());
 					TaskManager.makeNewTask("TCNewsTask:"+kobj.getId(), task);
