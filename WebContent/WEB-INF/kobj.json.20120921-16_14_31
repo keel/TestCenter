@@ -263,9 +263,6 @@
 				},
 				{
 					"col":"updateTime","def":0,"len":0,"required":false,"type":4,"intro":"更新时间"
-				},
-				{
-					"col":"rank","def":0,"len":0,"required":false,"type":1,"intro":"评分"
 				}
 			],
 			"intro":"测试任务"
@@ -839,9 +836,6 @@
 					"col":"PID","unique":false,"asc":false,"type":"type","intro":"product ID"
 				},
 				{
-					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
-				},
-				{
 					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
 				}
 			],
@@ -902,9 +896,6 @@
 				},
 				{
 					"col":"attachs","def":"","len":0,"required":false,"type":0,"intro":"附件文件名,用,号分开"
-				},
-				{
-					"col":"updateTime","def":0,"len":0,"required":false,"type":4,"intro":"更新时间"
 				}
 			],
 			"intro":"测试单元"

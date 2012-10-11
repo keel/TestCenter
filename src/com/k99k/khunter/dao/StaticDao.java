@@ -388,8 +388,13 @@ public class StaticDao extends MongoDao {
 		doneQ.put("$gt", TTask.TASK_STATE_NEW);
 		q.put("state", doneQ);
 		int tuDone = taskUnitDao.count(q);
-		sb.append("\"tuDone\":").append(tuDone).append("}");
+		sb.append("\"tuDone\":").append(tuDone).append(",");
 		
+		//通过的测试单元数
+		doneQ.put("$in", new int[]{TTask.TASK_STATE_PASS,TTask.TASK_STATE_PASS_PART});
+		q.put("state", doneQ);
+		int tuPass = taskUnitDao.count(q);
+		sb.append("\"tuPass\":").append(tuPass).append("}");
 		return sb.toString();
 	}
 

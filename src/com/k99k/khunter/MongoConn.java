@@ -546,7 +546,6 @@ public final class MongoConn implements DataSourceInterface{
 		
 		String ip = "127.0.0.1";
 //		ip = "202.102.40.43";
-		
 //		MongoConn.updatePGroup(ip);
 		System.out.println("--------end------");
 		

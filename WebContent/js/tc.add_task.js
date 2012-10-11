@@ -106,7 +106,7 @@ function filesSet(){
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
 }
-var phTypes = [["C5900","E329","W239","F839","F339","E379","C7500","其他"],
+var phTypes = [["华为C5900","天语E329","三星W239","三星F839","三星F339","天语E379","华为C7500","华为C7600","中兴R516","其他"],
                   ["240x320","320x480","480x800","480x854","960x540及以上","其他"]];
 function choosePhType(fu){
 	var pt = pJSON.sys;

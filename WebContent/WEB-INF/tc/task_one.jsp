@@ -527,6 +527,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
     <div class="inBoxContent" id="fCases">
     
     </div>
+   <% if(userType>1 && (state == TTask.TASK_STATE_PASS || state == TTask.TASK_STATE_PASS_PART)){ %> <div> 评分：<%=one.getProp("rank") %></div><%} %>
 </div>
 <% 
 	if(userType>1){

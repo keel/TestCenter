@@ -72,8 +72,10 @@ public class EGameFtpSynTask extends Action {
 		}
 		//从TestUnit中找到测试通过的文件名,适配机型,fileId
 		HashMap<String,Object> q = new HashMap<String, Object>();
+		HashMap<String,Object> in = new HashMap<String, Object>();
+		in.put("$in", new int[]{2,4});
 		q.put("TID", Long.parseLong(String.valueOf(tid)));
-		q.put("state", 2);
+		q.put("state", in);
 		ArrayList<HashMap<String,Object>> re = TestUnit.dao.query(q, StaticDao.fields_ftp_tid, null,0, 0, null);
 		if (re == null || re.size() == 0) {
 			log.error("EGameFtpSynTask faild. ERR_EGAME_FTP_TASK_NOT_FOUND.");

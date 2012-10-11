@@ -74,7 +74,7 @@ function showSummary(anaJson,to){
 		var f = anaJson;
 		var tb = "<div id='anaSummary'>";
 		tb += "已通过产品:<span>"+f.pass+"</span> 部分通过产品:<span>"+f.pass_part+"</span> 待反馈产品:<span>"+f.need_back+"</span> 测试中产品:<span>"+f.testing+"</span> 已放弃产品:<span>"+f.droped+"</span> 有效产品总数:<span>"+f.sum+"</span><br />";
-		tb += "已完成测试任务:<span>"+f.taskDone+"</span> 测试中的任务:<span>"+f.taskTesting+"</span> 待执行任务:<span>"+f.taskWillDo+"</span> 测试单元完成总数:<span>"+f.tuDone+"</span>";
+		tb += "已完成测试任务:<span>"+f.taskDone+"</span> 测试中的任务:<span>"+f.taskTesting+"</span> 待执行任务:<span>"+f.taskWillDo+"</span> 测试单元完成总数:<span>"+f.tuDone+"</span> 通过测试单元总数:<span>"+f.tuPass+"</span>";
 		tb=tb+"</div>";
 		$(to).html(tb);
 		$("#anaSummary span").addClass("blueBold");
@@ -98,7 +98,7 @@ function showSummary(anaJson,to){
 <div class="bold">统计：[<span class="blueBold" id="tStart"></span> --- <span id="tEnd" class="blueBold"></span>] </div>
 <div id="summary" class="inBox"></div>
 <br />
-<div><a href="javascript:void();" class="aButton">查看测试任务详情</a></div>
+<div><a href="javascript:void(0);" class="aButton">查看测试任务详情</a></div>
 <div id="detail"></div>
 </div>
 <div class="aboxSub2"></div>

@@ -269,7 +269,7 @@ out.print(sb);
     s.append(ca.getProp("info")).append("</div><div class='re_re'></div></div>\r\n");
     }
     if(canSave){
-    	s.append("<br />总体评价： <select name='tu_rank' id='tu_rank'><option value='3'>一般</option><option value='4'>较好</option><option value='5'>优秀</option><option value='2'>较差</option><option value='1'>差</option></select>");
+    	s.append("<br />总体评价： <select name='tu_rank' id='tu_rank'><option value='3' selected='selected'>一般</option><option value='4'>较好</option><option value='5'>优秀</option><option value='2'>较差</option><option value='1'>差</option></select>");
     }else{
     	s.append("<br />总体评价：<span id='tRank'>");
     	if(one.getProp("rank") != null){
