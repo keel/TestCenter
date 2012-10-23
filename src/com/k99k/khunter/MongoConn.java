@@ -55,11 +55,11 @@ public final class MongoConn implements DataSourceInterface{
 		//init();
 	}
 	
-	/**
-	 * 引入新CP
+	/*
+	 * 引入新CP(老)
 	 * @param ip
 	 * @param cpid
-	 */
+	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static final void importNewCompany(String ip,String[] cpid){
 		MongoConn mongo = new MongoConn();
@@ -144,6 +144,7 @@ public final class MongoConn implements DataSourceInterface{
 		
 		mongo.close();
 	}
+	 */
 	
 	/**
 	 * 引入新CP
@@ -177,7 +178,7 @@ public final class MongoConn implements DataSourceInterface{
 			//插入对象
 			for (int i = 0; i < cpid.length; i++) {
 				//获取公司接口信息
-				String url = "http://202.102.39.18:9087/Business/entitytest/cps.do?cpId="+cpid[i];
+				String url = "http://202.102.39.9:82/Business/entitytest/cps.do?cpId="+cpid[i];
 				String comInfo = Net.getUrlContent(url, 3000, false, "utf-8");
 				if (!StringUtil.isStringWithLen(comInfo, 10)) {
 					System.out.println("获取公司接口数据失败:"+cpid[i]);
@@ -540,9 +541,10 @@ public final class MongoConn implements DataSourceInterface{
 	
 	public static void main(String[] args) {
 //		String[] cps = new String[]{
-//				"C11107"
+//				"C09135",
+//				"C09133"
 //		};
-//		MongoConn.importNewCompany("202.102.40.43", cps);
+//		MongoConn.importNewCompany2("202.102.40.43", cps);
 		
 		String ip = "127.0.0.1";
 //		ip = "202.102.40.43";
