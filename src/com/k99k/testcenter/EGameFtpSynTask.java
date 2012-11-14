@@ -53,7 +53,20 @@ public class EGameFtpSynTask extends Action {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		
+		//开始上传
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		FTPClient fc = new FTPClient();
+		HashMap<String,String> f2f = new HashMap<String, String>();
+		f2f.put("f:/tomcat_6/webapps/ROOT/tc/gamefiles/76_1351761648889_0.apk", "/76_1351761648889_0.apk");
+		try {
+			fc.setPassive(false);
+			fc.connect("202.102.39.14");
+			fc.login("shitibao", "shitibao123");
+			uploadFiles(fc,f2f);
+			fc.disconnect(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
@@ -123,6 +136,7 @@ public class EGameFtpSynTask extends Action {
 		f2f.put(csv, remotePath+"config.csv");
 		
 		//开始上传
+		System.setProperty("java.net.preferIPv4Stack", "true");
 		FTPClient fc = new FTPClient();
 		try {
 			fc.setPassive(false);

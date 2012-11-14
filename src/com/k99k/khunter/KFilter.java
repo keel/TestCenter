@@ -88,7 +88,7 @@ public final class KFilter implements Filter {
 		//全程使用utf-8
 		setCharset("utf-8",req,resp);
 		
-		String requrl = req.getRequestURI();
+		String requrl = req.getRequestURI();//+ req.getQueryString();
 		//requrl = (requrl == null) ? "" : requrl.substring(1);
 		String[] pathArr = requrl.split("\\/");
 		int rn = rootNum+1;
