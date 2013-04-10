@@ -460,7 +460,7 @@ public class EGame extends Action {
 //		EGame.productUrl = "http://202.102.39.9:81/MIS/v/entitytest/products?startIndex=0&pageSize=1";
 //		EGame.handsetUrl = "http://202.102.39.9:81/MIS/v/entitytest/models?startIndex=0&pageSize=1";
 //		EGame.feeUrl = "http://202.102.39.9:81/MIS/v/entitytest/consumecodes";
-		
+		/*
 		EGame.companyUrl = "http://202.102.39.18:9087/Business/entitytest/cps.do?a=1";
 		EGame.productUrl = "http://202.102.39.18:9087/Business/entitytest/products.do?startIndex=0&pageSize=10";
 		EGame.handsetUrl = "http://202.102.39.18:9087/Business/entitytest/models.do?a=1";
@@ -482,7 +482,11 @@ public class EGame extends Action {
 //		System.out.println(JSON.writeFormat(re));
 		ArrayList<HashMap<String,String>> li = getFee(feePid);
 		System.out.println(JSON.write(li));
-		
+		*/
+		String s = "DaFNvluWBlNX563y0hhtdUramrk2eMEUcPtlohMALjU*";
+		s = "22F2qoO_uSdtUU71ae2AUwQazjfI5twiP1QhxQ1H_KY*";
+		s= Encrypter.decrypt(s);
+		System.out.println(s);
 	}
 
 	/**

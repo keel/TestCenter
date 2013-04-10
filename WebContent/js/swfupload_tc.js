@@ -23,7 +23,7 @@ function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url){
 	upload_success_handler : (sucFn)?sucFn:uploadSuccess,
 	upload_complete_handler:uploadComplete,
 
-	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif",  
+	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif;*.pdf",  
      file_types_description :(f_types_say)?f_types_say: "上传文件", 
 	file_size_limit :(f_size)?f_size: "223000"
 	//,debug:true

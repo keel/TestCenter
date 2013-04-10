@@ -162,6 +162,7 @@ public final class MongoConn implements DataSourceInterface{
 		if (mongo.init()) {
 			DBCollection coc = mongo.getColl("TCCompany");
 			DBCollection cuc = mongo.getColl("TCUser");
+			
 			//确定数据库表中的最大id
 			DBCursor cur = cuc.find(new BasicDBObject(),new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
 			long lastId = 0;
@@ -177,6 +178,15 @@ public final class MongoConn implements DataSourceInterface{
 			}
 			//插入对象
 			for (int i = 0; i < cpid.length; i++) {
+				
+				//确定cpid是否已存在，如存在则跳过 --如果去除此段可对已存在用户进行更新
+				cur = coc.find(new BasicDBObject("mainUser",cpid[i]));
+				if (cur.hasNext()) {
+					//skip
+					System.out.println("已存在此公司,跳过:"+cpid[i]);
+					continue;
+				}
+				
 				//获取公司接口信息
 				String url = "http://202.102.39.9:82/Business/entitytest/cps.do?cpId="+cpid[i];
 				String comInfo = Net.getUrlContent(url, 3000, false, "utf-8");
@@ -540,13 +550,13 @@ public final class MongoConn implements DataSourceInterface{
 	}
 	
 	public static void main(String[] args) {
-//		String[] cps = new String[]{
-//				"C09138"
-//		};
-//		MongoConn.importNewCompany2("202.102.40.43", cps);
-		
 		String ip = "127.0.0.1";
 //		ip = "202.102.40.43";
+		String[] cps = new String[]{
+				"C09242"
+		};
+		MongoConn.importNewCompany2(ip, cps);
+		
 //		MongoConn.updatePGroup(ip);
 		System.out.println("--------end------");
 		
