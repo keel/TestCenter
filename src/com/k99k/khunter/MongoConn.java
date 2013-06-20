@@ -38,9 +38,9 @@ public final class MongoConn implements DataSourceInterface{
 	
 	private String ip = "127.0.0.1";
 	private int port = 27017;
-	private String dbName = "tc";
+	private String dbName = "tc3"; //测试数据库
 	private String user = "keel";
-	private String pwd = "jsinfo2901_A";
+	private String pwd = "jsGame_1810";
 	
 	private int connectionsPerHost = 50;
 	private int threadsAllowedToBlockForConnectionMultiplier = 50;
@@ -243,6 +243,152 @@ public final class MongoConn implements DataSourceInterface{
 			
 		}
 		
+		mongo.close();
+	}
+	
+	/**
+	 * 修改测试人员名称及关联测试对象
+	 * @param orgName
+	 * @param newName
+	 */
+	public static final void changeTestUserName(MongoConn mongo,String orgName,String newName){
+		
+		if (mongo.init()) {
+			//更新TCUser,TCTask,TCTestUnit.tester
+			DBCollection coll = mongo.getColl("TCUser");
+			coll.update(new BasicDBObject("name",orgName),  new BasicDBObject("$set",new BasicDBObject("name",newName)), false, true);
+			System.out.println("TCUser updated.");
+			
+			
+			
+//			coll = mongo.getColl("TCTask");
+//			coll.update(new BasicDBObject("log.user",orgName),  new BasicDBObject("$set",new BasicDBObject("log.$.user",newName)), false, true);
+//			System.out.println("TCTask updated.");
+			
+			
+			
+			coll = mongo.getColl("TCTestUnit");
+			coll.update(new BasicDBObject("tester",orgName),  new BasicDBObject("$set",new BasicDBObject("tester",newName)), false, true);
+			System.out.println("TCTestUnit updated.");
+			
+			
+		}
+	}
+	
+	/**
+	 * 新增机型组,拆分
+	 */
+	public void newGroupSplit(String newGroup,String newShortName,String oldGroup,HashMap<String,Object> newParas){
+		long lastId = 0;
+		DBCollection coll = this.getColl("TCPhone");
+		DBCursor cur = coll.find().limit(1).sort(new BasicDBObject("_id",-1));
+		if (cur.hasNext()) {
+			lastId = (Long) cur.next().get("_id");
+		}else {
+			System.out.println("empty table TCPhone");
+			return;
+		}
+		cur = coll.find(new BasicDBObject("name",oldGroup));
+		if (cur.hasNext()) {
+			DBObject c = cur.next();
+			lastId++;
+			c.put("_id", lastId);
+			c.put("name", newGroup);
+			c.put("shortName", newShortName);
+			if (!newParas.isEmpty()) {
+				Iterator it = newParas.entrySet().iterator();
+				while(it.hasNext()){
+					Entry en = (Entry) it.next();
+					c.put(en.getKey().toString(), en.getValue());
+				}
+			}
+			coll.insert(c);
+		}
+		//目前通过和未测游戏新增拆分出来的机型组
+		 coll = this.getColl("TCTestUnit");
+		 cur = coll.find().limit(1).sort(new BasicDBObject("_id",-1));
+			if (cur.hasNext()) {
+				lastId = (Long) cur.next().get("_id");
+			}else {
+				System.out.println("empty table TCTestUnit");
+				return;
+			}
+		 HashMap<String,Object> q = new HashMap<String, Object>();
+		HashMap<String,Object> in = new HashMap<String, Object>();
+		in.put("$in", new int[]{0,2,4});
+		q.put("state", in);
+		q.put("phone", oldGroup);
+		 cur = coll.find(new BasicDBObject(q));
+		while (cur.hasNext()) {
+			DBObject c = cur.next();
+			lastId++;
+			c.put("_id", lastId);
+			c.put("phone", newGroup);
+			coll.insert(c);
+		}
+	}
+	/**
+	 * 机型组合并
+	 */
+	public  void newGroupMerge(String newGroup,String oldGroup,HashMap<String,Object> newParas){
+		DBCollection coll = this.getColl("TCPhone");
+		//coll.update(new BasicDBObject("name",oldGroup),new BasicDBObject("state",-1),false,false);
+		coll.remove(new BasicDBObject("name",oldGroup));
+		//将被合的机型组改为新机型组
+		 coll = this.getColl("TCTestUnit");
+		HashMap<String,Object> q = new HashMap<String, Object>();
+		HashMap<String,Object> in = new HashMap<String, Object>();
+		in.put("$in", new int[]{0,2,4});
+		q.put("state", in);
+		q.put("phone", oldGroup);
+		DBCursor cur = coll.find(new BasicDBObject(q));
+		while (cur.hasNext()) {
+			DBObject c = cur.next();
+			String state = c.get("state").toString();
+			if (state.trim().equals("0")) {
+				coll.remove(c);
+				continue;
+			}
+			c.put("phone", newGroup);
+			coll.save(c);
+		}
+	}
+	
+	
+	
+	/**
+	 * 比较机型组通过结果
+	 * @param mongo
+	 */
+	public static void cc(MongoConn mongo){
+		
+		if (mongo.init()) {
+			String p2 = "#三星I579";
+			String p1= "#酷派5855";
+			DBCollection coll = mongo.getColl("TCTestUnit");
+			DBCursor cur = coll.find(new BasicDBObject("phone",p1).append("state", 2));
+			long re = 0;
+			long cc = 0;
+			while(cur.hasNext()){
+				DBObject d = cur.next();
+//				if (d.get("PID") == null) {
+//					continue;
+//				}
+				int pid = Integer.parseInt(d.get("PID").toString());
+				DBCursor cur2 = coll.find(new BasicDBObject("PID",pid).append("phone",p2).append("state", 9));
+				if (cur2.hasNext()) {
+					DBObject d1 = cur2.next();
+					re++;
+				}
+				cc++;
+			}
+			System.out.println(p1+":"+cc);
+			System.out.println(p2+":"+re);
+//			long cc = coll.count(new BasicDBObject("state",3).append("phone", "华为C8650+"));
+//			System.out.println("华为C8650+:"+cc);
+//			cc = coll.count(new BasicDBObject("state",3).append("phone", "中兴N760"));
+//			System.out.println("中兴N760:"+cc);
+		}
 		mongo.close();
 	}
 	
@@ -552,12 +698,57 @@ public final class MongoConn implements DataSourceInterface{
 	public static void main(String[] args) {
 		String ip = "127.0.0.1";
 //		ip = "202.102.40.43";
-		String[] cps = new String[]{
-				"C09242"
-		};
-		MongoConn.importNewCompany2(ip, cps);
 		
+		/*
+		String[] cps = new String[]{
+				"C09412"
+
+		};
+		
+		
+		MongoConn.importNewCompany2(ip, cps);
+		*/
+		
+		MongoConn mongo = new MongoConn();
+		mongo.setIp(ip);
+		mongo.setPort(27017);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
+			
+			
+			HashMap<String,Object> np = new HashMap<String, Object>();
+			mongo.newGroupMerge("#华为C8500","#中兴N600",np);
+			mongo.newGroupMerge("#三星I559","#中兴N606",np);
+			mongo.newGroupMerge("#三星I579","#酷派5855",np);
+			mongo.newGroupSplit( "#酷派5860","5860", "#三星I909MR", np);
+			mongo.newGroupSplit( "#华为C8812", "C8812","#三星I909MR", np);
+			System.out.println("adjust OK.");
+//			DBCollection coll = mongo.getColl("TCPhone");
+//			coll.ins(new BasicDBObject("name","#中兴N606"));
+//			coll.remove(new BasicDBObject("name","#中兴N600"));
+//			coll.remove(new BasicDBObject("name","#酷派5855"));
+		}
+		
+		//cc(mongo);
+		/*
+//		MongoConn.changeTestUserName(mongo,"鞠云", "刘静");
+//		MongoConn.changeTestUserName(mongo,"朱敏", "徐敏");
+//		MongoConn.changeTestUserName(mongo,"李德明", "施奇");
+//		MongoConn.changeTestUserName(mongo,"张桃", "沙宛龙");
+//		MongoConn.changeTestUserName(mongo,"肖航", "朱军");
+//		MongoConn.changeTestUserName(mongo,"王浩浩", "刘婷");
+//		MongoConn.changeTestUserName(mongo,"熊克松", "傅雪芳");
+//		MongoConn.changeTestUserName(mongo,"徐尧", "郭蓬飞");
+//		MongoConn.changeTestUserName(mongo,"陈俊", "陈明锐");
+//		MongoConn.changeTestUserName(mongo,"朱跃", "汤琴");
+//		MongoConn.changeTestUserName(mongo,"杨玉勤", "洪泓");
+		MongoConn.changeTestUserName(mongo,"洪泓", "洪鸿");
+		
+		mongo.close();*/
 //		MongoConn.updatePGroup(ip);
+		mongo.close();
 		System.out.println("--------end------");
 		
 	/*	
@@ -766,7 +957,7 @@ public final class MongoConn implements DataSourceInterface{
 			if (!auth) {
 				log.error("auth error! user:"+this.user);
 			}else{
-				log.info("=========== mongoConn init OK! ============");
+				log.info("=========== mongoConn init OK!["+this.dbName+"] ============");
 				return true;
 			}
 		} catch (UnknownHostException e) {

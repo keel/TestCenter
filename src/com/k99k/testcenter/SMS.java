@@ -37,6 +37,8 @@ public class SMS extends Action {
 			log.error("SMS paras error. dests:"+dests+" content:"+content);
 			return super.act(msg);
 		}
+		
+		/* 短信能力暂时停止
 		for (int i = 0; i < dests.length; i++) {
 			if (StringUtil.isStringWithLen(dests[i], 10)) {
 				if(!Sms.sendOne(dests[i], content)){
@@ -47,7 +49,7 @@ public class SMS extends Action {
 			}else{
 				log.error("SMS dest is empty. passed. content:"+content);
 			}
-		}
+		}*/
 		return super.act(msg);
 	}
 	

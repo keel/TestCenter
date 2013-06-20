@@ -132,7 +132,7 @@ public class Admin extends Action {
 			one.setType(userType);
 			one.setProp("company", uCom);
 			one.setProp("email", uMail);
-			one.setProp("groupID", 0);
+			one.setProp("groupID", 1);
 			one.setProp("groupLeader", 0);
 			one.setProp("newNews", 0);
 			one.setProp("newTasks", 0);

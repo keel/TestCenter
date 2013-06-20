@@ -438,7 +438,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <select name="task_level" id="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
 </p>
 <p>下一流程处理人：
-<select name="task_operator"><option value="王朦朦">王朦朦</option><option value="夏丽惠">夏丽惠</option></select>
+<select name="task_operator"><option value="张琪亮">张琪亮</option><option value="夏丽惠">夏丽惠</option></select>
 </p>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
