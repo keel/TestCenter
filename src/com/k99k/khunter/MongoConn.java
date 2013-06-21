@@ -278,7 +278,7 @@ public final class MongoConn implements DataSourceInterface{
 	/**
 	 * 新增机型组,拆分
 	 */
-	public void newGroupSplit(String newGroup,String newShortName,String oldGroup,HashMap<String,Object> newParas){
+	public void newGroupSplit(String newGroup,String newShortName,long newEgameId,String oldGroup,HashMap<String,Object> newParas){
 		long lastId = 0;
 		DBCollection coll = this.getColl("TCPhone");
 		DBCursor cur = coll.find().limit(1).sort(new BasicDBObject("_id",-1));
@@ -324,6 +324,7 @@ public final class MongoConn implements DataSourceInterface{
 			lastId++;
 			c.put("_id", lastId);
 			c.put("phone", newGroup);
+			c.put("egameId", newEgameId);
 			coll.insert(c);
 		}
 	}
@@ -712,7 +713,7 @@ public final class MongoConn implements DataSourceInterface{
 		MongoConn mongo = new MongoConn();
 		mongo.setIp(ip);
 		mongo.setPort(27017);
-		mongo.setDbName("tc");
+		mongo.setDbName("tc4");
 		mongo.setUser("keel");
 		mongo.setPwd("jsGame_1810");
 		if (mongo.init()) {
@@ -722,8 +723,8 @@ public final class MongoConn implements DataSourceInterface{
 			mongo.newGroupMerge("#华为C8500","#中兴N600",np);
 			mongo.newGroupMerge("#三星I559","#中兴N606",np);
 			mongo.newGroupMerge("#三星I579","#酷派5855",np);
-			mongo.newGroupSplit( "#酷派5860","5860", "#三星I909MR", np);
-			mongo.newGroupSplit( "#华为C8812", "C8812","#三星I909MR", np);
+			mongo.newGroupSplit( "#酷派5860","5860",1341, "#三星I909MR", np);
+			mongo.newGroupSplit( "#华为C8812", "C8812",1320,"#三星I909MR", np);
 			System.out.println("adjust OK.");
 //			DBCollection coll = mongo.getColl("TCPhone");
 //			coll.ins(new BasicDBObject("name","#中兴N606"));

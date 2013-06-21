@@ -215,7 +215,9 @@ public class TUser extends Action  {
 		HashMap<String,Object> fields = new HashMap<String, Object>(4);
 		fields.put("_id", 1);
 		fields.put("name", 1);
-		ArrayList<HashMap<String,Object>> list = dao.query(q, fields, null, 0, 0, null);
+		HashMap<String,Object> sort = new HashMap<String, Object>(4);
+		sort.put("_id", 1);
+		ArrayList<HashMap<String,Object>> list = dao.query(q, fields, sort, 0, 0, null);
 		if (list == null || list.isEmpty()) {
 			msg.addData("[print]", "");
 			return;
