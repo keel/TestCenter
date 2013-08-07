@@ -700,15 +700,25 @@ public final class MongoConn implements DataSourceInterface{
 		String ip = "127.0.0.1";
 //		ip = "202.102.40.43";
 		
-		/*
+		
 		String[] cps = new String[]{
-				"C09412"
+				"C09478",
+				"C09472",
+				"C09475",
+				"C09465",
+				"C09285",
+				"C11138",
+				"C09431",
+				"C09466",
+				"C09442",
+				"C09447",
+				"C09324"
 
 		};
 		
 		
 		MongoConn.importNewCompany2(ip, cps);
-		*/
+		/*
 		
 		MongoConn mongo = new MongoConn();
 		mongo.setIp(ip);
@@ -726,12 +736,14 @@ public final class MongoConn implements DataSourceInterface{
 			mongo.newGroupSplit( "#酷派5860","5860",1341, "#三星I909MR", np);
 			mongo.newGroupSplit( "#华为C8812", "C8812",1320,"#三星I909MR", np);
 			System.out.println("adjust OK.");
+			
+			
 //			DBCollection coll = mongo.getColl("TCPhone");
 //			coll.ins(new BasicDBObject("name","#中兴N606"));
 //			coll.remove(new BasicDBObject("name","#中兴N600"));
 //			coll.remove(new BasicDBObject("name","#酷派5855"));
 		}
-		
+		*/
 		//cc(mongo);
 		/*
 //		MongoConn.changeTestUserName(mongo,"鞠云", "刘静");

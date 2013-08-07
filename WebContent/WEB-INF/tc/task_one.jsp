@@ -286,7 +286,7 @@ function dropTask(id){
 	var r=confirm("确认放弃此产品吗？");
 	if (r==true){
 		$.post("<%=prefix %>/tasks/a_drop", "id="+id ,function(data) {
-			if(data=="ok"){alert("放弃成功");window.location = $.prefix+$.taskUrl;};
+			if(data=="ok"){alert("放弃成功");window.location = $.prefix+"/tasks/"+$.tid;};
 		});
 	}
 }
@@ -303,6 +303,14 @@ function feeInfo(fee,to){
 			tb=tb+"</table>";
 			$(to).html(tb);
 		}
+	}
+}
+function backToTest(id){
+	var r=confirm("确认退回此产品吗？");
+	if (r==true){
+		$.post("<%=prefix %>/tasks/backToTest", "tid="+id ,function(data) {
+			if(data=="ok"){alert("退回成功");window.location = $.prefix+"/tasks/"+$.tid;};
+		});
 	}
 }
 -->
@@ -579,7 +587,10 @@ else if(userType==99) { %>
 <a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
 <a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
 <a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
-<%} %>
+<% if(userType==99){ %>
+<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton">退回到测试</a>
+<% }
+} %>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 <%//厂家查看驳回状态
 }else if((state==TTask.TASK_STATE_REJECT && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>

@@ -114,12 +114,68 @@ public class TTask extends Action {
 		}else if(subact.equals("add2")){
 			msg.addData("sub", subact);
 			this.toAdd2(u, httpmsg);
+		}else if(subact.equals("backToTest")){
+			msg.addData("sub", subact);
+			this.backToTest(req,u, httpmsg);
 		}else{
 			JOut.err(404, httpmsg);
 		}
 		return super.act(msg);
 	}
 	
+	static final String TestPointer = "曹雨";
+	
+	private void backToTest(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		//验证权限
+		if (u.getType() < 4) {
+			//权限不够
+			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
+			return;
+		}
+		
+		String task_id = req.getParameter("tid");
+		if(!StringUtil.isDigits(task_id) ){
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		long tid = Integer.parseInt(task_id);
+		KObject task = dao.findOne(tid);
+		if (task==null) {
+			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
+			return;
+		}
+		
+		// 将状态置为测试中状态
+		HashMap<String,Object> q = new HashMap<String, Object>(2);
+		q.put("_id", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>();
+		set.put("state", TASK_STATE_TEST);
+		set.put("operator", TestPointer);
+		HashMap<String,Object> logmsg = new HashMap<String, Object>();
+		logmsg.put("time", System.currentTimeMillis());
+		logmsg.put("user", u.getName());
+		logmsg.put("info", "退回测试");
+		HashMap<String,Object> push = new HashMap<String, Object>(2);
+		push.put("log", logmsg);
+		HashMap<String,Object> update = new HashMap<String, Object>();
+		update.put("$set", set);
+		update.put("$push", push);
+		if(dao.update(q, update, false, false)){
+			ActionMsg atask = new ActionMsg("tTaskTask");
+			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
+			atask.addData("tid", tid);
+			atask.addData("pid", task.getProp("PID"));
+			atask.addData("operator", task.getProp("operator").toString());
+			atask.addData("act", "backToTest");
+			TaskManager.makeNewTask("TTaskTask-back_"+tid, atask);
+			msg.addData("[print]", "ok");
+		}else{
+			JOut.err(403,"E500"+Err.ERR_TASK_BACK, msg);
+			return;
+		}
+		
+		
+	}
 	
 	/**
 	 * 测试结果退回厂家或创建者,实际上是将任务放弃,厂家需要重新创建
