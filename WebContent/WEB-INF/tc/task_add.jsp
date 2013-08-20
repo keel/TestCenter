@@ -12,6 +12,7 @@ if(o != null ){
 }
 KObject user = (KObject)data.getData("u");
 HashMap<String,String> pmap = (HashMap<String,String>)data.getData("pmap");
+ArrayList<KObject> files = (data.getData("files") == null) ? null : (ArrayList<KObject>)data.getData("files");
 ArrayList<HashMap<String,String>> fee = null;
 Object feeobj = data.getData("fee");
 if(feeobj!=null){
@@ -131,8 +132,8 @@ var sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
 	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
-	if(re.length>=18){
-	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType(\""+i+"\");'>适配机型组</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
+	if(re.length>=5){
+	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
 	$.hasFileIndex = i;
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
@@ -143,8 +144,16 @@ if(pJSON.sys==0){
 	upFileType = "*.apk";
 }
 initUpload("<%=user.getName() %>",sucFn,upFileType);
+
+<%
+int maxFileNum = 0;
+if(files != null){
+	String lastFileName = files.get(files.size()-1).getProp("fileName").toString();
+	maxFileNum = 1+Integer.parseInt(lastFileName.substring(lastFileName.lastIndexOf("_")+1,lastFileName.lastIndexOf("\\.")));
+}
+%>
 swfu.newfile = function(file){
-	return '<%=user.getId()+"_"+System.currentTimeMillis() %>'+"_"+file.index+file.type;
+	return pJSON._id+"_"+(file.index+<%=maxFileNum %>)+file.type;
 };
 
 
@@ -214,8 +223,8 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <div id="hide" class="hide">
 <div id="taskFS">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
-<p><label for="task_info">任务说明：<span class="gray">请填入测试需要注意的要点,如果是修改后提交请说明具体的修改之处</span></label><br />
-<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea></p>
+<p><label for="task_info">任务说明：<span class="red">请填入需要测试过程中注意的问题,如不适配机型等，如果是修改后提交请说明具体的修改之处</span></label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
 <% if(userType>1){ %>
 <p>任务优先级：
 <select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>

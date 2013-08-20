@@ -67,7 +67,7 @@ public class TTaskTask extends Action {
 	
 	
 	/**
-	 * 退回任务创建人
+	 * 退回测试
 	 * @param msg
 	 */
 	private void backToTest(ActionMsg msg){
@@ -75,13 +75,39 @@ public class TTaskTask extends Action {
 		String newOperator = TTask.TestPointer;//(String)msg.getData("creator");
 		String operator = (String)msg.getData("operator");
 		long tid = (Long)msg.getData("tid");
-//		int re = (Integer)msg.getData("re");
-//		long uid = (Long)msg.getData("uid");
-//		if (re == -3) {
-//			
-//		}
+		
+		changeOperator(tid,operator,newOperator);
+		
+		//更新产品状态
+		updateProductState(msg,TTask.TASK_STATE_TEST);
+	}
+
+	
+	private final void updateProductState(ActionMsg msg,int state){
+		Object po = msg.getData("pid");
+		if (StringUtil.isDigits(po)) {
+			long pid = Long.parseLong(msg.getData("pid").toString());
+			HashMap<String, Object> query = new HashMap<String, Object>(2);
+			HashMap<String,Object> set = new HashMap<String, Object>(4);
+			query.put("_id", pid);
+			set = new HashMap<String, Object>(4);
+			HashMap<String,Object> update = new HashMap<String, Object>(4);
+			update.put("updateTime", System.currentTimeMillis());
+			update.put("state",state);
+			set.put("$set", update);
+			boolean re = Product.dao.updateOne(query, set);
+			if (!re) {
+				log.error("Update states failed on Product when reject task. PID:"+pid);
+			}
+		}else{
+			log.error("Update states failed on Product when reject task. no PID!  TID:"+msg.getData("tid"));
+			
+		}
+	}
+	
+	private final void changeOperator(long tid,String oldOperator,String newOperator){
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("name", operator);
+		query.put("name", oldOperator);
 		query.put("unReadTasks", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> pull = new HashMap<String, Object>(2);
@@ -99,43 +125,11 @@ public class TTaskTask extends Action {
 		set.put("$push", pull);
 		set.put("$inc", inc);
 		TUser.dao.updateOne(query, set);
-		//更新产品状态
-		Object po = msg.getData("pid");
-		if (StringUtil.isDigits(po)) {
-			long pid = Long.parseLong(msg.getData("pid").toString());
-			query = new HashMap<String, Object>(2);
-			query.put("_id", pid);
-			set = new HashMap<String, Object>(4);
-			HashMap<String,Object> update = new HashMap<String, Object>(4);
-			update.put("updateTime", System.currentTimeMillis());
-			update.put("state", TTask.TASK_STATE_TEST);
-			set.put("$set", update);
-			boolean re = Product.dao.updateOne(query, set);
-			if (!re) {
-				log.error("Update states failed on Product when reject task. PID:"+pid+" TID:"+tid);
-			}
-		}else{
-			log.error("Update states failed on Product when reject task. no PID!  TID:"+tid);
-			
-		}
 	}
-
-	/**
-	 * 退回任务创建人
-	 * @param msg
-	 */
-	private void back(ActionMsg msg){
-		//long userid = (Long)msg.getData("uid");
-		String creator = (String)msg.getData("creator");
-		String operator = (String)msg.getData("operator");
-		long tid = (Long)msg.getData("tid");
-//		int re = (Integer)msg.getData("re");
-//		long uid = (Long)msg.getData("uid");
-//		if (re == -3) {
-//			
-//		}
+	
+	private final void changeOperator(long tid,long uid,String newOperator){
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("name", operator);
+		query.put("_id", uid);
 		query.put("unReadTasks", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> pull = new HashMap<String, Object>(2);
@@ -147,31 +141,55 @@ public class TTaskTask extends Action {
 		TUser.dao.updateOne(query, set);
 		//更新待办人
 		query = new HashMap<String, Object>(2);
-		query.put("name", creator);
+		query.put("name", newOperator);
+		query.remove("_id");
 		inc.put("newTasks", 1);
 		set.remove("$pull");
 		set.put("$push", pull);
 		set.put("$inc", inc);
 		TUser.dao.updateOne(query, set);
+	}
+	
+	/**
+	 * 更新此任务涉及所有待办人
+	 * @param tid
+	 * @param newOperator
+	 */
+	private final void changeOperator(long tid,String newOperator){
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("unReadTasks", tid);
+		HashMap<String,Object> set = new HashMap<String, Object>(4);
+		HashMap<String,Object> pull = new HashMap<String, Object>(2);
+		pull.put("unReadTasks", tid);
+		HashMap<String,Object> inc = new HashMap<String, Object>(2);
+		inc.put("newTasks", -1);
+		set.put("$pull", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
+		//更新待办人
+		query = new HashMap<String, Object>(2);
+		query.put("name", newOperator);
+		inc.put("newTasks", 1);
+		set.remove("$pull");
+		set.put("$push", pull);
+		set.put("$inc", inc);
+		TUser.dao.updateOne(query, set);
+	}
+	
+	/**
+	 * 退回任务创建人
+	 * @param msg
+	 */
+	private void back(ActionMsg msg){
+		//long userid = (Long)msg.getData("uid");
+		String creator = (String)msg.getData("creator");
+		String operator = (String)msg.getData("operator");
+		long tid = (Long)msg.getData("tid");
+
+		changeOperator(tid,operator,creator);
+		
 		//更新产品状态
-		Object po = msg.getData("pid");
-		if (StringUtil.isDigits(po)) {
-			long pid = Long.parseLong(msg.getData("pid").toString());
-			query = new HashMap<String, Object>(2);
-			query.put("_id", pid);
-			set = new HashMap<String, Object>(4);
-			HashMap<String,Object> update = new HashMap<String, Object>(4);
-			update.put("updateTime", System.currentTimeMillis());
-			update.put("state", TTask.TASK_STATE_NEED_MOD);
-			set.put("$set", update);
-			boolean re = Product.dao.updateOne(query, set);
-			if (!re) {
-				log.error("Update states failed on Product when reject task. PID:"+pid+" TID:"+tid);
-			}
-		}else{
-			log.error("Update states failed on Product when reject task. no PID!  TID:"+tid);
-			
-		}
+		updateProductState(msg,TTask.TASK_STATE_NEED_MOD);
 	}
 	
 	/**
@@ -187,25 +205,8 @@ public class TTaskTask extends Action {
 //		if (re == -3) {
 //			
 //		}
-		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("_id", uid);
-		query.put("unReadTasks", tid);
-		HashMap<String,Object> set = new HashMap<String, Object>(4);
-		HashMap<String,Object> pull = new HashMap<String, Object>(2);
-		pull.put("unReadTasks", tid);
-		HashMap<String,Object> inc = new HashMap<String, Object>(2);
-		inc.put("newTasks", -1);
-		set.put("$pull", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
-		//更新待办人
-		query = new HashMap<String, Object>(2);
-		query.put("name", operator);
-		inc.put("newTasks", 1);
-		set.remove("$pull");
-		set.put("$push", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		
+		changeOperator(tid,uid,operator);
 	}
 	
 	/**
@@ -225,47 +226,9 @@ public class TTaskTask extends Action {
 		String info = msg.getData("info").toString();
 		if (re != TTask.TASK_STATE_BACKTOGROUPLEADER) {
 			//处理已办,更新所有未测的TestUnit所涉及的测试人员,将待办任务去除
-			HashMap<String,Object> query = new HashMap<String, Object>(4);
-			//query.put("_id", userid);
-			query.put("unReadTasks", tid);
-			HashMap<String,Object> set = new HashMap<String, Object>(4);
-			HashMap<String,Object> pull = new HashMap<String, Object>(2);
-			pull.put("unReadTasks", tid);
-			HashMap<String,Object> inc = new HashMap<String, Object>(2);
-			inc.put("newTasks", -1);
-			set.put("$pull", pull);
-			set.put("$inc", inc);
-			TUser.dao.update(query, set,false,true);
-			//更新待办人
-			query = new HashMap<String, Object>(2);
-			query.put("name", operator);
-			inc.put("newTasks", 1);
-			set.remove("$pull");
-			set.put("$push", pull);
-			set.put("$inc", inc);
-			TUser.dao.updateOne(query, set);
-			
-			
+			changeOperator(tid,operator);
 		}else{
-			HashMap<String,Object> query = new HashMap<String, Object>(4);
-			query.put("_id", uid);
-			query.put("unReadTasks", tid);
-			HashMap<String,Object> set = new HashMap<String, Object>(4);
-			HashMap<String,Object> pull = new HashMap<String, Object>(2);
-			pull.put("unReadTasks", tid);
-			HashMap<String,Object> inc = new HashMap<String, Object>(2);
-			inc.put("newTasks", -1);
-			set.put("$pull", pull);
-			set.put("$inc", inc);
-			TUser.dao.updateOne(query, set);
-			//更新待办人
-			query = new HashMap<String, Object>(2);
-			query.put("name", operator);
-			inc.put("newTasks", 1);
-			set.remove("$pull");
-			set.put("$push", pull);
-			set.put("$inc", inc);
-			TUser.dao.updateOne(query, set);
+			changeOperator(tid,uid,operator);
 			
 		}
 		
@@ -338,25 +301,7 @@ public class TTaskTask extends Action {
 		String operator = (String)msg.getData("operator");
 		long tid = (Long)msg.getData("tid");
 		//处理已办
-		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("_id", userid);
-		query.put("unReadTasks", tid);
-		HashMap<String,Object> set = new HashMap<String, Object>(4);
-		HashMap<String,Object> pull = new HashMap<String, Object>(2);
-		pull.put("unReadTasks", tid);
-		HashMap<String,Object> inc = new HashMap<String, Object>(2);
-		inc.put("newTasks", -1);
-		set.put("$pull", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
-		//更新待办人
-		query = new HashMap<String, Object>(2);
-		query.put("name", operator);
-		inc.put("newTasks", 1);
-		set.remove("$pull");
-		set.put("$push", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		changeOperator(tid,userid,operator);
 	}
 	/**
 	 * 处理TestUnit执行完成后的更新
@@ -456,47 +401,13 @@ public class TTaskTask extends Action {
 	
 	private void appoint(ActionMsg msg){
 		String userName = (String)msg.getData("uName");
-		long operatorId = (Long)msg.getData("oid");
+		String operator = msg.getData("operator").toString();
 		long tid = (Long)msg.getData("tid");
 		
-		//处理已办
-		HashMap<String,Object> query = new HashMap<String, Object>(2);
-		query.put("name", userName);
-		HashMap<String,Object> set = new HashMap<String, Object>(4);
-		HashMap<String,Object> pull = new HashMap<String, Object>(2);
-		pull.put("unReadTasks", tid);
-		HashMap<String,Object> inc = new HashMap<String, Object>(2);
-		inc.put("newTasks", -1);
-		set.put("$pull", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
-		//更新待办人
-		query.put("_id", operatorId);
-		query.remove("name");
-		inc.put("newTasks", 1);
-		set.remove("$pull");
-		set.put("$push", pull);
-		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		changeOperator(tid,userName,operator);
 		//更新产品状态
-		Object po = msg.getData("pid");
-		if (StringUtil.isDigits(po)) {
-			long pid = Long.parseLong(msg.getData("pid").toString());
-			query = new HashMap<String, Object>(2);
-			query.put("_id", pid);
-			set = new HashMap<String, Object>(4);
-			HashMap<String,Object> update = new HashMap<String, Object>(4);
-			update.put("updateTime", System.currentTimeMillis());
-			update.put("state", TTask.TASK_STATE_TEST);
-			set.put("$set", update);
-			boolean re = Product.dao.updateOne(query, set);
-			if (!re) {
-				log.error("Update states failed on Product when appoint task. PID:"+pid+" TID:"+tid);
-			}
-		}else{
-			log.error("Update states failed on Product when appoint task. no PID!  TID:"+tid);
-			
-		}
+		this.updateProductState(msg, TTask.TASK_STATE_TEST);
+		
 		
 	}
 	/**

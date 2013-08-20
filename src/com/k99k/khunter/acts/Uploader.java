@@ -95,7 +95,7 @@ public class Uploader extends Action {
 	
 	
 	/**
-	 * 接收上传文件
+	 * 接收上传文件,如有同名文件则覆盖
 	 * @param request HttpServletRequest
 	 * @param savePath 保存文件的路径,注意末尾要加上/符
 	 * @param fileName 原上传文件名
@@ -109,7 +109,7 @@ public class Uploader extends Action {
 			 sis = request.getInputStream();
 			 String toFile = savePath+newName;
 		 
-            fos = new FileOutputStream(new File(toFile));
+            fos = new FileOutputStream(new File(toFile),false);
             
             byte[] bt = new byte[2048];  
             int count;  

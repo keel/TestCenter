@@ -86,6 +86,19 @@ public final class IO {
 	}
 	
 	/**
+	 * 移动文件
+	 * @param filePath
+	 * @param dir
+	 * @return
+	 * @throws IOException
+	 */
+	public static final boolean moveFile(String filePath, String dir) throws IOException {  
+		File f = new File(filePath);
+		File d = new File(dir);
+		return f.renameTo(new File(d,f.getName()));
+	}
+
+	/**
 	 * 复制整个文件夹到另一位置
 	 * @param from File 文件夹
 	 * @param to File 新的文件夹
@@ -124,7 +137,7 @@ public final class IO {
         out.close();  
         return true;
     } 
-
+	
 	/**
 	 * 复制单个文件,如原文件存在则直接覆盖
 	 * @param in InputStream

@@ -342,7 +342,7 @@ public class TTask extends Action {
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
 			atask.addData("pid", task.getProp("PID"));
-			atask.addData("oid", operator.getId());
+			atask.addData("operator", operator.getName());
 			atask.addData("uName", task.getProp("operator").toString());
 			atask.addData("act", "appoint");
 			TaskManager.makeNewTask("TTaskTask-appoint_"+tid, atask);
@@ -596,16 +596,6 @@ public class TTask extends Action {
 	}
 	
 	
-//	/**
-//	 * 任务讨论,注意一个产品对应一个主题
-//	 * @param req
-//	 * @param u
-//	 * @param msg
-//	 */
-//	private void comm(HttpServletRequest req,KObject u,HttpActionMsg msg){
-//		//
-//	}
-	
 	/**
 	 * 退回或确认结果并通知任务创建者
 	 * @param req
@@ -732,7 +722,7 @@ public class TTask extends Action {
 		HashMap<String,Object> q = new HashMap<String, Object>(4);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> update = new HashMap<String, Object>();
-		String task_operator = "曹雨";
+		String task_operator = TestPointer;
 		q.put("_id", tid);
 		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过

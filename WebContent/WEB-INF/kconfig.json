@@ -93,12 +93,8 @@
 		{
 			"_actName":"upload",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"e:/workspace/TestCenter/WebContent/gamefiles/"
-		},
-		{
-			"_actName":"upload2",
-			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"e:/workspace/TestCenter/WebContent/file/"
+			"savePath":"e:/workspace/TestCenter/WebContent/gamefiles/",
+			"tempSavePath":"e:/workspace/TestCenter/WebContent/temp"
 		},
 		{
 			"_actName":"download",

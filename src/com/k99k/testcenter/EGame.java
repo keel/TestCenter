@@ -235,17 +235,13 @@ public class EGame extends Action {
 			pid = Long.parseLong(opid);
 		}
 		
-		//先确定此产品有无在测试平台提交任务,如果有则直接转到查看
-		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("PID", pid);
-		HashMap<String,Object> gte = new HashMap<String, Object>(2);
-		gte.put("$gte", 0);
-		query.put("state", gte);
-//		HashMap<String,Object> sort = new HashMap<String, Object>(2);
-//		sort.put("_id", -1);
-//		HashMap<String,Object> column = new HashMap<String, Object>(2);
-//		column.put("_id", 1);
 		if (!isReply) {
+			//先确定此产品有无在测试平台提交任务,如果有则直接转到查看
+			HashMap<String,Object> query = new HashMap<String, Object>(4);
+			query.put("PID", pid);
+			HashMap<String,Object> gte = new HashMap<String, Object>(2);
+			gte.put("$gte", 0);
+			query.put("state", gte);
 			ArrayList<HashMap<String,Object>> re = TTask.dao.query(query, StaticDao.prop_id, StaticDao.prop_id_desc, 0, 1, null);
 			if (re != null && re.size() >0) {
 				long tid = (Long)(re.get(0).get("_id"));
@@ -280,6 +276,16 @@ public class EGame extends Action {
 				msg.addData("fee", fee);
 			}
 		}
+		
+		//查找目录产品中已存在的测试通过的实体包
+		HashMap<String,Object> query = new HashMap<String, Object>(4);
+		query.put("PID", pid);
+		query.put("state", 1);
+		ArrayList<KObject> re = GameFile.dao.queryKObj(query, null, StaticDao.prop_id, 0, 0, null);
+		if (re != null && re.size() >0) {
+			msg.addData("files", re);
+		}
+		
 		//数据库中无此产品时使用pmap
 		msg.addData("pmap", pmap);
 		

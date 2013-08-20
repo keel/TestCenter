@@ -36,6 +36,7 @@ public class FileUpload extends Action {
 	 * 保存文件的路径
 	 */
 	private String savePath = "";
+	private String tempSavePath = "";
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -59,7 +60,8 @@ public class FileUpload extends Action {
 		}
 		String newFileName = (newName==null)?file:newName.trim();
 		//log.info("f:"+file);
-		String re = Uploader.upload(req,this.savePath,file,newFileName);
+		String toPath = (this.tempSavePath.equals("")) ? this.savePath : this.tempSavePath;
+		String re = Uploader.upload(req,toPath,file,newFileName);
 		//log.info("upload ok :"+re);
 		msg.addData("[print]", re);
 		return super.act(msg);
@@ -77,6 +79,14 @@ public class FileUpload extends Action {
 	 */
 	public final void setSavePath(String savePath) {
 		this.savePath = savePath;
+	}
+
+	public String getTempSavePath() {
+		return tempSavePath;
+	}
+
+	public void setTempSavePath(String tempSavePath) {
+		this.tempSavePath = tempSavePath;
 	}
 
 	

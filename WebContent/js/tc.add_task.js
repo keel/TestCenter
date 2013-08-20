@@ -89,14 +89,14 @@ function filesSet(){
 		if(v.length<=0){b=false;return false;}
 		else{
 			v.each(function(){
-				j.groups.push($(this).text());
+				j.groups.push($(this).attr("title"));
 			});
 			tmp.push(j);
 		}
 		i++;
 	});
-	if(!b){alert("请为所有文件都指定机型组!");return;}
-	if(i==0){alert("请上传文件并指定机型组!");return;}
+	if(!b){alert("请为所有文件都指定适配参数!");return;}
+	if(i==0){alert("请上传文件并指定适配参数!");return;}
 	//生成文件json
 	if(tmp.length>0){pJSON.files=tmp;$("#task_p_json_h").html($.toJSON(pJSON));}
 	if($("#task_type_h").val()==""){$("#task_type_h").val($('input:radio[name=task_type]:checked').val());};
@@ -106,31 +106,56 @@ function filesSet(){
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
 }
-var phTypes = [["华为C5900","天语E329","三星W239","三星F839","三星F339","天语E379","华为C7500","华为C7600","中兴R516","其他"],
-                  ["240x320","320x480","480x800","480x854","960x540及以上","其他"]];
-function choosePhType(fu){
+var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540及以上","1_其他"],
+               ["2_Androd2.1","2_Androd2.2","2_Androd2.3","2_Androd4.0","2_Androd4.2及以上","2_其他"],
+               ["3_128M","3_256M","3_512M","3_1G","3_1G以上"],
+               ["华为C5900","天语E329","三星W239","三星F839","三星F339","天语E379","华为C7500","华为C7600","中兴R516","其他"]];
+var apkPara=["分辨率","系统版本","内存"];
+function choosePhType2(fu){
 	var pt = pJSON.sys;
 	$("#fu_"+fu).css("background-color","#FFF");
-	if(pt>=0 && pt<=1){
-		if($("#phTypes").length<=0){
-			var tt = $("<div id='phTypes'></div>");
-			for ( var i = 0; i < phTypes[pt].length; i++) {
-				$("<input type='checkbox' class='pht' name='pht' id='pht_"+i+"' value='"+phTypes[pt][i]+"' /><label for='pht_"+i+"'>"+phTypes[pt][i]+"</label> ").appendTo(tt);
-			}
-			tt.append("<br /><a href=\"javascript:phtSet();\" class=\"aButton\">确定<\/a>");
-			tt[0].fu = fu;
-			tt.appendTo($("#fu_"+fu));
-		}else{
-			var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
-			p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
+	if($("#phTypes").length<=0){
+		var tt = $("<div id='phTypes'></div>");
+		if(pt ==0){
+			makeChoosePh(tt,phTypes2[4],0,"机型组:");
+			tt.append("<br />");
+		}else if(pt ==1){
+			makeChoosePh(tt,phTypes2[0],1,apkPara[0]+":");
+			makeChoosePh(tt,phTypes2[1],2,apkPara[1]+":");
+			makeChoosePh(tt,phTypes2[2],3,apkPara[2]+":");
 		}
+		tt.append("<a href=\"javascript:phtSet("+pt+");\" class=\"aButton\">确定<\/a>");
+		tt[0].fu = fu;
+		tt.appendTo($("#fu_"+fu));
+	}else{
+		var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
+		p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
 	}
 }
-function phtSet(){
-	var ok = $("<div class='sok'></div>");
+function makeChoosePh(tt,dataArr,cate,title){
+	if(title){
+		$("<span>"+title+"</span>").appendTo(tt);
+	}
+	for ( var i = 0; i < dataArr.length; i++) {
+		$("<input type='checkbox' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+dataArr[i].substring(2)+"</label> ").appendTo(tt);
+	}
+	tt.append("<br />");
+	return tt;
+}
+
+function phtSet(sys){
+	var ok = $("<div class='sok'></div>");var type = 0;
 	$("#phTypes").find(".pht:checked").each(function(i){
-		$("<span class='txtBox'>"+$(this).val()+"</span>").appendTo(ok);
+		var v = $(this).val(),n=v;
+		if(sys == 1){
+			var a=v.split("_");  n = a[1];
+			if(type != a[0]){
+				$("<br />").appendTo(ok);type=type+10*a[0];
+			}
+		}
+		$("<span class='txtBox' title="+v+">"+n+"</span>").appendTo(ok);
 	});
+	if(sys==1 && type !=1110){alert("请补充"+apkPara[0]+"参数!");return;}
 	ok.appendTo($("#fu_"+$("#phTypes")[0].fu));
 	$("#phTypes").appendTo($("#hide"));
 }
