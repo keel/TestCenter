@@ -702,17 +702,8 @@ public final class MongoConn implements DataSourceInterface{
 		
 		
 		String[] cps = new String[]{
-				"C09478",
-				"C09472",
-				"C09475",
-				"C09465",
-				"C09285",
-				"C11138",
-				"C09431",
-				"C09466",
-				"C09442",
-				"C09447",
-				"C09324"
+				"C09215"
+
 
 		};
 		

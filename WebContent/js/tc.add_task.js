@@ -137,25 +137,32 @@ function makeChoosePh(tt,dataArr,cate,title){
 		$("<span>"+title+"</span>").appendTo(tt);
 	}
 	for ( var i = 0; i < dataArr.length; i++) {
-		$("<input type='checkbox' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+dataArr[i].substring(2)+"</label> ").appendTo(tt);
+		var as = dataArr[i].split("_");
+		if(as[0].length==2){continue;};
+		$("<input type='checkbox' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+as[1]+"</label> ").appendTo(tt);
 	}
 	tt.append("<br />");
 	return tt;
 }
 
 function phtSet(sys){
-	var ok = $("<div class='sok'></div>");var type = 0;
+	var ok = $("<div class='sok'></div>");var type = [0,0,0];
 	$("#phTypes").find(".pht:checked").each(function(i){
 		var v = $(this).val(),n=v;
 		if(sys == 1){
-			var a=v.split("_");  n = a[1];
-			if(type != a[0]){
-				$("<br />").appendTo(ok);type=type+10*a[0];
+			var a=v.split("_");  n = a[1],t=a[0]-1;
+			if(type[t] == 0){
+				$("<br />").appendTo(ok);type[t]=1;
 			}
 		}
 		$("<span class='txtBox' title="+v+">"+n+"</span>").appendTo(ok);
 	});
-	if(sys==1 && type !=1110){alert("请补充"+apkPara[0]+"参数!");return;}
+	if(sys==1 && type.join(',') !='1,1,1'){
+		var as = "";
+		for(var i=0;i<3;i++){if(type[i]==0){as+=","+apkPara[i];}};
+		as=as.substring(1);
+		alert("请补充 "+as+" 参数!");return;
+	}
 	ok.appendTo($("#fu_"+$("#phTypes")[0].fu));
 	$("#phTypes").appendTo($("#hide"));
 }

@@ -137,7 +137,7 @@ var sucFn = function(file, serverData){
 	$.hasFileIndex = i;
 	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
 };
-var upFileType = "*.jpg";
+var upFileType = "*.*";
 if(pJSON.sys==0){
 	upFileType = "*.jar";
 }else if(pJSON.sys==1){
