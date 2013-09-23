@@ -223,7 +223,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <div id="hide" class="hide">
 <div id="taskFS">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
-<p><label for="task_info">任务说明：<span class="red">请填入需要测试过程中注意的问题,如不适配机型等，如果是修改后提交请说明具体的修改之处</span></label><br />
+<p><label for="task_info">任务说明：<span class="red">请填入需要测试过程中注意的问题,如不适配的android版本，分辨率等，修改后提交请说明具体的修改之处</span></label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
 <% if(userType>1){ %>
 <p>任务优先级：

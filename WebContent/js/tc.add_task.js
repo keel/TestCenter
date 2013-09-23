@@ -114,7 +114,9 @@ var apkPara=["分辨率","系统版本","内存"];
 function choosePhType2(fu){
 	var pt = pJSON.sys;
 	$("#fu_"+fu).css("background-color","#FFF");
-	if($("#phTypes").length<=0){
+	if($("#phTypes").length>0){
+		$("#phTypes").remove();
+	}
 		var tt = $("<div id='phTypes'></div>");
 		if(pt ==0){
 			makeChoosePh(tt,phTypes2[4],0,"机型组:");
@@ -127,10 +129,10 @@ function choosePhType2(fu){
 		tt.append("<a href=\"javascript:phtSet("+pt+");\" class=\"aButton\">确定<\/a>");
 		tt[0].fu = fu;
 		tt.appendTo($("#fu_"+fu));
-	}else{
-		var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
-		p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
-	}
+	//}else{
+	//	var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");
+	//	p.appendTo($("#fu_"+fu));p[0].fu = fu;$("#fu_"+fu).find(".sok").remove();
+	//}
 }
 function makeChoosePh(tt,dataArr,cate,title){
 	if(title){
@@ -138,7 +140,7 @@ function makeChoosePh(tt,dataArr,cate,title){
 	}
 	for ( var i = 0; i < dataArr.length; i++) {
 		var as = dataArr[i].split("_");
-		if(as[0].length==2){continue;};
+		if(cate==1 && as[0].charAt(0)=='-'){continue;};
 		$("<input type='checkbox' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+as[1]+"</label> ").appendTo(tt);
 	}
 	tt.append("<br />");
@@ -151,6 +153,10 @@ function phtSet(sys){
 		var v = $(this).val(),n=v;
 		if(sys == 1){
 			var a=v.split("_");  n = a[1],t=a[0]-1;
+			if(a[0] == 1){
+				var p=(this.id.split("_"))[1];
+				phTypes2[0][p]="-"+phTypes2[0][p];
+			};
 			if(type[t] == 0){
 				$("<br />").appendTo(ok);type[t]=1;
 			}
