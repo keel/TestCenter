@@ -10,7 +10,7 @@ function selectOK(){
 	$("#td_in").find(".phone1").each(function(i){
 		$("<span class='txtBox' id='s"+this.id+"'>"+$(this).text()+"</span>").appendTo(ok);
 	});
-	ok.appendTo($("#fu_"+$("#choosePhone")[0].fu));
+	ok.appendTo($("#cfu_"+$("#choosePhone")[0].fu));
 	clearIn();$("#choosePhone").appendTo("#hide");
 }
 function selectPhone(i){
@@ -38,7 +38,7 @@ function selectPhone(i){
 		});
 	$("#fu_"+i).find(".sok").remove();}
 	$("#choosePhone")[0].fu = i;
-	$("#choosePhone").appendTo($("#fu_"+i));
+	$("#choosePhone").appendTo($("#cfu_"+i));
 }
 function addGG(aa){
 	var i = 0;

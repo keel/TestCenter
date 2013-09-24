@@ -25,6 +25,9 @@ out.print(JSPOut.out("head0","0",one.getName()));%>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/tc.choose_phone.js" type="text/javascript"></script>
+<%if(state==TTask.TASK_STATE_CONFIRM){ %>
+<script src="<%=sPrefix %>/js/tc.add_task.js" type="text/javascript"></script>
+<%} %>
 <script src="<%=sPrefix %>/js/drag.js" type="text/javascript"></script>
 <script type="text/javascript">
 <!--
@@ -117,6 +120,8 @@ if(state==TTask.TASK_STATE_CONFIRM && userType>1){%>
 <%}%>
 
 feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
+showFileParas();
+if(<%=state%>==6){endFileParas();};
 });
 function aSubmit(f){
 	if(f=="#p_form"){
@@ -313,6 +318,18 @@ function backToTest(id){
 		});
 	}
 }
+function showFileParas(){
+	$(".txtBox2").each(function(i){
+		var a=$(this).text().split("_");
+		$(this).text(a[1]).addClass("txtBox_"+a[0]);
+	});
+}
+function endFileParas(){
+	$("#showTUS").find(".file_upload").each(function(i){
+		$(this).find(".filename").after(" <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a>");
+		//$(" <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a>").appendTo(this);
+	});
+}
 -->
 </script>
 <%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
@@ -369,9 +386,9 @@ StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = files.iterator();int i = 0;
 	while(it.hasNext()){
 		KObject f=it.next();
-		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
+		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
 		sb.append("'><a rel='").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-		if(userType>=3){
+		if(userType>=3 && one.getState()==0){
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
 		}
 		sb.append("<div class=\"groups\">");

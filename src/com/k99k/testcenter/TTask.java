@@ -1160,16 +1160,16 @@ public class TTask extends Action {
 		msg.addData("u", u);
 		msg.addData("one", one);
 		msg.addData("product", product);
+		//显示待分配的文件或URL
+		int sys = Integer.parseInt(product.getProp("sys").toString());
+		if (sys!=2) {
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			q.put("TID", one.getId());
+			ArrayList<KObject> files = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+			msg.addData("files", files);
+		}
 		//Task的状态处于待分配(已创建)
 		if (one.getState()==TASK_STATE_NEW || (u.getType() == 1 && one.getState()>=TASK_STATE_TEST)) {
-			//显示待分配的文件或URL
-			int sys = Integer.parseInt(product.getProp("sys").toString());
-			if (sys!=2) {
-				HashMap<String,Object> q = new HashMap<String, Object>();
-				q.put("TID", one.getId());
-				ArrayList<KObject> files = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
-				msg.addData("files", files);
-			}
 		}else {
 			//查找本Task所属的TestUnit
 			HashMap<String,Object> q = new HashMap<String, Object>(2);

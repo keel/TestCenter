@@ -91,6 +91,9 @@ label.error{color:red;width:300px;text-align:left;display:block;}
 .phoneCate{line-height: 30px;padding:3px 7px;vertical-align:top;font-size:13px;background-color:#eee;color:#1F5982;margin:0;border: 1px solid #1F5982;border-left:none;}
 .txtBox{display: inline-block;background-color:#eee;color:#1F5982;padding:3px;margin:3px 3px 0 0;border: 1px solid #1F5982;}
 .txtBox2{display: inline-block;background-color:#fef8ab;color:#1F5982;padding:3px;margin:3px 3px 0 0;}
+.txtBox_1{background-color:#ffddee;}
+.txtBox_2{background-color:#ccddee;}
+.txtBox_3{background-color:#cceeea;}
 .sok{padding:10px 0;}
 .okBT{width:60px;text-align: center;}
 .tu0{display: inline-block;background-color:#fef8ab;color:#1F5982;padding:3px;margin:3px 3px 0 0;}
