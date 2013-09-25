@@ -36,6 +36,7 @@ $.isMy = <%=(ismy)?"true":"false" %>;
 $.me="<%=user.getName() %>";
 $.userType="<%=userType %>";
 $.taskUrl=($.isMy)?"/tasks/my":"/tasks";
+pJSON.sys=$.sys;
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
 	if (r==true){
@@ -263,6 +264,15 @@ function confirmTU(){
 }
 function finish(){
 	abox("确认结果提交","处理中,请稍候……");
+	var config2 = "";
+	$("#showTUS").find(".file_upload").each(function(i){
+		var f=$(this).find(".filename").text(),p=[];config2+=f+"|";
+		$(this).find(".txtBox").each(function(j){
+			p[j] = $(this).attr("title");
+		});
+		config2+=p.join("|")+",";
+	});
+	$("#fileParas").val(config2);
 	$.post($.prefix+"/tasks/a_finish", $("#f_form").serialize(),function(data) {
 		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
 		if(data=="ok"){abox("确认结果提交","<div class='reOk'>确认结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");}
@@ -326,7 +336,7 @@ function showFileParas(){
 }
 function endFileParas(){
 	$("#showTUS").find(".file_upload").each(function(i){
-		$(this).find(".filename").after(" <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a>");
+		$(this).find(".filename").after(" [ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]");
 		//$(" <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a>").appendTo(this);
 	});
 }
@@ -563,6 +573,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
 if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
+<input type="hidden" id="fileParas" />
 <label for="tu_pass">确认测试结果：</label>
 <select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="3">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
 下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><span id="task_next"></span><br />

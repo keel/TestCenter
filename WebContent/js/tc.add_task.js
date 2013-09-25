@@ -128,6 +128,7 @@ function choosePhType2(fu){
 		}
 		tt.append("<a href=\"javascript:phtSet("+pt+");\" class=\"aButton\">确定<\/a>");
 		tt[0].fu = fu;
+		$("#fu_"+fu).find(".sok").remove();
 		tt.appendTo($("#fu_"+fu));
 	//}else{
 	//	var p = $("#phTypes");p.find(".pht:checked").removeAttr("checked");

@@ -58,6 +58,30 @@ public class TTask extends Action {
 	public static final int TASK_STATE_REJECT = 7;//废弃,直接用TASK_STATE_NEED_MOD
 	public static final int TASK_STATE_BACKTOGROUPLEADER = -3;
 	
+	/**
+	 * 参数适配对应关系
+	 */
+	static HashMap<String,String> fileParaMap = new HashMap<String, String>();
+	
+	static{
+		fileParaMap.put("1_240x320", "1001");
+		fileParaMap.put("1_320x480", "1002");
+		fileParaMap.put("1_480x800", "1003");
+		fileParaMap.put("1_480x854", "1004");
+		fileParaMap.put("1_960x540及以上", "1005|1006|1007");
+		fileParaMap.put("2_Androd2.1", "2001|2002|2003");
+		fileParaMap.put("2_Androd2.2", "2004");
+		fileParaMap.put("2_Androd2.3", "2005|2006");
+		fileParaMap.put("2_Androd3.0", "2007|2008|2009");
+		fileParaMap.put("2_Androd4.0", "2010|2011|2012");
+		fileParaMap.put("2_Androd4.2及以上", "2013|2014");
+		fileParaMap.put("3_128M", "3001");
+		fileParaMap.put("3_256M", "3002");
+		fileParaMap.put("3_512M", "3003");
+		fileParaMap.put("3_1G", "3004");
+		fileParaMap.put("3_1G以上", "3005");
+		
+	}
 
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)
@@ -615,8 +639,9 @@ public class TTask extends Action {
 		String tu_re = req.getParameter("tu_pass");
 		String task_info = req.getParameter("task_info");
 		String task_operator = req.getParameter("task_operator");
+		String fileParas = req.getParameter("fileParas");
 		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re) 
-				|| !StringUtil.isStringWithLen(task_operator, 1)) {
+				|| !StringUtil.isStringWithLen(task_operator, 1) || !StringUtil.isStringWithLen(fileParas, 5)) {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
@@ -630,6 +655,17 @@ public class TTask extends Action {
 		KObject task = dao.findOne(tid);
 		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
+			
+			
+			//生成参数配置
+			String[] sarr = fileParas.split(",");
+			
+			
+			
+			
+			
+			
+			
 			update.put("operator", task_operator);
 			update.put("isOnline", 1);
 			task_info = "通过 : "+task_info;
