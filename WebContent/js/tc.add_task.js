@@ -1,5 +1,4 @@
 var pJSON = {};
-
 function addCompany(){
 	return {c:$("#task_company").val()};
 }
@@ -113,6 +112,7 @@ var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540及�
 var apkPara=["分辨率","系统版本","内存"];
 function choosePhType2(fu){
 	var pt = pJSON.sys;
+	if(!pt){pt=$.sys;pJSON.sys=$.sys;}
 	$("#fu_"+fu).css("background-color","#FFF");
 	if($("#phTypes").length>0){
 		$("#phTypes").remove();

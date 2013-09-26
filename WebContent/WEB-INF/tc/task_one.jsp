@@ -36,10 +36,9 @@ $.isMy = <%=(ismy)?"true":"false" %>;
 $.me="<%=user.getName() %>";
 $.userType="<%=userType %>";
 $.taskUrl=($.isMy)?"/tasks/my":"/tasks";
-pJSON.sys=$.sys;
 function del(id){
 	var r=confirm("确认删除此条任务吗？\r\n\r\n["+$(".aboxTitle>div").text()+"]");
-	if (r==true){
+	if (r){
 		$.post("<%=prefix %>/tasks/a_d", "id="+id ,function(data) {
 			if(data=="ok"){alert("删除成功");window.location = "<%=prefix %>"+$.taskUrl;};
 		});
@@ -129,7 +128,7 @@ function aSubmit(f){
 		if($("#files").length>0){
 			var b = true,tmp = [];
 			$("#files .file_upload").each(function(){
-				var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"gFile":n,"fileId":$(this).find(".filename").attr("rel"),"phone":[]};
+				var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),rel=$(this).find(".filename").attr("rel").split("@"),j={"gFile":rel[0],"fileId":rel[1],"phone":[]};
 				if(v.length<=0){b=false;return false;}
 				else{
 					v.each(function(){
@@ -264,15 +263,16 @@ function confirmTU(){
 }
 function finish(){
 	abox("确认结果提交","处理中,请稍候……");
-	var config2 = "";
+	var config2 = "",isPara=true;
 	$("#showTUS").find(".file_upload").each(function(i){
 		var f=$(this).find(".filename").text(),p=[];config2+=f+"|";
 		$(this).find(".txtBox").each(function(j){
 			p[j] = $(this).attr("title");
 		});
+		if(p.length==0){isPara=false;}
 		config2+=p.join("|")+",";
 	});
-	$("#fileParas").val(config2);
+	if(isPara){$("#fileParas").val(config2);}else{var r=confirm("确定不需要适配参数吗？");if(!r){$.fancybox.close();return;}};
 	$.post($.prefix+"/tasks/a_finish", $("#f_form").serialize(),function(data) {
 		var bt1 = "<a href=\"javascript:window.location='"+$.prefix+"/tasks/"+$.tid+"';\" class=\"aButton\">查看任务</a>";
 		if(data=="ok"){abox("确认结果提交","<div class='reOk'>确认结果提交成功！ &nbsp;"+bt1+" <a href=\"javascript:window.location =('"+$.prefix+$.taskUrl+"');\" class=\"aButton\">返回列表</a></div>");}
@@ -397,7 +397,7 @@ StringBuilder sb = new StringBuilder();
 	while(it.hasNext()){
 		KObject f=it.next();
 		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
-		sb.append("'><a rel='").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 		if(userType>=3 && one.getState()==0){
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
 		}
@@ -418,7 +418,7 @@ StringBuilder sb = new StringBuilder();
 else if(product.getProp("sys").toString().equals("2") && one.getState()==0 && userType>1){
 	StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>WAP游戏适配机型</div><div class='inBoxContent'>");
-		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='fu_0");
+		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_0");
 		sb.append("'>");
 		if(userType>=3){
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(0);'>适配机型</a> ]</span>");
@@ -573,7 +573,7 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
 if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
-<input type="hidden" id="fileParas" />
+<input type="hidden" id="fileParas" value="" name="fileParas" />
 <label for="tu_pass">确认测试结果：</label>
 <select name="tu_pass" id="tu_pass"><option value="2">通过</option><option value="4">部分通过</option><option value="3">不通过</option><option value="-3">退回到组长</option><option value="-2">放弃</option></select><br />
 下一执行人:<select id="task_operator" name="task_operator"><option value="田智龙">田智龙</option></select><span id="task_next"></span><br />

@@ -85,7 +85,7 @@ public class GameFile extends Action {
 			return super.act(msg);
 		}
 		//获取真实文件名
-		String fullPath = this.path+g.getProp("fileName");
+		String fullPath = this.path+g.getProp("PID")+"/"+g.getProp("fileName");
 		File f = new File(fullPath);
 		if (f.exists()) {
 			HttpServletResponse resp = httpmsg.getHttpResp();

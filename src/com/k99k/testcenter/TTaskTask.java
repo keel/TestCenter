@@ -10,9 +10,11 @@ import java.util.Iterator;
 import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
+import com.k99k.khunter.ActionManager;
 import com.k99k.khunter.ActionMsg;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.TaskManager;
+import com.k99k.tools.IO;
 import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
@@ -231,7 +233,26 @@ public class TTaskTask extends Action {
 			changeOperator(tid,uid,operator);
 			
 		}
-		
+		//更新产品状态
+		Object po = msg.getData("pid");
+		if (StringUtil.isDigits(po)) {
+			long pid = Long.parseLong(msg.getData("pid").toString());
+			HashMap<String, Object> query = new HashMap<String, Object>(2);
+			query.put("_id", pid);
+			HashMap<String, Object> set = new HashMap<String, Object>(4);
+			HashMap<String,Object> update = new HashMap<String, Object>(4);
+			update.put("updateTime", System.currentTimeMillis());
+			update.put("state", re);
+			set.put("$set", update);
+			boolean re1 = Product.dao.updateOne(query, set);
+			if (!re1) {
+				log.error("Update states failed on Product when appoint task. PID:"+pid+" TID:"+tid);
+			}
+		}else{
+			log.error("Update states failed on Product when appoint task. no PID!  TID:"+tid);
+			
+		}
+				
 		if (re == TTask.TASK_STATE_NEED_MOD) {
 			//发出邮件和短信通知
 			KObject task = TTask.dao.findOne(tid);
@@ -268,25 +289,6 @@ public class TTaskTask extends Action {
 				TaskManager.makeNewTask("email Task:"+tid+System.currentTimeMillis(), atask1);
 				
 			}
-			
-		}
-		//更新产品状态
-		Object po = msg.getData("pid");
-		if (StringUtil.isDigits(po)) {
-			long pid = Long.parseLong(msg.getData("pid").toString());
-			HashMap<String, Object> query = new HashMap<String, Object>(2);
-			query.put("_id", pid);
-			HashMap<String, Object> set = new HashMap<String, Object>(4);
-			HashMap<String,Object> update = new HashMap<String, Object>(4);
-			update.put("updateTime", System.currentTimeMillis());
-			update.put("state", re);
-			set.put("$set", update);
-			boolean re1 = Product.dao.updateOne(query, set);
-			if (!re1) {
-				log.error("Update states failed on Product when appoint task. PID:"+pid+" TID:"+tid);
-			}
-		}else{
-			log.error("Update states failed on Product when appoint task. no PID!  TID:"+tid);
 			
 		}
 		
@@ -469,6 +471,11 @@ public class TTaskTask extends Action {
 					f.put("creatorName", creatorName);
 					KObject kobj = new KObject();
 					if(GameFile.schema.setPropFromMapForCreate(f, kobj) && GameFile.dao.add(kobj)){
+						FileUpload fu = (FileUpload)ActionManager.findAction("upload");
+						String savePath = fu.getSavePath();
+						String tmpPath = fu.getTempSavePath();
+						IO.moveFile(tmpPath+f.get("fileName"), savePath+pid+"/");
+						
 					}else{
 						log.error("GameFile add failed:"+JSON.write(f));
 					}

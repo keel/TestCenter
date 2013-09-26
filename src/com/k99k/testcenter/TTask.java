@@ -641,7 +641,7 @@ public class TTask extends Action {
 		String task_operator = req.getParameter("task_operator");
 		String fileParas = req.getParameter("fileParas");
 		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re) 
-				|| !StringUtil.isStringWithLen(task_operator, 1) || !StringUtil.isStringWithLen(fileParas, 5)) {
+				|| !StringUtil.isStringWithLen(task_operator, 1)) {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
 		}
@@ -657,8 +657,30 @@ public class TTask extends Action {
 			//通过或部分通过
 			
 			
-			//生成参数配置
-			String[] sarr = fileParas.split(",");
+			//生成每个实体的参数配置
+			if (StringUtil.isStringWithLen(fileParas, 2)) {
+				//存在参数配置生成
+				String[] sarr = fileParas.split(",");
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < sarr.length-1; i++) {
+					String[] sa = sarr[i].split("|");
+					sb.append(sa[0]).append(",");
+					int n=1;
+					for (int j = 1; j < sa.length; j++) {
+						sb.append(fileParaMap.get(sa[j]));
+						if(sa[j].charAt(0) > 1){
+							sb.append(",");
+							n++;
+						}else{
+							sb.append("|");
+						}
+					}
+					sb.delete(sb.length()-1,sb.length()).append("\r\n");
+				}
+				
+				String config2 = sb.toString();
+				update.put("synFileParas", config2);
+			}
 			
 			
 			
@@ -801,7 +823,7 @@ public class TTask extends Action {
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
-		logmsg.put("info", "上线 - "+task_info);
+		logmsg.put("info", "同步 - "+task_info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
 		push.put("log", logmsg);
 		set.put("$push", push);

@@ -10,12 +10,12 @@ function selectOK(){
 	$("#td_in").find(".phone1").each(function(i){
 		$("<span class='txtBox' id='s"+this.id+"'>"+$(this).text()+"</span>").appendTo(ok);
 	});
-	ok.appendTo($("#cfu_"+$("#choosePhone")[0].fu));
+	ok.appendTo($("#cfu_"+$("#choosePhone").data("fu")));
 	clearIn();$("#choosePhone").appendTo("#hide");
 }
 function selectPhone(i){
 	
-	$("#fu_"+i).css("background-color","#FFF");
+	$("#cfu_"+i).css("background-color","#FFF");
 	if(allPData.length == 0){
 		//abox("Loading...","请稍侯...");
 		$.getJSON($("#choosePhone").data("url"),function(sData){
@@ -33,11 +33,11 @@ function selectPhone(i){
 			//aboxClose();
 		});
 	}else{clearIn();
-		$("#fu_"+i).find(".txtBox").each(function(){
+		$("#cfu_"+i).find(".txtBox").each(function(){
 			var a = this.id.split("_");$("#p_"+a[1]+"_"+a[2])[0].io();
 		});
-	$("#fu_"+i).find(".sok").remove();}
-	$("#choosePhone")[0].fu = i;
+	$("#cfu_"+i).find(".sok").remove();}
+	$("#choosePhone").data("fu",i);
 	$("#choosePhone").appendTo($("#cfu_"+i));
 }
 function addGG(aa){

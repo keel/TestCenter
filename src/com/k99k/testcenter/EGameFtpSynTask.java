@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.KObject;
 import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.IO;
@@ -83,11 +84,12 @@ public class EGameFtpSynTask extends Action {
 			log.error("EGameFtpSynTask faild. tid or pid not exsit.");
 			return super.act(msg);
 		}
+		long tidL = Long.parseLong(String.valueOf(tid));
 		//从TestUnit中找到测试通过的文件名,适配机型,fileId
 		HashMap<String,Object> q = new HashMap<String, Object>();
 		HashMap<String,Object> in = new HashMap<String, Object>();
 		in.put("$in", new int[]{2,4});
-		q.put("TID", Long.parseLong(String.valueOf(tid)));
+		q.put("TID", tidL);
 		q.put("state", in);
 		ArrayList<HashMap<String,Object>> re = TestUnit.dao.query(q, StaticDao.fields_ftp_tid, null,0, 0, null);
 		if (re == null || re.size() == 0) {
@@ -122,13 +124,25 @@ public class EGameFtpSynTask extends Action {
 			//适配对应文件,使用egameId
 			fsb.append(fileName).append(",").append(Phone.egameIds.get(phone)).append(",").append(isGroup).append("\r\n");
 			//文件上传序列
-			f2f.put(this.localPath+fileName, remotePath+fileName);
+			f2f.put(this.localPath+pid+"/"+fileName, remotePath+fileName);
 		}
 		
 		//生成适配对应文件
-		String csv = this.localPath+"config_"+System.currentTimeMillis()+".csv";
+		String local = this.localPath+pid+"/";
+		String csv = local+"config_"+tid+"_"+System.currentTimeMillis()+".csv";
+		String csv2 = local+"config2_"+tid+"_"+System.currentTimeMillis()+".csv";
+		
+		//生成参数适配文件
+		KObject task = TTask.dao.findOne(tidL);
+		String config2 = task.getProp("synFileParas").toString();
 		try {
+			IO.makeDir(local);
 			IO.writeTxt(fsb.toString(), "utf-8", csv);
+			if (StringUtil.isStringWithLen(config2, 2)) {
+				IO.writeTxt(config2, "utf-8", csv2);
+				f2f.put(csv2, remotePath+"config2.csv");
+			}
+			
 		} catch (IOException e) {
 			log.error("EGameFtpSynTask faild.writeTxt error. ");
 			return super.act(msg);

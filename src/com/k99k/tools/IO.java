@@ -64,6 +64,16 @@ public final class IO {
 	}
 	
 	/**
+	 * 创建目录,无论目录是否已存在
+	 * @param dir
+	 * @return 
+	 */
+	public static final boolean makeDir(String dir){
+		File f = new File(dir);
+		return f.mkdirs();
+	}
+	
+	/**
 	 * 删除目录及下面的文件和子目录,失败的则跳过
 	 * @param dir 目录 
 	 * @return 
@@ -95,6 +105,9 @@ public final class IO {
 	public static final boolean moveFile(String filePath, String dir) throws IOException {  
 		File f = new File(filePath);
 		File d = new File(dir);
+		if (!d.exists()) {
+			d.mkdirs();
+		}
 		return f.renameTo(new File(d,f.getName()));
 	}
 
