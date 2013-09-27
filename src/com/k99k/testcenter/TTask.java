@@ -635,6 +635,7 @@ public class TTask extends Action {
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
 		}
+		String opName = "测试完成";
 		String t_id = req.getParameter("tid");
 		String tu_re = req.getParameter("tu_pass");
 		String task_info = req.getParameter("task_info");
@@ -662,30 +663,40 @@ public class TTask extends Action {
 				//存在参数配置生成
 				String[] sarr = fileParas.split(",");
 				StringBuilder sb = new StringBuilder();
-				for (int i = 0; i < sarr.length-1; i++) {
-					String[] sa = sarr[i].split("|");
+				for (int i = 0; i < sarr.length; i++) {
+					String[] sa = sarr[i].split("\\|");
 					sb.append(sa[0]).append(",");
-					int n=1;
+					int n=1;boolean endSkip = false;
 					for (int j = 1; j < sa.length; j++) {
-						sb.append(fileParaMap.get(sa[j]));
-						if(sa[j].charAt(0) > 1){
+						String s = fileParaMap.get(sa[j]);
+						if(Integer.parseInt(String.valueOf(sa[j].charAt(0))) > n){
+							sb.deleteCharAt(sb.length()-1);
+							if (endSkip) {
+								sb.deleteCharAt(sb.length()-1);endSkip=false;
+							}
 							sb.append(",");
 							n++;
-						}else{
+							if (s!=null) {
+								sb.append(s);
+							}
 							sb.append("|");
+						}else{
+							if (s==null) {
+								endSkip = true;
+								sb.append("|");
+								continue;
+							}
+							sb.append(s).append("|");
 						}
 					}
-					sb.delete(sb.length()-1,sb.length()).append("\r\n");
+					sb.deleteCharAt(sb.length()-1).append("\r\n");
 				}
 				
 				String config2 = sb.toString();
 				update.put("synFileParas", config2);
 			}
 			
-			
-			
-			
-			
+			 
 			
 			
 			update.put("operator", task_operator);
@@ -699,6 +710,7 @@ public class TTask extends Action {
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
 			task_info = "未通过 : "+task_info;
+			opName = "未通过";
 		}else if(tuRE==TASK_STATE_BACKTOGROUPLEADER){
 			//退回
 			HashMap<String,Object> slice = new HashMap<String, Object>();
@@ -718,10 +730,12 @@ public class TTask extends Action {
 			update.put("operator", task_operator);
 			update.put("state", TASK_STATE_TEST);
 			task_info = "退回组长:"+task_operator;
+			opName = "退回";
 		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
 			update.put("state", TASK_STATE_DROP);
 			task_info = "已放弃 - "+task_info;
+			opName = "放弃";
 		}else{
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -730,7 +744,7 @@ public class TTask extends Action {
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
-		logmsg.put("info", "测试完成:"+task_info);
+		logmsg.put("info", opName+":"+task_info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
 		push.put("log", logmsg);
 		set.put("$push", push);
@@ -770,6 +784,7 @@ public class TTask extends Action {
 		String t_id = req.getParameter("tid");
 		String tu_re = req.getParameter("tu_re");
 		String task_info = req.getParameter("task_info");
+		String opName = "同步到平台";
 		if (!StringUtil.isDigits(t_id) || !StringUtil.isDigits(tu_re)) {
 			JOut.err(403,"E403"+Err.ERR_PARAS, msg);
 			return;
@@ -795,9 +810,11 @@ public class TTask extends Action {
 			TaskManager.makeNewTask("egameFtp-"+tid, amsg);
 		}else if(tuRE==TASK_STATE_DROP){
 			//放弃
+			opName = "放弃";
 			update.put("state", TASK_STATE_DROP);
 		}else if(tuRE==TASK_STATE_BACKTOGROUPLEADER){
 			//退回
+			opName = "退回";
 			HashMap<String,Object> slice = new HashMap<String, Object>();
 			slice.put("_id", 1);
 			slice.put("creatorName", 1);
@@ -823,7 +840,7 @@ public class TTask extends Action {
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
-		logmsg.put("info", "同步 - "+task_info);
+		logmsg.put("info", opName+" - "+task_info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
 		push.put("log", logmsg);
 		set.put("$push", push);
