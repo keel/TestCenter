@@ -92,7 +92,6 @@ public class TTaskTask extends Action {
 			HashMap<String, Object> query = new HashMap<String, Object>(2);
 			HashMap<String,Object> set = new HashMap<String, Object>(4);
 			query.put("_id", pid);
-			set = new HashMap<String, Object>(4);
 			HashMap<String,Object> update = new HashMap<String, Object>(4);
 			update.put("updateTime", System.currentTimeMillis());
 			update.put("state",state);
@@ -501,17 +500,18 @@ public class TTaskTask extends Action {
 				updateTask.put("state", TTask.TASK_STATE_BACKED);
 				set.put("$set", updateTask);
 				q.put("_id", ta.getId());
-				TTask.dao.update(query, set, false, true);
+				TTask.dao.update(q, set, false, true);
 				//消除待办人
-				query = new HashMap<String, Object>(4);
-				query.put("unReadTasks", ta.getId());
+				q = new HashMap<String, Object>(4);
+				q.put("unReadTasks", ta.getId());
 				HashMap<String,Object> pull = new HashMap<String, Object>(2);
 				pull.put("unReadTasks", ta.getId());
+				set = new HashMap<String, Object>(4);
 				set.put("$pull", pull);
 				inc = new HashMap<String, Object>(2);
 				inc.put("newTasks", -1);
 				set.put("$inc", inc);
-				TUser.dao.update(query, set, false, true);
+				TUser.dao.update(q, set, false, true);
 			}
 		}
 		//更新产品的测试次数

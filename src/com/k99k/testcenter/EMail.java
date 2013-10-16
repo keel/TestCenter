@@ -48,8 +48,8 @@ public class EMail extends Action {
 		for (int i = 0; i < dests.length; i++) {
 			if (StringUtil.isStringWithLen(dests[i], 3)) {
 				//##暂停邮件提醒
-				log.error("暂停邮件提醒");
-				//this.mail.addTask(dests[i], subject, content);
+				//log.error("暂停邮件提醒");
+				this.mail.addTask(dests[i], subject, content);
 			}else{
 				log.error("Email adress is empty,not send. subject:"+subject);
 			}

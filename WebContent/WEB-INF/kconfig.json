@@ -11,7 +11,7 @@
 			"_dbType":"mongodb",
 			"ip":"127.0.0.1",
 			"port":27017,
-			"dbName":"tc4",
+			"dbName":"tc5",
 			"user":"keel",
 			"pwd":"jsGame_1810",
 			"maxWaitTime":5000,
@@ -97,6 +97,11 @@
 			"tempSavePath":"e:/workspace/TestCenter/WebContent/temp/"
 		},
 		{
+			"_actName":"upload2",
+			"_class":"com.k99k.testcenter.FileUpload",
+			"savePath":"e:/workspace/TestCenter/WebContent/file/"
+		},
+		{
 			"_actName":"download",
 			"_class":"com.k99k.testcenter.Download",
 			"downPath":"e:/workspace/TestCenter/WebContent/file/"
@@ -162,7 +167,7 @@
 		{
 			"_actName":"egameFtp",
 			"_class":"com.k99k.testcenter.EGameFtpSynTask",
-			"ip":"202.102.39.x14",
+			"ip":"202.102.39.14",
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",

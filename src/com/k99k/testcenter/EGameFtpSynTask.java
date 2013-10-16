@@ -104,6 +104,7 @@ public class EGameFtpSynTask extends Action {
 		
 		//清空query条件
 		q = new HashMap<String, Object>(2);
+		StringBuilder fileString = new StringBuilder();
 		for (Iterator<HashMap<String, Object>> it = re.iterator(); it.hasNext();) {
 			HashMap<String, Object> map = it.next();
 			String fileId = map.get("fileId").toString();
@@ -124,7 +125,9 @@ public class EGameFtpSynTask extends Action {
 			//适配对应文件,使用egameId
 			fsb.append(fileName).append(",").append(Phone.egameIds.get(phone)).append(",").append(isGroup).append("\r\n");
 			//文件上传序列
-			f2f.put(this.localPath+pid+"/"+fileName, remotePath+fileName);
+			String localFile = this.localPath+pid+"/"+fileName;
+			f2f.put(localFile, remotePath+fileName);
+			fileString.append(localFile).append(";");
 		}
 		
 		//生成适配对应文件
@@ -134,11 +137,11 @@ public class EGameFtpSynTask extends Action {
 		
 		//生成参数适配文件
 		KObject task = TTask.dao.findOne(tidL);
-		String config2 = task.getProp("synFileParas").toString();
 		try {
 			IO.makeDir(local);
 			IO.writeTxt(fsb.toString(), "utf-8", csv);
-			if (StringUtil.isStringWithLen(config2, 2)) {
+			if (task.containsProp("synFileParas")) {
+				String config2 = task.getProp("synFileParas").toString();
 				IO.writeTxt(config2, "utf-8", csv2);
 				f2f.put(csv2, remotePath+"config2.csv");
 			}
@@ -153,18 +156,29 @@ public class EGameFtpSynTask extends Action {
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		FTPClient fc = new FTPClient();
 		try {
-			fc.setPassive(false);
+			fc.setPassive(true);
 			fc.connect(this.ip);
 			fc.login(this.user, this.pwd);
 			uploadFiles(fc,f2f);
 			fc.disconnect(true);
 		} catch (Exception e) {
-			log.error("uploadFiles error.", e);
-			log.error("Will try again after 30min:"+msg.getActitonName());
-			msg.removeData(TaskManager.TASK_TYPE);
-			msg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_SCHEDULE_POOL);
-			msg.addData(TaskManager.TASK_DELAY, 30*60*1000);
-			TaskManager.makeNewTask("egameFtp-"+tid+"-"+System.currentTimeMillis(), msg);
+			Object o = msg.getData("tryTimes");
+			int tTimes = 0;
+			if (o != null) {
+				tTimes = Integer.parseInt(o.toString());
+			}
+			
+			log.error("uploadFiles error.tryTimes:"+tTimes, e);
+			log.error("error tid:"+tidL+",pid:"+pid+",localfiles:"+fileString+",\r\n Will try again after 30min:"+msg.getActitonName());
+			
+			if (tTimes < 10) {
+				tTimes++;
+				msg.removeData(TaskManager.TASK_TYPE);
+				msg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_SCHEDULE_POOL);
+				msg.addData(TaskManager.TASK_DELAY, 30*60*1000);
+				msg.addData("tryTimes", tTimes);
+				TaskManager.makeNewTask("egameFtp-"+tid+"-"+System.currentTimeMillis(), msg);
+			}
 			return super.act(msg);
 		}
 		return super.act(msg);

@@ -331,7 +331,9 @@ function backToTest(id){
 function showFileParas(){
 	$(".txtBox2").each(function(i){
 		var a=$(this).text().split("_");
-		$(this).text(a[1]).addClass("txtBox_"+a[0]);
+		if(a.length==2){
+			$(this).text(a[1]).addClass("txtBox_"+a[0]);
+		}
 	});
 }
 function endFileParas(){

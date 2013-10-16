@@ -1327,7 +1327,7 @@ public class TTask extends Action {
 			q.put("state", state);
 			HashMap<String,Object> in = new HashMap<String, Object>(4);
 			if (taskIds == null) {
-				in.put("$eq", 0);
+				in.put("$lt", 0);
 			}else{
 				in.put("$in", taskIds);
 			}
