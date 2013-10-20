@@ -337,10 +337,48 @@ function showFileParas(){
 	});
 }
 function endFileParas(){
+	var synF =  initSynFileParas();
 	$("#showTUS").find(".file_upload").each(function(i){
-		$(this).find(".filename").after(" [ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]");
-		//$(" <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a>").appendTo(this);
+		var f=$(this).find(".filename"),s = (synF) ? "<br />"+synF[f.text()] :"";
+		f.after(" [ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]"+s);
 	});
+}
+<%
+Object synFileObj = one.getProp("synFileParas");
+String synFileStr = "";
+boolean hasSynFile = false;
+if(StringUtil.isStringWithLen(synFileObj, 2)){
+	synFileStr = synFileObj.toString().replaceAll("\r\n", "#");
+	hasSynFile = true;
+}
+%>
+function initSynFileParas(){
+	var synFileParas= {};
+	if(<%=hasSynFile%>){
+		var s = "<%=synFileStr %>";
+		var sa = s.split("#");
+		for(var i=0;i<sa.length;i++){
+			var one = sa[i].split(","),oneSpan = "";
+			for ( var j = 1; j < one.length; j++) {
+				oneSpan+="<span class='txtBox2 txtBox_"+j+"'>"+one[j]+"</span>";
+			}
+			synFileParas[one[0]] = oneSpan;
+		}
+		return synFileParas;
+	}
+	return false;
+}
+function showOrgParas(){
+	if(synFileParas){
+		var sa = s.split("\r\n");
+		var ok = "<div class='sok'>";
+		for(var i=1;i=sa.length;i++){
+			ok+="<span class='txtBox2 txtBox_"+i+"' >"+sa[i]+"</span><br />";
+		}
+		ok+="</div>";
+		return ok;
+	}
+	return false;
 }
 -->
 </script>

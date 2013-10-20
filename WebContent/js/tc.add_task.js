@@ -105,11 +105,11 @@ function filesSet(){
 function task_company(){
 	$("#task_company_h").val($("#task_company").val());
 }
-var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540及以上","1_其他"],
-               ["2_Androd2.1","2_Androd2.2","2_Androd2.3","2_Androd4.0","2_Androd4.2及以上","2_其他"],
-               ["3_128M","3_256M","3_512M","3_1G","3_1G以上"],
+var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540"],
+               ["2_Androd2.1","2_Androd2.2","2_Androd2.3","2_Androd4.0","2_Androd4.2"],
+               ["3_128M","3_256M","3_512M","3_1G"],
                ["华为C5900","天语E329","三星W239","三星F839","三星F339","天语E379","华为C7500","华为C7600","中兴R516","其他"]];
-var apkPara=["分辨率","系统版本","内存"];
+var apkPara=["分辨率","系统版本","最小内存"];
 function choosePhType2(fu){
 	var pt = pJSON.sys;
 	if(!pt){pt=$.sys;pJSON.sys=$.sys;}
@@ -139,10 +139,11 @@ function makeChoosePh(tt,dataArr,cate,title){
 	if(title){
 		$("<span>"+title+"</span>").appendTo(tt);
 	}
+	var iType=(cate==3) ? "radio" : "checkbox";
 	for ( var i = 0; i < dataArr.length; i++) {
 		var as = dataArr[i].split("_");
 		if(cate==1 && as[0].charAt(0)=='-'){continue;};
-		$("<input type='checkbox' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+as[1]+"</label> ").appendTo(tt);
+		$("<input type='"+iType+"' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+as[1]+"</label> ").appendTo(tt);
 	}
 	tt.append("<br />");
 	return tt;
