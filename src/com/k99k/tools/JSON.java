@@ -165,7 +165,7 @@ public class JSON {
 		sb.append("]");
 	}
 
-	private static final void jsonString(StringBuilder sb,Object obj) {
+	public static final void jsonString(StringBuilder sb,Object obj) {
         sb.append('"');
         CharacterIterator it = new StringCharacterIterator(obj.toString());
         for (char c = it.first(); c != CharacterIterator.DONE; c = it.next()) {

@@ -112,14 +112,14 @@ var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540"],
 var apkPara=["分辨率","系统版本","最小内存"];
 function choosePhType2(fu){
 	var pt = pJSON.sys;
-	if(!pt){pt=$.sys;pJSON.sys=$.sys;}
+	if(!pt && pt != 0){pt=$.sys;pJSON.sys=$.sys;}
 	$("#fu_"+fu).css("background-color","#FFF");
 	if($("#phTypes").length>0){
 		$("#phTypes").remove();
 	}
 		var tt = $("<div id='phTypes'></div>");
 		if(pt ==0){
-			makeChoosePh(tt,phTypes2[4],0,"机型组:");
+			makeChoosePh(tt,phTypes2[3],0,"机型组:");
 			tt.append("<br />");
 		}else if(pt ==1){
 			makeChoosePh(tt,phTypes2[0],1,apkPara[0]+":");
@@ -142,7 +142,7 @@ function makeChoosePh(tt,dataArr,cate,title){
 	var iType=(cate==3) ? "radio" : "checkbox";
 	for ( var i = 0; i < dataArr.length; i++) {
 		var as = dataArr[i].split("_");
-		if(cate==1 && as[0].charAt(0)=='-'){continue;};
+		if(cate==1 && as[0].charAt(0)=='-'){continue;}else if(cate==0){as[1]=as[0];};
 		$("<input type='"+iType+"' class='pht' name='pht"+cate+"' id='pht"+cate+"_"+i+"' value='"+dataArr[i]+"' /><label for='pht"+cate+"_"+i+"'>"+as[1]+"</label> ").appendTo(tt);
 	}
 	tt.append("<br />");
