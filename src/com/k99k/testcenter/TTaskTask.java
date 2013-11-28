@@ -68,6 +68,39 @@ public class TTaskTask extends Action {
 	}
 	
 	
+	
+	private void synFileRename(){
+		
+	}
+	
+	public static final void passFileUpdateForProduct(long pid){
+		HashMap<String,Object> q = new HashMap<String, Object>(4);
+		q.put("PID", pid);
+		q.put("state", 1);//状态为通过的PID
+		ArrayList<KObject> passfiles = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+		int size = passfiles.size();
+		if (size>0) {
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < size; i++) {
+				KObject obj = passfiles.get(i);
+				String fileName = obj.getProp("fileName").toString();
+				String groups = obj.getProp("groups").toString();
+				sb.append(",{\"").append(fileName).append("\":").append(groups).append("}");
+			}
+			sb.replace(0, 1, "[");
+			sb.append("]");
+			String passFileStr = sb.toString();
+			q = new HashMap<String, Object>();
+			q.put("_id", pid);
+			HashMap<String,Object> set = new HashMap<String, Object>();
+			set.put("passFile", passFileStr);
+			Product.dao.update(q, set,false,false);
+		}
+		
+	}
+	
+	
+	
 	/**
 	 * 退回测试
 	 * @param msg
@@ -117,7 +150,7 @@ public class TTaskTask extends Action {
 		inc.put("newTasks", -1);
 		set.put("$pull", pull);
 		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		TUser.dao.update(query, set,false,true);
 		//更新待办人
 		query = new HashMap<String, Object>(2);
 		query.put("name", newOperator);
@@ -139,7 +172,7 @@ public class TTaskTask extends Action {
 		inc.put("newTasks", -1);
 		set.put("$pull", pull);
 		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		TUser.dao.update(query, set,false,true);
 		//更新待办人
 		query = new HashMap<String, Object>(2);
 		query.put("name", newOperator);
@@ -166,7 +199,7 @@ public class TTaskTask extends Action {
 		inc.put("newTasks", -1);
 		set.put("$pull", pull);
 		set.put("$inc", inc);
-		TUser.dao.updateOne(query, set);
+		TUser.dao.update(query, set,false,true);
 		//更新待办人
 		query = new HashMap<String, Object>(2);
 		query.put("name", newOperator);
@@ -201,13 +234,13 @@ public class TTaskTask extends Action {
 		//long userid = (Long)msg.getData("uid");
 		String operator = (String)msg.getData("operator");
 		long tid = (Long)msg.getData("tid");
-//		int re = (Integer)msg.getData("re");
 		long uid = (Long)msg.getData("uid");
-//		if (re == -3) {
-//			
-//		}
-		
+		long pid = (Long)msg.getData("pid");
 		changeOperator(tid,uid,operator);
+		
+		if (pid != 0) {
+			passFileUpdateForProduct(pid);
+		}
 	}
 	
 	/**

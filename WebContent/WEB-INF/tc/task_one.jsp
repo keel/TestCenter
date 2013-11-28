@@ -14,6 +14,7 @@ KObject user = (KObject)data.getData("u");
 KObject one = (KObject)data.getData("one");
 KObject product = (KObject)data.getData("product");
 ArrayList<KObject> files = (data.getData("files")==null)?null:(ArrayList<KObject>)data.getData("files");
+ArrayList<KObject> passfiles = (data.getData("passfiles")==null)?null:(ArrayList<KObject>)data.getData("passfiles");
 ArrayList<KObject> tus = (data.getData("tus")==null)?null:(ArrayList<KObject>)data.getData("tus");
 Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").equals("true");
 String myPara = (ismy)?"/my":"";
@@ -464,6 +465,30 @@ else if(product.getProp("sys").toString().equals("2") && one.getState()==0 && us
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(0);'>适配机型</a> ]</span>");
 		}
 		sb.append("</div>");
+	sb.append("</div></div>");
+	out.print(sb);
+}
+if(passfiles != null && !passfiles.isEmpty()){
+StringBuilder sb = new StringBuilder();
+	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
+	Iterator<KObject> it = passfiles.iterator();int i = 0;
+	while(it.hasNext()){
+		KObject f=it.next();
+		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
+		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+		if(userType>=3 && one.getState()==0){
+			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
+		}
+		sb.append("<div class=\"groups\">");
+		ArrayList<String> gps = (ArrayList<String>)f.getProp("groups");
+		Iterator<String> itr = gps.iterator();
+		while(itr.hasNext()){
+			String g = itr.next();
+			sb.append("<span class='txtBox2'>").append(g).append("</span>");
+		}
+		sb.append("</div></div>");
+		i++;
+	}
 	sb.append("</div></div>");
 	out.print(sb);
 }

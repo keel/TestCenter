@@ -1,12 +1,9 @@
 package com.k99k.tools.encrypter;
 
-import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
 //import javax.crypto.KeyGenerator;
 //import javax.crypto.SecretKey;
 import javax.crypto.NoSuchPaddingException;
@@ -142,10 +139,9 @@ public class Encrypter {
 			byte[] dec = Base64Coder.decode(str);
 
 			utf8 = dcipher.doFinal(dec);
-		} catch (IllegalBlockSizeException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			e.printStackTrace();
+			return null;
 		}
 		return utf8;
 	}
@@ -160,8 +156,9 @@ public class Encrypter {
 		String de = null;
 		try {
 			de = new String(decryptToByte(str), "UTF8");
-		} catch (UnsupportedEncodingException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		return de;
 	}

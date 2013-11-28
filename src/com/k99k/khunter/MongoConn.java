@@ -26,6 +26,7 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoException;
 import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
+import com.mongodb.WriteResult;
 
 /**
  * MongoDB连接处理器，单例
@@ -356,7 +357,55 @@ public final class MongoConn implements DataSourceInterface{
 	}
 	
 	
-	
+	public static final void fixUser(String ip,String userName){
+		MongoConn mongo = new MongoConn();
+		mongo.setIp(ip);
+		mongo.setPort(27017);
+		mongo.setDbName("tc");
+		mongo.setUser("keel");
+		mongo.setPwd("jsGame_1810");
+		if (mongo.init()) {
+			DBCollection coll = mongo.getColl("TCUser");
+			BasicDBObject q = new BasicDBObject("_id",6);
+			DBCursor cur = coll.find(q);
+			
+			if (cur.hasNext()) {
+				DBObject u = cur.next();
+				BasicDBList ls = (BasicDBList) u.get("unReadTasks");
+				StringBuilder sb = new StringBuilder();
+				int count =  ls.size();
+				for (int i = 0; i < count; i++) {
+					sb.append(ls.get(i)).append(",");
+				}
+				System.out.println(sb.toString());
+				
+				DBCollection cot = mongo.getColl("TCTask");
+				DBCursor cu2 = cot.find(new BasicDBObject("_id",new BasicDBObject("$in",ls)));
+				while (cu2.hasNext()) {
+					DBObject tu = cu2.next();
+					int state = (Integer) tu.get("state");
+					if (state<0) {
+						ls.remove(tu.get("_id"));
+						continue;
+					}
+					if (!tu.get("operator").equals(userName)) {
+						ls.remove(tu.get("_id"));
+					}
+				}
+				sb = new StringBuilder();
+				count =  ls.size();
+				for (int i = 0; i < count; i++) {
+					sb.append(ls.get(i)).append(",");
+				}
+				System.out.println(sb.toString());
+				System.out.println(count);
+				BasicDBObject set = new BasicDBObject("$set",new BasicDBObject("unReadTasks",ls).append("newTasks", count));
+				WriteResult re = coll.update(q, set);
+				System.out.println(re.getError());
+			}
+			
+		}
+	}
 	/**
 	 * 比较机型组通过结果
 	 * @param mongo
@@ -702,33 +751,32 @@ public final class MongoConn implements DataSourceInterface{
 		
 		
 		String[] cps = new String[]{
-				"C09563",
-				"C09569",
-				"C09571",
-				"C09572",
-				"C09561",
-				"C09562",
-				"C09566",
-				"C09568",
-				"C09570",
-				"C09560",
-				"C09565",
-				"C09564",
-				"C09574",
-				"C09578",
-				"C09580",
-				"C09576",
-				"C09575",
-				"C09577",
-				"C09579",
-				"C09573",
-				"C09567"
-
-
+				"C09600",
+				"C09586",
+				"C09589",
+				"C09592",
+				"C09587",
+				"C09583",
+				"C09584",
+				"C09585",
+				"C09590",
+				"C09595",
+				"C09597",
+				"C09593",
+				"C09581",
+				"C09598",
+				"C09599",
+				"C09582",
+				"C09588",
+				"C09591",
+				"C09594"
 		};
 		
 		ip = "180.96.63.70";
-		MongoConn.importNewCompany2(ip, cps);
+//		MongoConn.importNewCompany2(ip, cps);
+		
+		
+		fixUser(ip,"曹雨");
 		/*
 		
 		MongoConn mongo = new MongoConn();

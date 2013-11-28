@@ -6,6 +6,8 @@ package com.k99k.testcenter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +64,7 @@ public class TTask extends Action {
 	 * 参数适配对应关系
 	 */
 	static HashMap<String,String> fileParaMap = new HashMap<String, String>();
+	static HashMap<String,String> fileParaMapReverse = new HashMap<String, String>();
 	
 	static{
 		fileParaMap.put("1_240x320", "1001");
@@ -80,6 +83,11 @@ public class TTask extends Action {
 		fileParaMap.put("3_512M", "3003");
 		fileParaMap.put("3_1G", "3004");
 		//fileParaMap.put("3_1G以上", "3005");
+		
+		for (Iterator iterator = fileParaMap.entrySet().iterator(); iterator.hasNext();) {
+			Entry<String,String> map = (Entry<String,String>) iterator.next();
+			fileParaMapReverse.put(map.getKey(), map.getValue());
+		}
 		
 	}
 
@@ -797,12 +805,13 @@ public class TTask extends Action {
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		String task_operator = TestPointer;
 		q.put("_id", tid);
+		long pid = 0;
 		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
 			update.put("isOnline", 2);
 			update.put("state", tuRE);
 			KObject t = dao.findOne(tid);
-			long pid = (Long)t.getProp("PID");
+			pid = (Long)t.getProp("PID");
 			ActionMsg amsg = new ActionMsg("egameFtp");
 			amsg.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_SINGLE);
 			amsg.addData("pid", pid);
@@ -850,6 +859,7 @@ public class TTask extends Action {
 			atask.addData(TaskManager.TASK_TYPE, TaskManager.TASK_TYPE_EXE_POOL);
 			atask.addData("tid", tid);
 			atask.addData("uid", u.getId());
+			atask.addData("pid", pid);
 			atask.addData("re", tuRE);
 			if (tuRE==TASK_STATE_BACKTOGROUPLEADER) {
 				atask.addData("operator", task_operator);
@@ -1242,6 +1252,11 @@ public class TTask extends Action {
 			q.put("TID", one.getId());
 			ArrayList<KObject> files = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
 			msg.addData("files", files);
+//			q = new HashMap<String, Object>(4); //由product相关字段实现
+//			q.put("PID", pid);
+//			q.put("state", 1);//状态为通过的PID
+//			ArrayList<KObject> passfiles = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+//			msg.addData("passfiles", passfiles);
 		}
 		//Task的状态处于待分配(已创建)
 		if (one.getState()==TASK_STATE_NEW || (u.getType() == 1 && one.getState()>=TASK_STATE_TEST)) {

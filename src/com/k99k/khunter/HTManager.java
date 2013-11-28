@@ -24,7 +24,10 @@ public final class HTManager {
 	//private static final HTManager me = new HTManager();
 	
 	
-
+	/**
+	 * 调试模式
+	 */
+	public static boolean debug = true;
 	
 	/**
 	 * 类加载路径,注意这里需要配置成绝对路径
@@ -85,6 +88,9 @@ public final class HTManager {
 					//ini = (String) root.get("iniPath");
 					iniPath = (String) root.get("iniPath");
 					ini = iniPath + "kconfig.json";
+					//调试模式
+					debug = (root.get("debug").equals("false")) ? false :true ;
+					log.info("debug : " + debug);
 					
 					//初始化DataSourceManager
 					initOK = DataSourceManager.init(ini,classPath);

@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.HTManager;
 import com.k99k.tools.SendMail;
 import com.k99k.tools.StringUtil;
 
@@ -47,11 +48,13 @@ public class EMail extends Action {
 		}
 		for (int i = 0; i < dests.length; i++) {
 			if (StringUtil.isStringWithLen(dests[i], 3)) {
-				//##暂停邮件提醒
-				//log.error("暂停邮件提醒");
-				this.mail.addTask(dests[i], subject, content);
+				if (HTManager.debug) {
+					log.info("debug mode，不执行邮件发送  subject:"+subject+" dests[i]:"+dests[i]);
+				}else{
+					this.mail.addTask(dests[i], subject, content);
+				}
 			}else{
-				log.error("Email adress is empty,not send. subject:"+subject);
+				log.error("Email adress is empty,not send. subject:"+subject+" dests[i]:"+dests[i]);
 			}
 		}
 		return super.act(msg);
