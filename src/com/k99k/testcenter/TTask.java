@@ -156,6 +156,7 @@ public class TTask extends Action {
 	}
 	
 	static final String TestPointer = "曹雨";
+	static final String TestOver = "结束";
 	
 	private void backToTest(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
@@ -783,7 +784,7 @@ public class TTask extends Action {
 	@SuppressWarnings("unchecked")
 	private void online(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
-		int userType = u.getType();
+		int userType = u.getType(); 
 		if (userType != 12 && userType != 99) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
@@ -810,6 +811,7 @@ public class TTask extends Action {
 			//通过或部分通过
 			update.put("isOnline", 2);
 			update.put("state", tuRE);
+			update.put("operator", TestOver);
 			KObject t = dao.findOne(tid);
 			pid = (Long)t.getProp("PID");
 			ActionMsg amsg = new ActionMsg("egameFtp");
@@ -863,6 +865,8 @@ public class TTask extends Action {
 			atask.addData("re", tuRE);
 			if (tuRE==TASK_STATE_BACKTOGROUPLEADER) {
 				atask.addData("operator", task_operator);
+			}else{
+				atask.addData("operator", TestOver);
 			}
 			atask.addData("act", "online");
 			TaskManager.makeNewTask("TTaskTask-online_"+tid, atask);

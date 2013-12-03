@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 
 import com.k99k.khunter.Action;
 import com.k99k.khunter.ActionMsg;
+import com.k99k.khunter.HTManager;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.TaskManager;
 import com.k99k.khunter.dao.StaticDao;
@@ -154,6 +155,14 @@ public class EGameFtpSynTask extends Action {
 		
 		//开始上传
 		System.setProperty("java.net.preferIPv4Stack", "true");
+		if (HTManager.debug) {
+			
+			log.info("debug mode, do not ftpsync.");
+			return super.act(msg);
+		}
+		
+		
+		
 		FTPClient fc = new FTPClient();
 		try {
 			fc.setPassive(true);

@@ -89,7 +89,8 @@ public final class HTManager {
 					iniPath = (String) root.get("iniPath");
 					ini = iniPath + "kconfig.json";
 					//调试模式
-					debug = (root.get("debug").equals("false")) ? false :true ;
+					String s = root.get("debug").toString();
+					debug = (Boolean.parseBoolean(s)) ? true :false ;
 					log.info("debug : " + debug);
 					
 					//初始化DataSourceManager
