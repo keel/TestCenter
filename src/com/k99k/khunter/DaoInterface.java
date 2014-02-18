@@ -77,6 +77,15 @@ public interface DaoInterface extends Cloneable{
 	
 	
 	/**
+	 * 判断某个字段值为某值的记录是否存在
+	 * @param paraName
+	 * @param query
+	 * @return
+	 */
+	public boolean checkExist(String paraName,Object query);
+	
+	
+	/**
 	 * 判断是否存在有此条件的记录,返回第一条记录的id
 	 * @param query
 	 * @return 存在则第一条记录的id,否则返回-1

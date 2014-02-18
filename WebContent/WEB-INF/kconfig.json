@@ -4,15 +4,15 @@
 		"2011-8-8":"始建此文件"
 	},
 	"info":"注意数据库需要增加以下index: db.TCUser.ensureIndex({'unReadTasks':1});db.TCTopic.ensureIndex({'tags':1})",
-	"classPath": "e:/workspace/TestCenter/WebContent/WEB-INF/classes/",
-	"iniPath": "e:/workspace/TestCenter/WebContent/WEB-INF/",
+	"classPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/classes/",
+	"iniPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/",
 	"debug":true,
 	"dataSources":{
 		"mongodb_local":{
 			"_dbType":"mongodb",
 			"ip":"127.0.0.1",
 			"port":27017,
-			"dbName":"tc5",
+			"dbName":"tc",
 			"user":"keel",
 			"pwd":"jsGame_1810",
 			"maxWaitTime":5000,
@@ -81,7 +81,7 @@
 		{
 			"_actName":"gamefile",
 			"_class":"com.k99k.testcenter.GameFile",
-			"path":"e:/workspace/TestCenter/WebContent/gamefiles/"
+			"path":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
 			"_actName":"newsTask",
@@ -94,18 +94,18 @@
 		{
 			"_actName":"upload",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"e:/workspace/TestCenter/WebContent/gamefiles/",
-			"tempSavePath":"e:/workspace/TestCenter/WebContent/temp/"
+			"savePath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/",
+			"tempSavePath":"D:/works/workspace_keel/TestCenter/WebContent/temp/"
 		},
 		{
 			"_actName":"upload2",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"e:/workspace/TestCenter/WebContent/file/"
+			"savePath":"D:/works/workspace_keel/TestCenter/WebContent/file/"
 		},
 		{
 			"_actName":"download",
 			"_class":"com.k99k.testcenter.Download",
-			"downPath":"e:/workspace/TestCenter/WebContent/file/"
+			"downPath":"D:/works/workspace_keel/TestCenter/WebContent/file/"
 		},
 		{
 			"_actName":"phone",
@@ -172,7 +172,7 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
-			"localPath":"e:/workspace/TestCenter/WebContent/gamefiles/"
+			"localPath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
 			"_actName":"ana",

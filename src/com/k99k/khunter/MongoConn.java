@@ -751,32 +751,15 @@ public final class MongoConn implements DataSourceInterface{
 		
 		
 		String[] cps = new String[]{
-				"C09600",
-				"C09586",
-				"C09589",
-				"C09592",
-				"C09587",
-				"C09583",
-				"C09584",
-				"C09585",
-				"C09590",
-				"C09595",
-				"C09597",
-				"C09593",
-				"C09581",
-				"C09598",
-				"C09599",
-				"C09582",
-				"C09588",
-				"C09591",
-				"C09594"
+				"C09689",
+
 		};
 		
 		ip = "180.96.63.70";
-//		MongoConn.importNewCompany2(ip, cps);
+		MongoConn.importNewCompany2(ip, cps);
 		
 		
-		fixUser(ip,"曹雨");
+		//fixUser(ip,"曹雨");
 		/*
 		
 		MongoConn mongo = new MongoConn();

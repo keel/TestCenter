@@ -10,16 +10,23 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
 import com.k99k.khunter.DaoInterface;
 import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.DataSourceInterface;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
+import com.k99k.testcenter.EGame;
 import com.k99k.testcenter.Product;
 import com.k99k.testcenter.TTask;
+import com.k99k.tools.CnToSpell;
+import com.k99k.tools.JSON;
+import com.k99k.tools.Net;
+import com.k99k.tools.StringUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 
 /**
  * 静态方法执行的Dao，执有多个DaoManager的Dao对象,需要在最后一个Action中初始化
@@ -45,7 +52,7 @@ public class StaticDao extends MongoDao {
 	static DaoInterface productDao;
 	static DaoInterface taskDao;
 	static DaoInterface taskUnitDao;
-	
+	static DaoInterface companyDao;
 	/**
 	 * {level:-1,_id:-1}
 	 */
@@ -100,6 +107,7 @@ public class StaticDao extends MongoDao {
 		productDao = DaoManager.findDao("TCProductDao");
 		taskDao = DaoManager.findDao("TCTaskDao");
 		taskUnitDao = DaoManager.findDao("TCTestUnitDao");
+		companyDao = DaoManager.findDao("TCCompanyDao");
 	}
 	
 	public static final KObject checkUser(String name,String pwd){
@@ -398,5 +406,129 @@ public class StaticDao extends MongoDao {
 		return sb.toString();
 	}
 
+	
+	/**
+	 * 同步公司数据,如果有则更新,无则添加
+	 * @param cpid
+	 * @return
+	 */
+	public static final boolean syncCompany(String cpid){
+		
+		EGame.getCompanyUrl();
+		String url = EGame.getCompanyUrl()+"&cpId="+cpid;//"http://202.102.39.9:82/Business/entitytest/cps.do?cpId="+cpid;
+		String comInfo = Net.getUrlContent(url, 3000, false, "utf-8");
+		if (!StringUtil.isStringWithLen(comInfo, 10)) {
+			log.error("获取公司接口数据失败:"+cpid);
+			return false;
+		}
+		
+		HashMap<String,Object> comMap = (HashMap<String, Object>) JSON.read(comInfo);
+		comMap = (HashMap<String, Object>) (((ArrayList)comMap.get("rows")).get(0));
+		if (comMap ==  null || comMap.isEmpty()) {
+			log.error("此公司不存在或无法从接口获取:"+cpid);
+			return false;
+		}
+		
+		
+		DBCollection coc = companyDao.getColl(); //mongo.getColl("TCCompany");
+		DBCollection cuc = tcUserDao.getColl(); //mongo.getColl("TCUser");
+		
+		//确定cpid是否已存在
+		DBCursor cur = coc.find(new BasicDBObject("mainUser",cpid));
+		if (cur.hasNext()) {
+			//已存在此公司
+			String name = comMap.get("shortName").toString();
+			
+			DBObject co = cur.next();
+			co.put("shortName", CnToSpell.getLetter(name));
+			co.put("name",name);
+			co.put("version", Integer.parseInt(co.get("version").toString())+1);
+			coc.save(co);
+			
+			//更新TCUser
+			cur = cuc.find(new BasicDBObject("name",cpid));
+			co = null;
+			if (cur.hasNext()) {
+				co = cur.next();
+				co.put("info", comMap.get("cnName").toString());
+				co.put("phoneNumber", comMap.get("linkPhone").toString());
+				co.put("email", comMap.get("linkEmail").toString());
+				co.put("company", name);
+				cuc.save(co);
+			}else{
+				log.error("更新company相关的TCUser失败:"+cpid);
+				return false;
+			}
+			
+			log.info("update company ok:"+cpid);
+		}else{
+			//确定数据库表中的最大id
+			cur.close();
+			cur = null;
+			cur = cuc.find(new BasicDBObject(),new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
+			long lastId = 0;
+			if (cur.hasNext()) {
+				DBObject cc = (DBObject) cur.next();
+				lastId = Long.parseLong(cc.get("_id").toString())+1;
+			}
+			cur = coc.find(new BasicDBObject(),new BasicDBObject("_id",1)).sort(new BasicDBObject("_id",-1)).limit(1);
+			long lastcId = 0;
+			if (cur.hasNext()) {
+				DBObject cc = (DBObject) cur.next();
+				lastcId = Long.parseLong(cc.get("_id").toString())+1;
+			}
+			cur.close();
+			
+			DBObject co = new BasicDBObject();
+			co.put("name", cpid);
+			co.put("pwd", "egame");
+			co.put("type", 1);
+			co.put("level", 0);
+			co.put("info", comMap.get("cnName").toString());
+			co.put("phoneNumber", comMap.get("linkPhone").toString());
+			co.put("email", comMap.get("linkEmail").toString());
+			co.put("company", comMap.get("shortName").toString());
+			co.put("newNews", 0);
+			co.put("newTasks", 0);
+			co.put("qq", "");
+			co.put("state", 0);
+			co.put("groupID", 0);
+			co.put("groupLeader", 0);
+			
+			//更新TCUser
+
+			co.put("_id", lastId);
+			cuc.save(co);
+			//更新TCCompany
+			
+			DBObject co2 = new BasicDBObject();
+			String mainUser = co.get("name").toString();
+			String name = co.get("company").toString();
+			co2.put("_id", lastcId);
+			co2.put("shortName", CnToSpell.getLetter(name));
+			co2.put("mainUser", mainUser);
+			co2.put("name", name);
+			co2.put("state", 0);
+			co2.put("level", 0);
+			co2.put("type", 0);
+			co2.put("version", 1);
+			coc.save(co2);
+			log.info("add company ok:"+cpid+" _id-u:"+lastId+" _id-c:"+lastcId);
+		}
+		return true;
+	}
+	
+	public static final boolean syncProduct(long pid){
+		
+		
+		HashMap<String,String> pmap = EGame.getProduct(pid);
+		
+		//获取短代信息
+		ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+		
+		System.out.println("ok");
+		return true;
+	}
+	
 	
 }

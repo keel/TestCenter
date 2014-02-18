@@ -14,7 +14,7 @@ KObject user = (KObject)data.getData("u");
 KObject one = (KObject)data.getData("one");
 KObject product = (KObject)data.getData("product");
 ArrayList<KObject> files = (data.getData("files")==null)?null:(ArrayList<KObject>)data.getData("files");
-ArrayList<KObject> passfiles = (data.getData("passfiles")==null)?null:(ArrayList<KObject>)data.getData("passfiles");
+ArrayList<KObject> passfiles = (data.getData("passFileParas")==null)?null:(ArrayList<KObject>)data.getData("passFileParas");
 ArrayList<KObject> tus = (data.getData("tus")==null)?null:(ArrayList<KObject>)data.getData("tus");
 Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").equals("true");
 String myPara = (ismy)?"/my":"";
@@ -480,6 +480,11 @@ StringBuilder sb = new StringBuilder();
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
 		}
 		sb.append("<div class=\"groups\">");
+		
+		//## 显示已通过包
+		
+		
+		
 		ArrayList<String> gps = (ArrayList<String>)f.getProp("groups");
 		Iterator<String> itr = gps.iterator();
 		while(itr.hasNext()){

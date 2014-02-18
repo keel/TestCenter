@@ -72,7 +72,7 @@ public class TTaskTask extends Action {
 	private void synFileRename(){
 		
 	}
-	
+	/*
 	public static final void passFileUpdateForProduct(long pid){
 		HashMap<String,Object> q = new HashMap<String, Object>(4);
 		q.put("PID", pid);
@@ -98,7 +98,7 @@ public class TTaskTask extends Action {
 		}
 		
 	}
-	
+	*/
 	
 	
 	/**
@@ -238,8 +238,11 @@ public class TTaskTask extends Action {
 		long pid = (Long)msg.getData("pid");
 		changeOperator(tid,uid,operator);
 		
+		//##更新gameFile的状态!!
+		
+		
 		if (pid != 0) {
-			passFileUpdateForProduct(pid);
+//			passFileUpdateForProduct(pid);
 		}
 	}
 	
@@ -265,6 +268,25 @@ public class TTaskTask extends Action {
 			changeOperator(tid,uid,operator);
 			
 		}
+		//更新gameFile状态
+		if (msg.containsData("gameFilePara")) {
+			String gfp = (String) msg.getData("gameFilePara");
+			String[] gfss = gfp.split(",");
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			q.put("TID", tid);
+			HashMap<String,Object> update = new HashMap<String, Object>();
+			HashMap<String,Object> set = new HashMap<String, Object>();
+			
+			for (int i = 0; i < gfss.length; i++) {
+				String aFile = gfss[i];
+				q.put("fileName", aFile);
+				set.put("passFileParas", aFile);
+				set.put("state", 1);
+				update.put("$set", set);
+				GameFile.dao.updateOne(q, update);
+			}
+		}
+		
 		//更新产品状态
 		Object po = msg.getData("pid");
 		if (StringUtil.isDigits(po)) {

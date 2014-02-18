@@ -156,6 +156,12 @@ public class EGame extends Action {
 				if (System.currentTimeMillis()-loginTime <= cookieTime) {
 					//使用CPID
 					u = TUser.dao.findOne(tt[0]);
+					if (u == null) {
+						//未同步时直接同步
+						if (StaticDao.syncCompany(tt[0])) {
+							u = TUser.dao.findOne(tt[0]);
+						}
+					}
 					if (u != null) {
 						//如果带产品id,则加到user的属性中,注意后期处理时要清除
 						if (tt.length == 3 && StringUtil.isDigits(tt[2])) {

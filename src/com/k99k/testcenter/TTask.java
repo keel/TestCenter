@@ -663,6 +663,8 @@ public class TTask extends Action {
 		HashMap<String,Object> update = new HashMap<String, Object>();
 		q.put("_id", tid);
 		KObject task = dao.findOne(tid);
+		//用于更新gameFile的适配结果
+		String gameFilePara = null;
 		if (tuRE == TASK_STATE_PASS|| tuRE == TASK_STATE_PASS_PART) {
 			//通过或部分通过
 			
@@ -702,11 +704,9 @@ public class TTask extends Action {
 				}
 				
 				String config2 = sb.toString();
+				gameFilePara = fileParas;
 				update.put("synFileParas", config2);
 			}
-			
-			 
-			
 			
 			update.put("operator", task_operator);
 			update.put("isOnline", 1);
@@ -768,6 +768,9 @@ public class TTask extends Action {
 			atask.addData("operator", task_operator);
 			atask.addData("uid", u.getId());
 			atask.addData("act", "finish");
+			if (gameFilePara != null) {
+				atask.addData("gameFilePara", gameFilePara);
+			}
 			TaskManager.makeNewTask("TTaskTask-finish_"+tid, atask);
 			msg.addData("[print]", "ok");
 			return;
@@ -1036,7 +1039,14 @@ public class TTask extends Action {
 //			return;
 //		}
 		HashMap<String,Object> json = (HashMap<String, Object>) JSON.read(task_p_json_h);
-		if (Company.dao.findOne(json.get("company").toString()) == null) {
+		String cpid = json.get("cpID").toString();
+		boolean comExsit = false;
+		if (Company.dao.checkExist("mainUser",cpid)) {
+			comExsit = true;
+		}else if(StaticDao.syncCompany(cpid)){
+			comExsit = true;
+		}
+		if (!comExsit) {
 			JOut.err(403,"E403"+Err.ERR_PARAS+"-company", msg);
 			return;
 		}
@@ -1271,6 +1281,15 @@ public class TTask extends Action {
 			ArrayList<KObject> tus = TestUnit.dao.queryKObj(q, null, MongoDao.prop_id_desc, 0, 0, null);
 			msg.addData("tus", tus);
 		}
+		//显示已通过包
+		
+		HashMap<String,Object> q = new HashMap<String, Object>();
+		q.put("PID", pid);
+		q.put("state", 1);
+		ArrayList<KObject> passFileParas = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+		msg.addData("passFileParas", passFileParas);
+		
+		
 		
 		//转到编辑时判断权限:是否为任务创建者或type>=4
 		if (req.getParameter("edit")!=null && (u.getName().equals(one.getCreatorName()) || u.getType()>=4)) {
