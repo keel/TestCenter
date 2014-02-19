@@ -62,6 +62,8 @@ public class Product extends Action {
 			this.find(req, u, httpmsg);
 		}else if(subact.equals("one")){
 			this.one(req, u, httpmsg);
+		}else if(subact.equals("sync")){
+			this.sync(req, u, httpmsg);
 		}else if (StringUtil.isDigits(subact)) {
 			
 		}else if(subact.equals("a_a")){
@@ -101,6 +103,24 @@ public class Product extends Action {
 			return 0;//kobj.getId();
 		}
 		return -4;
+	}
+	
+	private void sync(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		if(u.getType()<2){
+			msg.addData("[print]", "");
+			return ;
+		}
+		String pidstr = req.getParameter("pid");
+		if (!StringUtil.isDigits(pidstr)) {
+			msg.addData("[print]", "no pid");
+			return ;
+		}
+		if (StaticDao.syncProduct(Long.parseLong(pidstr))) {
+			msg.addData("[print]", "ok");
+			return ;
+		}
+		msg.addData("[print]", "sync failed.");
+		return ;
 	}
 	
 	/**

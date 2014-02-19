@@ -520,13 +520,65 @@ public class StaticDao extends MongoDao {
 	
 	public static final boolean syncProduct(long pid){
 		
-		
+		//产品信息
 		HashMap<String,String> pmap = EGame.getProduct(pid);
 		
-		//获取短代信息
+		//计费信息
 		ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
 		
-		System.out.println("ok");
+		
+		KObject one = new KObject();//productDao.findOne(pid);
+		one.setId(pid);
+		String name = pmap.get("gameName");
+		one.setName(name);
+		one.setProp("company", pmap.get("venderShortName"));
+		int netType = 3;
+		Object gType = pmap.get("gameTypeName");
+		if(gType.equals("单机游戏")){
+			netType = 0;
+		}else if(gType.equals("联网游戏")){
+			netType = 1;
+		}else if(gType.equals("WAP游戏")){
+			netType = 2;
+		}else{
+			netType = 3;
+		}
+		one.setProp("netType", netType);
+		one.setProp("shortName", CnToSpell.getLetter(name));
+		int sys = 6;
+		Object os = pmap.get("gameOSName");
+		if(os.equals("JAVA")){
+			sys = 0;
+		}else if(os.equals("Android")){
+			sys = 1;
+		}else if(netType == 2){
+			sys = 2;
+		}else if(os.equals("BREW")){
+			sys = 3;
+		}else if(os.equals("Windows Mobile")){
+			sys = 4;
+		}else if(os.equals("Windows CE")){
+			sys = 5;
+		}else{
+			sys = 6;
+		}
+		one.setProp("sys", sys);
+		int type = 0;String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("packageFlag");
+		if(!isPack.toString().equals("0")){
+			type = 4;
+		}else if(pType.indexOf("关卡或道具")>=0){
+			type = 1;
+		}else if(pType.indexOf("下载")>=0){ //下载时按次计费
+			type = 3;
+		}else if(pType.indexOf("免费")>=0){
+			type = 0;
+		}else if(pType.indexOf("包月")>=0){
+			type = 5;
+		}
+		one.setProp("type", type);
+		one.setProp("feeInfo", pmap.get("feeInfo"));
+		productDao.save(one);
+		log.info("product sync ok:"+pid);
 		return true;
 	}
 	

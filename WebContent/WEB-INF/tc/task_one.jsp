@@ -420,6 +420,11 @@ function showOrgParas(){
 公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>
 <%if(one.getType() == 0 || one.getType() == 1){ %>
 测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
+<%}
+if(user.getType() >1 ){%>
+[ <a href="../product/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步产品数据</a> |
+ <a href="../user/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步公司数据</a> ]
+
 <%} %>
 </div>
     	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> <!-- 接口调测情况: <span id="task_p_acc_v" class="blueBold"><- %=product.getProp("netPort") -%></span> --></div> 

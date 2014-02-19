@@ -1062,7 +1062,6 @@ public class TTask extends Action {
 		int tType = Integer.parseInt(task_type_h);
 		if (json.containsKey("newp")) {
 			json.remove("newp");
-			//FIXME 在数据库中创建Product后就再不会更新了，需要有一处可以再次从EGame更新Product
 			HashMap<String,Object> q = new HashMap<String, Object>(2);
 			HashMap<String,Object> qn = new HashMap<String, Object>(2);
 			qn.put("$gte", 0);
@@ -1074,7 +1073,7 @@ public class TTask extends Action {
 				int re = Product.add(json);
 				if(re!=0){
 					JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
-					return;
+					return;    
 				}
 			}else{
 				Object ttso = product.get(0).get("testTimes");

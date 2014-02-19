@@ -20,6 +20,7 @@ import com.k99k.khunter.KFilter;
 import com.k99k.khunter.KObjManager;
 import com.k99k.khunter.KObjSchema;
 import com.k99k.khunter.KObject;
+import com.k99k.khunter.dao.StaticDao;
 import com.k99k.tools.JSON;
 import com.k99k.tools.StringUtil;
 
@@ -63,11 +64,37 @@ public class TUser extends Action  {
 			this.edit(subact, req, u, httpmsg);
 		}else if(subact.equals("a_u")){
 			this.update(req, u, httpmsg);
+		}else if(subact.equals("sync")){
+			this.sync(req, u, httpmsg);
 		}else{
 			JOut.err(404, httpmsg);
 		}
 		
 		return super.act(msg);
+	}
+	
+	
+	/**
+	 * 针对厂商，强制从平台同步更新厂商信息
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void sync(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String pid = req.getParameter("pid");
+		if (u.getType()>1 && StringUtil.isDigits(pid)) {
+			HashMap<String,String> pmap = EGame.getProduct(Long.parseLong(pid));
+			String cpid = pmap.get("venderCode");
+			if (StringUtil.isStringWithLen(cpid, 3) && StaticDao.syncCompany(cpid)) {
+				msg.addData("[print]", "ok");
+				return;
+			}
+			msg.addData("[print]", "sync failed.");
+			return;
+		}
+		
+		JOut.err(404, msg);
+		return;
 	}
 	
 	/**
