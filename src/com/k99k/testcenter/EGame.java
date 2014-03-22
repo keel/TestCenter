@@ -48,10 +48,10 @@ public class EGame extends Action {
 	 */
 	private static  String productUrl;
 	
-	/**
-	 * 终端接口URL
-	 */
-	private static String handsetUrl;
+//	/**
+//	 * 终端接口URL
+//	 */
+//	private static String handsetUrl;
 	
 	/**
 	 * 短代信息URL接口
@@ -376,7 +376,7 @@ public class EGame extends Action {
 	 * @return HashMap形式的company json
 	 */
 	public static final HashMap<String,String> getCompany(String cpid){
-		String url = companyUrl+"&cpid="+cpid;
+		String url = companyUrl+"&cp_id="+cpid;
 		return getUrlJson(url);
 	}
 	
@@ -386,18 +386,18 @@ public class EGame extends Action {
 	 * @return HashMap形式的json
 	 */
 	public static final HashMap<String,String> getProduct(long pid){
-		String url = productUrl+"&productId="+pid;
+		String url = productUrl+"&app_id="+pid;
 		return getUrlJson(url);
 	}
-	/**
-	 * 获取终端信息
-	 * @param mode
-	 * @return HashMap形式的json
-	 */
-	public static final HashMap<String,String> getHandset(String mode){
-		String url = handsetUrl+"&model="+mode;
-		return getUrlJson(url);
-	}
+//	/**
+//	 * 获取终端信息
+//	 * @param mode
+//	 * @return HashMap形式的json
+//	 */
+//	public static final HashMap<String,String> getHandset(String mode){
+//		String url = handsetUrl+"&model="+mode;
+//		return getUrlJson(url);
+//	}
 	
 	/**
 	 * 获取短代信息
@@ -406,7 +406,7 @@ public class EGame extends Action {
 	 */
 	@SuppressWarnings("unchecked")
 	public static final ArrayList<HashMap<String,String>> getFee(long pid){
-		String url = feeUrl+"?productId="+pid;
+		String url = feeUrl+"?app_id="+pid;
 		String re = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (re.equals("")) {
 			return null;
@@ -417,7 +417,7 @@ public class EGame extends Action {
 		try {
 			if (j instanceof HashMap) {
 				HashMap<String,Object> json = (HashMap<String,Object>)j;
-				if (json.containsKey("rows")) {
+				if (json.containsKey("data")) {
 					ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) json.get("rows");
 					if (list!=null && list.size()>=1) {
 						return list;
@@ -438,6 +438,7 @@ public class EGame extends Action {
 	 */
 	@SuppressWarnings("unchecked")
 	private final static HashMap<String,String> getUrlJson(String url){
+		System.out.println("appURL:"+url);
 		String re = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (re.equals("")) {
 			return null;
@@ -446,8 +447,8 @@ public class EGame extends Action {
 		try {
 			if (j instanceof HashMap) {
 				HashMap<String,Object> json = (HashMap<String,Object>)j;
-				if (json.containsKey("rows")) {
-					ArrayList<Object> list = (ArrayList<Object>) json.get("rows");
+				if (json.containsKey("data")) {
+					ArrayList<Object> list = (ArrayList<Object>) json.get("data");
 					if (list!=null && list.size()>=1) {
 						HashMap<String,String> comJson = (HashMap<String, String>) list.get(0);
 						if (comJson != null) {
@@ -529,19 +530,19 @@ public class EGame extends Action {
 		productUrl = url;
 	}
 
-	/**
-	 * @return the handsetUrl
-	 */
-	public static final String getHandsetUrl() {
-		return handsetUrl;
-	}
-
-	/**
-	 * @param handsetUrl the handsetUrl to set
-	 */
-	public static final void setHandsetUrl(String url) {
-		handsetUrl = url;
-	}
+//	/**
+//	 * @return the handsetUrl
+//	 */
+//	public static final String getHandsetUrl() {
+//		return handsetUrl;
+//	}
+//
+//	/**
+//	 * @param handsetUrl the handsetUrl to set
+//	 */
+//	public static final void setHandsetUrl(String url) {
+//		handsetUrl = url;
+//	}
 
 	/**
 	 * @return the feeUrl

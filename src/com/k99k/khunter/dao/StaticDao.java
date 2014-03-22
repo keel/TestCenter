@@ -414,8 +414,7 @@ public class StaticDao extends MongoDao {
 	 */
 	public static final boolean syncCompany(String cpid){
 		
-		EGame.getCompanyUrl();
-		String url = EGame.getCompanyUrl()+"&cpId="+cpid;//"http://202.102.39.9:82/Business/entitytest/cps.do?cpId="+cpid;
+		String url = EGame.getCompanyUrl()+"&cp_id="+cpid;//"http://202.102.39.9:82/Business/entitytest/cps.do?cpId="+cpid;
 		String comInfo = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (!StringUtil.isStringWithLen(comInfo, 10)) {
 			log.error("获取公司接口数据失败:"+cpid);
@@ -423,7 +422,7 @@ public class StaticDao extends MongoDao {
 		}
 		
 		HashMap<String,Object> comMap = (HashMap<String, Object>) JSON.read(comInfo);
-		comMap = (HashMap<String, Object>) (((ArrayList)comMap.get("rows")).get(0));
+		comMap = (HashMap<String, Object>) (((ArrayList)comMap.get("data")).get(0));
 		if (comMap ==  null || comMap.isEmpty()) {
 			log.error("此公司不存在或无法从接口获取:"+cpid);
 			return false;
