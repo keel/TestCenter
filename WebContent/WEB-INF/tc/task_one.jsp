@@ -438,7 +438,7 @@ if(user.getType() >1 ){%>
 <% 
 if(files != null && !files.isEmpty()){
 StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>游戏实体包</div><div class='inBoxContent'>");
+	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>提测实体包</div><div class='inBoxContent'>");
 	Iterator<KObject> it = files.iterator();int i = 0;
 	while(it.hasNext()){
 		KObject f=it.next();
@@ -486,14 +486,10 @@ StringBuilder sb = new StringBuilder();
 		}
 		sb.append("<div class=\"groups\">");
 		
-		//## 显示已通过包
-		
-		
-		
-		ArrayList<String> gps = (ArrayList<String>)f.getProp("groups");
-		Iterator<String> itr = gps.iterator();
-		while(itr.hasNext()){
-			String g = itr.next();
+		//显示已通过包
+		String[] passFs = f.getProp("passFileParas").toString().split("\\|");
+		for(int j=1;j<passFs.length;j++){
+			String g = passFs[j];
 			sb.append("<span class='txtBox2'>").append(g).append("</span>");
 		}
 		sb.append("</div></div>");
@@ -701,7 +697,14 @@ else if(userType==99) { %>
 <div>请仔细参考流程中驳回的原因，根据实际情况从业务平台重新发起任务：</div>
 <a href='javascript:dropTask(<%= one.getId()%>);' class='aButton tx_center' id="bt_rejectAcc">确认驳回并放弃</a>
 </div>
-<%}%>
+<%}
+
+if(state==TTask.TASK_STATE_PASS && userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){%>
+<br />
+<div id="passback">
+<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
+
+<%} %>
 </div>
 
 

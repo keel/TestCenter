@@ -143,6 +143,8 @@ public class TTask extends Action {
 			this.confirm(req, u, httpmsg);
 		}else if(subact.equals("a_s")){
 			this.search(subact,req, u, httpmsg);
+		}else if(subact.equals("update")){
+			this.update(req, u, httpmsg);
 		}else if(subact.equals("add2")){
 			msg.addData("sub", subact);
 			this.toAdd2(u, httpmsg);
@@ -157,6 +159,57 @@ public class TTask extends Action {
 	
 	static final String TestPointer = "曹雨";
 	static final String TestOver = "结束";
+	
+	
+	/**
+	 * 导向发起实体包更新的页面
+	 * @param req
+	 * @param u
+	 * @param msg
+	 */
+	private void update(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		if (u.getType() < 1) {
+			//权限不够
+			JOut.err(401, msg);
+			return;
+		}
+		String opid = req.getParameter("pid");
+		if (!StringUtil.isDigits(opid)) {
+			JOut.err(403, msg);
+			return;
+		}
+		long pid = Long.parseLong(opid);
+		HashMap<String,String> pmap = EGame.getProduct(pid);
+		if (pmap == null) {
+			//接口获取失败
+			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
+			return;
+		}
+		//加入真正的公司名称
+		pmap.put("cpName", Company.egameIds.get(pmap.get("venderCode").toString()));
+		//默认为此产品的首次测试,添加操作时会进行判断
+		//boolean isOld = Product.dao.checkId(pid);
+		pmap.put("task_type", "0");
+		if (String.valueOf(pmap.get("payType")).equals("2")) {
+			//获取短代信息
+			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+			if (fee != null) {
+				msg.addData("fee", fee);
+			}
+		}
+		msg.addData("pmap", pmap);
+		
+	
+		//显示已通过包
+		HashMap<String,Object> q = new HashMap<String, Object>();
+		q.put("PID", pid);
+		q.put("state", 1);
+		ArrayList<KObject> passFileParas = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+		msg.addData("passFileParas", passFileParas);
+		
+		msg.addData("u", u);
+		msg.addData("[jsp]", "/WEB-INF/tc/task_update.jsp");
+	}
 	
 	private void backToTest(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限

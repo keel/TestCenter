@@ -279,7 +279,11 @@ public class TTaskTask extends Action {
 			
 			for (int i = 0; i < gfss.length; i++) {
 				String aFile = gfss[i];
-				q.put("fileName", aFile);
+				int po = aFile.indexOf('|');
+				if (po<0) {
+					continue;
+				}
+				q.put("fileName", aFile.substring(0,po));
 				set.put("passFileParas", aFile);
 				set.put("state", 1);
 				update.put("$set", set);
