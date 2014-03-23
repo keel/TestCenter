@@ -130,6 +130,7 @@ $('#add_form').validate({
     }
 });
 
+
 var sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
@@ -145,7 +146,7 @@ if(pJSON.sys==0){
 }else if(pJSON.sys==1){
 	upFileType = "*.apk";
 }
-initUpload("<%=user.getName() %>",sucFn,upFileType);
+initUpload("<%=user.getName() %>",sucFn,upFileType,null,null,null,1);
 <%
 int maxFileNum = 0;
 if(files != null){
@@ -221,6 +222,7 @@ StringBuilder sb = new StringBuilder();
 		KObject f=it.next();
 		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
 		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+		sb.append(" - <a href='#' class='aButton'>更新此实体包</a>");
 		if(userType>=3){
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
 		}
@@ -240,12 +242,12 @@ StringBuilder sb = new StringBuilder();
 }
 %>
 <div class="inBox" id="uploadFS">
-    <div class="inBoxTitle">游戏实体包上传</div> 
+    <div class="inBoxTitle">实体包上传</div> 
     <div class="inBoxContent">
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
 			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过200M,按住<span class="purpleBold">Ctrl键</span>可一次选择多个文件上传</span>
+			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过200M</span>
 		</div>
 		<div id="upFiles"></div>
 		<br /><a href="javascript:filesSet();" class="aButton">确定</a> 
