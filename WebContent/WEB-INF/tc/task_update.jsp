@@ -26,7 +26,7 @@ out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<%=sPrefix %>/css/jquery.autocomplete.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
@@ -80,8 +80,8 @@ if(os.equals("JAVA")){
 out.print(sys+";");
 %>
 pJSON.type = <% 
-String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("packageFlag");
-if(!isPack.toString().equals("0")){
+String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("isPackage");
+if(!StringUtil.toStrNotNull(isPack, "1").equals("0")){
 	type = "4";
 }else if(pType.indexOf("关卡或道具")>=0){
 	type = "1";
@@ -130,23 +130,28 @@ $('#add_form').validate({
     }
 });
 
-
-var sucFn = function(file, serverData){
+$.hasFileIndex=0;
+sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
-	var i  =($.hasFileIndex) ? ($.hasFileIndex+file.index) :file.index;
+	var i  =$.hasFileIndex;
+	var reShow = "";
 	if(re.length>=5){
-	swfok("<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>");
-	$.hasFileIndex = i;
-	}else{swfok("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
+		reShow="<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>";
+	}else{reShow = ("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
+	if(swfu.currentFile == "newAdd"){
+		$("#fileUpload"+i).append(reShow).show();$.hasFileIndex++;
+	}else{
+		$("#fileUpload"+i).html(reShow).show();
+	}
+	$("#uploadInfo").html("");$("#hide").prepend($("#fileupload"));
 };
-var upFileType = "*.*";
+upFileType = "*.*";
 if(pJSON.sys==0){
 	upFileType = "*.jar";
 }else if(pJSON.sys==1){
 	upFileType = "*.apk";
 }
-initUpload("<%=user.getName() %>",sucFn,upFileType,null,null,null,1);
 <%
 int maxFileNum = 0;
 if(files != null){
@@ -154,12 +159,25 @@ if(files != null){
 	maxFileNum = 1+Integer.parseInt(lastFileName.substring(lastFileName.lastIndexOf("_")+1,lastFileName.lastIndexOf("\\.")));
 }
 %>
+maxQueueNum = 1;
+addFileStartNum = 0;
+queueCheck = function (numFilesSelected, numFilesQueued) {
+	if (numFilesQueued > 0 ) {
+		if(numFilesQueued > maxQueueNum){
+			alert("超过上传包的最大数量！");
+		}else{
+			this.startUpload();return;
+		}
+	}
+}
+initUpload("<%=user.getName() %>",sucFn,upFileType,null,null,null,queueCheck);
+
 swfu.newfile = function(file){
-	return pJSON._id+"_"+(file.index+<%=maxFileNum %>)+file.type;
+	if(swfu.currentFile == "newAdd"){
+		return 	pJSON._id+"_"+(addFileStartNum+file.index)+".apk";
+	}
+	return swfu.currentFile;
 };
-
-
-
 
 feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 showFileParas();
@@ -187,6 +205,42 @@ function showFileParas(){
 		}
 	});
 }
+function getApkNum(apkName){
+	var s=	apkName.indexOf('_')+1,e=apkName.indexOf('.');
+	return parseInt(apkName.substring(s,e));
+}
+function maxFileNum(){
+	var max = 0;
+	$("#files").find(".filename").each(function(i){
+		var rel = $(this).attr("rel");
+		if(rel){
+			var fi = getApkNum(rel);
+			if(fi>max){max=fi;}
+		}
+	});
+	$("#newPk").find(".updateFileUpload").each(function(i){
+		var fi = parseInt(this.id.substring(10))-100;
+		if(fi>max){max=fi;}
+	});
+	return max;
+}
+function showUploadBT(cfuId,fileName){
+	if(!fileName){
+		swfu.currentFile = "newAdd";
+		addFileStartNum =maxFileNum()+1; 
+		maxQueueNum=50;
+	}else{
+		swfu.currentFile = fileName;
+	}
+	if(cfuId>=100){
+		maxQueueNum = 50;
+		$("#newPk").append("<div id=\"cfu_"+cfuId+"\"><div id=\"fileUpload"+cfuId+"\" class=\"updateFileUpload hide\"></div></div>");
+		var newI = parseInt($("#addNewPk").attr("rel"))+1;
+		$("#addNewPk").attr("href","javascript:showUploadBT("+newI+");").attr("rel",newI);
+	}else{maxQueueNum=1;}
+	$("#cfu_"+cfuId).append($("#fileupload"));
+	$.hasFileIndex=cfuId;
+}
 //-------------------------------------
 
 </script>
@@ -207,8 +261,8 @@ function showFileParas(){
     <div class="inBoxContent">
    		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=String.valueOf(pmap.get("gameId")) %></span> 
    		产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("gameName") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOSName") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("venderCode") %></span></div> 
-    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span> 计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("feeTypeName") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
-    	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("synUrl"), 1)?pmap.get("synUrl"):"" %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("wapUrl"), 1)?pmap.get("wapUrl"):"" %></span></div>
+    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
+    	<div class="inBoxLine">同步地址: <span id="task_p_synurl_v" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("synUrl"), 1)?pmap.get("synUrl"):"" %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("wapUrl"), 1)?pmap.get("wapUrl"):"" %></span></div>
     	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="hide"><%=feeInfo %></span><div id="feeInfoTable"></div></div>
 
     </div>
@@ -222,10 +276,12 @@ StringBuilder sb = new StringBuilder();
 		KObject f=it.next();
 		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
 		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-		sb.append(" - <a href='#' class='aButton'>更新此实体包</a>");
-		if(userType>=3){
+		sb.append(" - <a href='javascript:showUploadBT(")
+				.append(i).append(",\"")
+				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
+/* 		if(userType>=3){
 			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
-		}
+		} */
 		sb.append("<div class=\"groups\">");
 		
 		//显示已通过包
@@ -234,7 +290,7 @@ StringBuilder sb = new StringBuilder();
 			String g = passFs[j];
 			sb.append("<span class='txtBox2'>").append(g).append("</span>");
 		}
-		sb.append("</div></div>");
+		sb.append("</div><div id='fileUpload").append(i).append("' class='updateFileUpload hide'></div></div>");
 		i++;
 	}
 	sb.append("</div></div>");
@@ -242,23 +298,25 @@ StringBuilder sb = new StringBuilder();
 }
 %>
 <div class="inBox" id="uploadFS">
-    <div class="inBoxTitle">实体包上传</div> 
-    <div class="inBoxContent">
-	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
-		<div id="swfBT" class="inBoxLine">
-			<div id="spanSWFUploadButton">请稍候...</div> 
-			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过200M</span>
-		</div>
-		<div id="upFiles"></div>
-		<br /><a href="javascript:filesSet();" class="aButton">确定</a> 
-	</form>
+    <div class="inBoxTitle">补充新的适配包 <span class="red bold">注意！此处仅为补充新的适配使用，如果仅需要对已有包更新，请点击上方对应包后面的更新按钮</span></div> 
+    <div class="inBoxContent" id="newPk">
+		<a href="javascript:showUploadBT(100);" rel="100" id="addNewPk" class="aButton">增加新适配的实体包</a>
+		<div id="cfu_100"></div>
     </div>
 </div>
-
+<div>
+<br /><a href="javascript:filesSet('#task_new');" class="aButton">确定</a> 
+</div>
 </div>
 </div>
 
 <div id="hide" class="hide">
+	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
+		<div id="swfBT" class="inBoxLine txtBox_1">
+			<div id="spanSWFUploadButton">请稍候...</div> 
+			<span id="uploadInfo" style="font-size:14px;"> &nbsp;文件最大不超过200M</span>
+		</div>
+	</form>
 <div id="taskFS">
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
 <p><label for="task_info">任务说明：<span class="red">请填入需要测试过程中注意的问题,如不适配的android版本，分辨率等，修改后提交请说明具体的修改之处</span></label><br />

@@ -80,10 +80,11 @@ function urlSet(){
 	}
 }
 
-function filesSet(){
+function filesSet(fileScope){
 	//检测是否每个文件都指定了机型组
 	var b = true,tmp = [],i=0;
-	$("#upFiles").find(".file_upload").each(function(){
+	var scope = (fileScope) ? fileScope : "#upFiles";
+	$(scope).find(".file_upload").each(function(){
 		var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),j={"name":n,"fileName":$(this).find(".newname").text(),"size":$(this).find(".size").text(),"groups":[]};
 		if(v.length<=0){b=false;return false;}
 		else{

@@ -1,5 +1,5 @@
 var swfu;
-function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url,f_count){
+function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url,queueCheck){
  swfu= new SWFUpload({
 	upload_url : (f_url)?f_url:$.prefix+"/upload",
 	flash_url : $.sPrefix+"/js/swfupload.swf",
@@ -17,13 +17,14 @@ function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url,f_count){
 	prevent_swf_caching:false,
 	upload_start_handler : fileQueue,
 	file_queue_error_handler : fileQueueError,
-	file_dialog_complete_handler : fileDialogComplete,
+	file_dialog_complete_handler : (queueCheck) ? queueCheck :fileDialogComplete,
 	upload_progress_handler : uploadProgress,
 	upload_error_handler : uploadError,
 	upload_success_handler : (sucFn)?sucFn:uploadSuccess,
-	upload_complete_handler:uploadComplete,
+	//upload_complete_handler:uploadComplete,
 	
-	file_upload_limit:(f_count) ? f_count : 100,
+	 file_upload_limit : 50,
+     file_queue_limit : 50,
 
 	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif;*.pdf",  
      file_types_description :(f_types_say)?f_types_say: "上传文件", 
