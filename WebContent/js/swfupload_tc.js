@@ -21,10 +21,10 @@ function initUpload(uName,sucFn,f_types,f_types_say,f_size,f_url,queueCheck){
 	upload_progress_handler : uploadProgress,
 	upload_error_handler : uploadError,
 	upload_success_handler : (sucFn)?sucFn:uploadSuccess,
-	//upload_complete_handler:uploadComplete,
+	upload_complete_handler:uploadComplete,
 	
-	 file_upload_limit : 50,
-     file_queue_limit : 50,
+	 file_upload_limit : 100,
+     file_queue_limit : 100,
 
 	file_types : (f_types)?f_types:"*.rar;*.zip;*.apk;*.jar;*.doc;*.docx;*.xls;*.xlsx;*.ppt;*.pptx;*.txt;*.jpg;*.png;*.gif;*.pdf",  
      file_types_description :(f_types_say)?f_types_say: "上传文件", 
@@ -73,6 +73,9 @@ function fileQueueError(file, errorCode, message) {
 	}
 }
 function uploadComplete(file) {
+	if(swfu.end){
+		swfu.end();return;
+	}
 	if (this.getStats().files_queued === 0) {
 		//document.getElementById(this.customSettings.cancelButtonId).disabled = true;
 	} else {	

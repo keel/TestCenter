@@ -26,7 +26,7 @@ out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<%=sPrefix %>/css/jquery.autocomplete.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
-<script src="<%=sPrefix %>/js/swfupload.js" type="text/javascript"></script>
+<script src="<%=sPrefix %>/js/swfupload.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/swfupload_tc.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.validate.min.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/jquery.json-2.3.min.js" type="text/javascript"></script>
@@ -135,16 +135,23 @@ sucFn = function(file, serverData){
 	var re = serverData;
 	swfu.startProg = false;
 	var i  =$.hasFileIndex;
+	if(swfu.currentFile == "newAdd"){
+		i = addFileStartNum + file.index;
+	}
 	var reShow = "";
 	if(re.length>=5){
 		reShow="<div class='file_upload' id='fu_"+i+"'><span class='filename'>"+file.name+"</span><span class='newname hide'>"+re+"</span><span class='size hide'>"+file.size+"</span> <span class='u_ok'><span class='greenBold'>上传成功!</span> [ <a href='javascript:delFile(\""+i+"\");'>删除 </a> ][ <a href='javascript:choosePhType2(\""+i+"\");'>选择适配</a> ]<span class=\"files_name\">"+file.name+"</span></span></div>";
 	}else{reShow = ("<div class='file_upload file_upload_ERR'>"+file.name+" 上传失败!</div>");}
+	$("#uploadInfo").html("");
 	if(swfu.currentFile == "newAdd"){
-		$("#fileUpload"+i).append(reShow).show();$.hasFileIndex++;
+		$("#newPk").append(reShow);
+		swfu.end =null;
 	}else{
 		$("#fileUpload"+i).html(reShow).show();
+		swfu.end = function(){
+			$("#hide").prepend($("#fileupload"));
+		}
 	}
-	$("#uploadInfo").html("");$("#hide").prepend($("#fileupload"));
 };
 upFileType = "*.*";
 if(pJSON.sys==0){
@@ -218,8 +225,8 @@ function maxFileNum(){
 			if(fi>max){max=fi;}
 		}
 	});
-	$("#newPk").find(".updateFileUpload").each(function(i){
-		var fi = parseInt(this.id.substring(10))-100;
+	$("#newPk").find(".newname").each(function(i){
+		var fi = getApkNum(this.innerHTML);
 		if(fi>max){max=fi;}
 	});
 	return max;
@@ -229,17 +236,13 @@ function showUploadBT(cfuId,fileName){
 		swfu.currentFile = "newAdd";
 		addFileStartNum =maxFileNum()+1; 
 		maxQueueNum=50;
+		$("#cfu_AddNew").append($("#fileupload"));
 	}else{
 		swfu.currentFile = fileName;
+		maxQueueNum=1;
+		$("#cfu_"+cfuId).append($("#fileupload"));
+		$.hasFileIndex=cfuId;
 	}
-	if(cfuId>=100){
-		maxQueueNum = 50;
-		$("#newPk").append("<div id=\"cfu_"+cfuId+"\"><div id=\"fileUpload"+cfuId+"\" class=\"updateFileUpload hide\"></div></div>");
-		var newI = parseInt($("#addNewPk").attr("rel"))+1;
-		$("#addNewPk").attr("href","javascript:showUploadBT("+newI+");").attr("rel",newI);
-	}else{maxQueueNum=1;}
-	$("#cfu_"+cfuId).append($("#fileupload"));
-	$.hasFileIndex=cfuId;
 }
 //-------------------------------------
 
@@ -274,7 +277,7 @@ StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = passfiles.iterator();int i = 0;
 	while(it.hasNext()){
 		KObject f=it.next();
-		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
+		sb.append(" <div style='background-color:#FFF;padding:5px;' id='cfu_").append(i);
 		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 		sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")
@@ -300,11 +303,11 @@ StringBuilder sb = new StringBuilder();
 <div class="inBox" id="uploadFS">
     <div class="inBoxTitle">补充新的适配包 <span class="red bold">注意！此处仅为补充新的适配使用，如果仅需要对已有包更新，请点击上方对应包后面的更新按钮</span></div> 
     <div class="inBoxContent" id="newPk">
-		<a href="javascript:showUploadBT(100);" rel="100" id="addNewPk" class="aButton">增加新适配的实体包</a>
-		<div id="cfu_100"></div>
+		<a href="javascript:showUploadBT(100);" id="addNewPk" class="aButton">增加新适配的实体包</a>
+		<div id="cfu_AddNew"></div>
     </div>
 </div>
-<div>
+<div class="u_ok">
 <br /><a href="javascript:filesSet('#task_new');" class="aButton">确定</a> 
 </div>
 </div>
@@ -321,18 +324,14 @@ StringBuilder sb = new StringBuilder();
 <form action="<%=prefix%>/tasks/a_a" method="post" id="add_form">
 <p><label for="task_info">任务说明：<span class="red">请填入需要测试过程中注意的问题,如不适配的android版本，分辨率等，修改后提交请说明具体的修改之处</span></label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;"></textarea></p>
-<% if(userType>1){ %>
-<p>任务优先级：
-<select name="task_level"><option value="0">普通</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select>
-</p>
-<% }%>
 <p>下一流程处理人：
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
+<input type="hidden" id="is_update" name="is_update" value="true" />
 <input type="hidden" id="task_type_h" name="task_type_h" value="<%=pmap.get("task_type") %>" />
 <textarea rows="1" cols="1" class="hide" name="task_p_json_h" id="task_p_json_h"></textarea>
 </form>
-<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a> </p>
+<p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:100px;">创建更新任务</a> </p>
 </div>
 <!-- end of hide -->
 </div>
