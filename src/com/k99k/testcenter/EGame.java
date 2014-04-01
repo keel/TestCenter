@@ -418,7 +418,7 @@ public class EGame extends Action {
 			if (j instanceof HashMap) {
 				HashMap<String,Object> json = (HashMap<String,Object>)j;
 				if (json.containsKey("data")) {
-					ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) json.get("rows");
+					ArrayList<HashMap<String,String>> list = (ArrayList<HashMap<String,String>>) json.get("data");
 					if (list!=null && list.size()>=1) {
 						return list;
 					}
@@ -438,7 +438,7 @@ public class EGame extends Action {
 	 */
 	@SuppressWarnings("unchecked")
 	private final static HashMap<String,String> getUrlJson(String url){
-		System.out.println("appURL:"+url);
+//		System.out.println("egameURL:"+url);
 		String re = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (re.equals("")) {
 			return null;

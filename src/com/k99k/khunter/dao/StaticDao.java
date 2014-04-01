@@ -562,8 +562,8 @@ public class StaticDao extends MongoDao {
 			sys = 6;
 		}
 		one.setProp("sys", sys);
-		int type = 0;String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("packageFlag");
-		if(!isPack.toString().equals("0")){
+		int type = 0;String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("isPackage");
+		if(!StringUtil.toStrNotNull(isPack, "1").equals("0")){
 			type = 4;
 		}else if(pType.indexOf("关卡或道具")>=0){
 			type = 1;
@@ -575,7 +575,7 @@ public class StaticDao extends MongoDao {
 			type = 5;
 		}
 		one.setProp("type", type);
-		one.setProp("feeInfo", pmap.get("feeInfo"));
+		one.setProp("feeInfo",fee);
 		productDao.save(one);
 		log.info("product sync ok:"+pid);
 		return true;

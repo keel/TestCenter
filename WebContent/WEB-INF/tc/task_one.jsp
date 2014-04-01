@@ -1,7 +1,84 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="java.util.*,com.k99k.khunter.*,com.k99k.testcenter.*,com.k99k.tools.*" session="false" %>
+<%!
+private String showPassedFiles(ArrayList<KObject> passfiles,int userType,KObject one){
+	if(passfiles != null && !passfiles.isEmpty()){
+		StringBuilder sb = new StringBuilder();
+			sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
+			Iterator<KObject> it = passfiles.iterator();int i = 0;
+			while(it.hasNext()){
+				KObject f=it.next();
+				sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
+				sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				if(userType>=3 && one.getState()==0){
+					sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
+				}
+				sb.append("<div class=\"groups\">");
+				
+				//显示已通过包
+				String[] passFs = f.getProp("passFileParas").toString().split("\\|");
+				for(int j=1;j<passFs.length;j++){
+					String g = passFs[j];
+					sb.append("<span class='txtBox2'>").append(g).append("</span>");
+				}
+				sb.append("</div></div>");
+				i++;
+			}
+			sb.append("</div></div>");
+			return sb.toString();
+		}
+	return "";
+}
+private static final String QUESTION_FEEDBACK_HTML = "<div class=\"inBox hide\" id=\"failCases\"> <div class=\"inBoxTitle\">测试问题汇总<a name=\"ffcc\"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> <div class=\"inBoxContent\" id=\"fCases\"> </div>";
+private static final String showFailedCases(KObject one,int state){
+	StringBuilder sb = new StringBuilder(QUESTION_FEEDBACK_HTML);
+	if((state == TTask.TASK_STATE_PASS || state == TTask.TASK_STATE_PASS_PART)){ 
+		sb.append("<div> 评分：").append(one.getProp("rank")).append("</div>");
+	}
+	sb.append("</div>");
+	return sb.toString();
+}
+private static final String WAIT_TEST_HTML= "<br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div>";
+private String showTestUnit(ArrayList<KObject> tus,boolean showWait){
+	if(tus ==null || tus.isEmpty()){
+		return "";
+	}
+	String file = "";int i=0;
+	StringBuilder sb = new StringBuilder();
+	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
+	Iterator<KObject> it = tus.iterator();
+	boolean wapfix = false;
+	boolean hasFile = false;
+	while(it.hasNext()){
+		KObject tu = it.next();
+		String gFile = tu.getProp("gFile").toString();
+		if(!gFile.equals(file)){
+			if(!file.equals("")){sb.append("</div></div>");}
+			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
+			sb.append("'><a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+			file = gFile;
+			hasFile = true;
+			i++;
+		}else{
+			if(gFile.equals("") && !wapfix){sb.append("<div><div class=\"groups\">");wapfix=true;};
+			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
+		}
+	}
+	if(hasFile){
+		sb.append("</div></div>");
+	};
+	sb.append("</div>");
+	if(showWait){
+		sb.append(WAIT_TEST_HTML);
+	}
+	sb.append("</div></div>");
+	return sb.toString();
+}
+private static final String sPrefix = KFilter.getStaticPrefix();
+private static final String prefix = KFilter.getPrefix();
+ %>
 <%
-String sPrefix = KFilter.getStaticPrefix();
-String prefix = KFilter.getPrefix();
+
 Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
@@ -20,6 +97,7 @@ Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").eq
 String myPara = (ismy)?"/my":"";
 int state  =one.getState();
 int userType = user.getType();
+int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
 out.print(JSPOut.out("head0","0",one.getName()));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>
@@ -311,9 +389,9 @@ function feeInfo(fee,to){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
-			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
+			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>触发条件</th><th>软/硬</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";
@@ -473,32 +551,8 @@ else if(product.getProp("sys").toString().equals("2") && one.getState()==0 && us
 	sb.append("</div></div>");
 	out.print(sb);
 }
-if(passfiles != null && !passfiles.isEmpty()){
-StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
-	Iterator<KObject> it = passfiles.iterator();int i = 0;
-	while(it.hasNext()){
-		KObject f=it.next();
-		sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
-		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-		if(userType>=3 && one.getState()==0){
-			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
-		}
-		sb.append("<div class=\"groups\">");
-		
-		//显示已通过包
-		String[] passFs = f.getProp("passFileParas").toString().split("\\|");
-		for(int j=1;j<passFs.length;j++){
-			String g = passFs[j];
-			sb.append("<span class='txtBox2'>").append(g).append("</span>");
-		}
-		sb.append("</div></div>");
-		i++;
-	}
-	sb.append("</div></div>");
-	out.print(sb);
-}
-//if(userType>1){
+//已通过实体包
+out.print(showPassedFiles(passfiles, userType, one));
 %>
 <div class="inBox" id="infos">
     <div class="inBoxTitle">任务流程</div> 
@@ -533,9 +587,11 @@ StringBuilder sb = new StringBuilder();
     	%>
     </div>
 </div>
-<% // }
-//已创建
-if(state==TTask.TASK_STATE_NEW && userType > 3){%>
+<% 
+//新创建任务--------------------
+if(state==TTask.TASK_STATE_NEW ){
+	if(userType > 3){
+%>
 <div id="appoint">
 <form action="<%=prefix%>/tasks/a_p" method="post" id="p_form">
 <p><label for="task_info">任务附加说明：</label><br />
@@ -549,100 +605,38 @@ if(state==TTask.TASK_STATE_NEW && userType > 3){%>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
-<p><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(1);" class="bgred aButton tx_center">退回创建人</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p>
-</div>
+<br /><a href="javascript:aSubmit('#p_form');" id="submitBT" class="aButton tx_center" style="width:60px;">分配任务</a> <a href="javascript:pre(1);" class="bgred aButton tx_center">退回创建人</a>
 
-<%//转发TestUnit,或在TestUnit完成后汇总
-}else if(state==TTask.TASK_STATE_TEST && tus !=null && !tus.isEmpty() && userType >= 2){
-	String file = "";int i=0;
-	StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
-	Iterator<KObject> it = tus.iterator();
-	boolean wapfix = false;
-	while(it.hasNext()){
-		KObject tu = it.next();
-		String gFile = tu.getProp("gFile").toString();
-		if(!gFile.equals(file)){
-			if(!file.equals("")){sb.append("</div></div>");}
-			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i).append("'>");
-			sb.append("<a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-			file = gFile;
-			i++;
-		}else{
-			if(gFile.equals("") && !wapfix){sb.append("<div><div class=\"groups\">");wapfix=true;};
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-		}
-	}
-	sb.append("</div></div></div><br /><div id='sendT'><div class='bold' style='padding-bottom:5px;'>待测试单元分配</div></div></div></div>");
-	out.print(sb);
+<%}//测试中任务--------------------
+}else if(state==TTask.TASK_STATE_TEST ){
+	if(userType > 1){
+		out.println(showTestUnit(tus, true));
+		out.println(showFailedCases(one, state));
 %>
-<div class="inBox hide" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
-    <div class="inBoxContent" id="fCases">
-    
-    </div>
-</div>
 <div id="send">
 <form action="<%=prefix%>/tasks/a_send" method="post" id="s_form">
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" />
 <textarea rows="1" cols="1" class="hide" name="task_tu_json_h" id="task_tu_json_h"></textarea>
 </form>
-<p>
-<span id="finisher" class="hide">下一执行人:<select id="task_operator" name="task_operator"><option value="曹雨">曹雨</option></select><br /></span>
-<% if(userType > 2){ %>
-<a href='javascript:saveTU();' class='aButton tx_center' style='width:60px;' id="bt_saveTU">保存分配</a>
-<a href='javascript:summary();' class='aButton tx_center' id="bt_summary">汇总测试结果</a>
-<a href='javascript:confirmTU();' class='aButton tx_center' id="bt_confirm">测试结果提交</a>
-<%}%>
-<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></p></div>
-<%//已执行结束,查看TestUnit
-//}else if(state==TTask.TASK_STATE_CONFIRM && userType>1){
-}else if(state>TTask.TASK_STATE_TEST && state!=TTask.TASK_STATE_NEED_MOD && state!=TTask.TASK_STATE_REJECT){
-	if(userType > 1){
-	String file = "";int i=0;
-	StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='tus'><div class='inBoxTitle'>测试单元 <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>待测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>)</span></div><div class='inBoxContent'><div id='showTUS'>");
-	Iterator<KObject> it = tus.iterator();
-	boolean wapfix = false;
-	boolean hasFile = false;
-	while(it.hasNext()){
-		KObject tu = it.next();
-		String gFile = tu.getProp("gFile").toString();
-		if(!gFile.equals(file)){
-			if(!file.equals("")){sb.append("</div></div>");}
-			sb.append("<div class='file_upload' style='background-color:#FFF;' id='fu_").append(i);
-			sb.append("'><a href='").append(prefix).append("/gamefile/").append(tu.getProp("fileId")).append("' class=\"filename bold\">").append(tu.getProp("gFile")).append("</a><div class=\"groups\">");
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-			file = gFile;
-			hasFile = true;
-			i++;
-		}else{
-			if(gFile.equals("") && !wapfix){sb.append("<div><div class=\"groups\">");wapfix=true;};
-			sb.append("<a target='_blank' id='tu_").append(tu.getId()).append("' rel='").append(tu.getProp("tester")).append("' href='").append(prefix).append("/testUnit/").append(tu.getId()).append("' class='tus tu").append(tu.getState()).append("'>").append(tu.getProp("phone")).append("</a>");
-		}
-	}
-	if(hasFile){sb.append("</div></div>");};
-	sb.append("</div></div></div>");
-	out.print(sb);
-	}
-	
-%>
-<div class="inBox" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
-    <div class="inBoxContent" id="fCases">
-    
-    </div>
-   <% if(userType>1 && (state == TTask.TASK_STATE_PASS || state == TTask.TASK_STATE_PASS_PART)){ %> <div> 评分：<%=one.getProp("rank") %></div><%} %>
-</div>
-<% 
-	if(userType>1){
-%>
 <br />
+<span id="finisher" class="hide">下一执行人:<select id="task_operator" name="task_operator"><option value="曹雨">曹雨</option></select><br /></span>
+	<% if(userType > 2){ %>
+	<a href='javascript:saveTU();' class='aButton tx_center' style='width:60px;' id="bt_saveTU">保存分配</a>
+	<a href='javascript:summary();' class='aButton tx_center' id="bt_summary">汇总测试结果</a>
+	<a href='javascript:confirmTU();' class='aButton tx_center' id="bt_confirm">测试结果提交</a>
+	<%} 
+	}
+}
+//组长已汇总结果,待最终确认--------------------
+else if(state==TTask.TASK_STATE_CONFIRM){
+	if(userType>1){
+		out.print(showTestUnit(tus, false));
+		out.println(showFailedCases(one, state));
+	}
+%>
 <div id="finish">
-<%//由权限为4的人确认到准备上线状态
-int isOnline = StringUtil.isDigits(one.getProp("isOnline"))?Integer.parseInt(one.getProp("isOnline").toString()):0;
-if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ %>
+<%//由权限为4的人确认到准备上线状态--------------------
+	if(isOnline==0 && (userType==4 || userType==99) ){ %>
 <form action="<%=prefix%>/tasks/a_finish" method="post" id="f_form">
 <input type="hidden" id="fileParas" value="" name="fileParas" />
 <label for="tu_pass">确认测试结果：</label>
@@ -653,58 +647,49 @@ if(isOnline==0 && (userType==4 || userType==99) && (state == 1 || state == 6)){ 
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
 <a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果</a>
-<%}//由管理员操作上线
-else if(userType==99) { %>
+<%	}
+//由管理员操作最终结果--------------------
+}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){
+	if(userType==99 && isOnline==0) { %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
 <label for="tu_re">最终操作：</label><select name="tu_re" id="tu_re">
-<%//由管理员操作上线
- if(isOnline!=2) { %>
-<option value="2">上线</option><option value="4">上线部分通过</option>
-<%} %>
+		<%//由管理员操作上线
+		 if(isOnline!=2) { %>
+		<option value="2">通过并同步/option><option value="4">部分通过并同步</option>
+		<%} %>
 <option value="-3">退回</option><option value="-2">放弃</option></select><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>
-<%} %>
-<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
-
-<%
-	}
-//待反馈情况,厂家查看
-}else if((state==TTask.TASK_STATE_NEED_MOD && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
-<div class="inBox" id="failCases">
-    <div class="inBoxTitle">测试问题汇总<a name="ffcc"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> 
-    <div class="inBoxContent" id="fCases">
-    
-    </div>
-</div>
+<%	}else if(isOnline==1 && userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){
+	 %>
 <br />
+<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a>		
+	<%	}
+}
+//待反馈情况,厂家查看--------------------
+else if(state==TTask.TASK_STATE_NEED_MOD ){
+	if((userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){
+		out.print(showFailedCases(one, state));
+	%>
 <div id="feedback">
-<%if(userType == 1 || userType ==99){ %>
-<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
-<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
-<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
-<% if(userType==99){ %>
-<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton">退回到测试</a>
-<% }
-} %>
-<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
+	<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
+	<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
+	<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
+	<% if(userType==99){ %>
+	<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton">退回到测试</a>
+<%	} 
+}%>
+
 <%//厂家查看驳回状态
 }else if((state==TTask.TASK_STATE_REJECT && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
 <div class="inBox">
 <div>请仔细参考流程中驳回的原因，根据实际情况从业务平台重新发起任务：</div>
 <a href='javascript:dropTask(<%= one.getId()%>);' class='aButton tx_center' id="bt_rejectAcc">确认驳回并放弃</a>
-</div>
-<%}
-
-if(state==TTask.TASK_STATE_PASS && userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){%>
-<br />
-<div id="passback">
-<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a> <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
-
-<%} %>
+<%}%>
+<a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 </div>
 
 

@@ -78,8 +78,8 @@ if(os.equals("JAVA")){
 out.print(sys+";");
 %>
 pJSON.type = <% 
-String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("packageFlag");
-if(!isPack.toString().equals("0")){
+String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("isPackage");
+if(!String.valueOf(isPack).equals("1")){
 	type = "4";
 }else if(pType.indexOf("关卡或道具")>=0){
 	type = "1";
@@ -162,9 +162,9 @@ function feeInfo(fee,to){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
-			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
+			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>触发条件</th><th>软/硬</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";
@@ -196,7 +196,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
     <div class="inBoxContent">
    		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=String.valueOf(pmap.get("gameId")) %></span> 
    		产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("gameName") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOSName") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("venderCode") %></span></div> 
-    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span> 计费方式: <span id="task_p_feetype_v" class="blueBold"><%=pmap.get("feeTypeName") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
+    	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span>  联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
     	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("synUrl"), 1)?pmap.get("synUrl"):"" %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("wapUrl"), 1)?pmap.get("wapUrl"):"" %></span></div>
     	<div class="inBoxLine">计费点描述: <br /><span id="task_p_fee_v" class="hide"><%=feeInfo %></span><div id="feeInfoTable"></div></div>
 
