@@ -611,7 +611,6 @@ if(state==TTask.TASK_STATE_NEW ){
 }else if(state==TTask.TASK_STATE_TEST ){
 	if(userType > 1){
 		out.println(showTestUnit(tus, true));
-		out.println(showFailedCases(one, state));
 %>
 <div id="send">
 <form action="<%=prefix%>/tasks/a_send" method="post" id="s_form">
