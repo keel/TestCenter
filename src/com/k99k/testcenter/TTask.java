@@ -1073,6 +1073,7 @@ public class TTask extends Action {
 		String task_operator = req.getParameter("task_operator");
 		String task_p_json_h = req.getParameter("task_p_json_h");
 		String task_type_h = req.getParameter("task_type_h");
+		String isUpdate = req.getParameter("isUpdate");
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
 			!StringUtil.isDigits(task_type_h) ||

@@ -327,7 +327,7 @@ StringBuilder sb = new StringBuilder();
 <p>下一流程处理人：
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
-<input type="hidden" id="is_update" name="is_update" value="true" />
+<input type="hidden" id="isUpdate" name="isUpdate" value="true" />
 <input type="hidden" id="task_type_h" name="task_type_h" value="<%=pmap.get("task_type") %>" />
 <textarea rows="1" cols="1" class="hide" name="task_p_json_h" id="task_p_json_h"></textarea>
 </form>

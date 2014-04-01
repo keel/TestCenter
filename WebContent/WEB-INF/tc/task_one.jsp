@@ -28,7 +28,7 @@ private String showPassedFiles(ArrayList<KObject> passfiles,int userType,KObject
 		}
 	return "";
 }
-private static final String QUESTION_FEEDBACK_HTML = "<div class=\"inBox hide\" id=\"failCases\"> <div class=\"inBoxTitle\">测试问题汇总<a name=\"ffcc\"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> <div class=\"inBoxContent\" id=\"fCases\"> </div>";
+private static final String QUESTION_FEEDBACK_HTML = "<div class=\"inBox\" id=\"failCases\"> <div class=\"inBoxTitle\">测试问题汇总<a name=\"ffcc\"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> <div class=\"inBoxContent\" id=\"fCases\"> </div>";
 private static final String showFailedCases(KObject one,int state){
 	StringBuilder sb = new StringBuilder(QUESTION_FEEDBACK_HTML);
 	if((state == TTask.TASK_STATE_PASS || state == TTask.TASK_STATE_PASS_PART)){ 
@@ -647,25 +647,25 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
 <a href='javascript:finish();' class='aButton tx_center' id="bt_finish">确认结果</a>
-<%	}
-//由管理员操作最终结果--------------------
-}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){
-	if(userType==99 && isOnline==0) { %>
+<%	}else if(isOnline==1 && userType==99){ %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
 <label for="tu_re">最终操作：</label><select name="tu_re" id="tu_re">
 		<%//由管理员操作上线
 		 if(isOnline!=2) { %>
-		<option value="2">通过并同步/option><option value="4">部分通过并同步</option>
+		<option value="2">通过并同步</option><option value="4">部分通过并同步</option>
 		<%} %>
 <option value="-3">退回</option><option value="-2">放弃</option></select><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
 </form>
-<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>
-<%	}else if(isOnline==1 && userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){
+<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
+<%	}
+//由管理员操作最终结果--------------------
+}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){
+	if(userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){
 	 %>
-<br />
+<br /><div>
 <a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a>		
 	<%	}
 }
