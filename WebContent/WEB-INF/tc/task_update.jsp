@@ -277,7 +277,7 @@ StringBuilder sb = new StringBuilder();
 	Iterator<KObject> it = passfiles.iterator();int i = 0;
 	while(it.hasNext()){
 		KObject f=it.next();
-		sb.append(" <div style='background-color:#FFF;padding:5px;' id='cfu_").append(i);
+		sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i);
 		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 		sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")

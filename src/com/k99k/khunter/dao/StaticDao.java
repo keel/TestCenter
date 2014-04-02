@@ -96,7 +96,7 @@ public class StaticDao extends MongoDao {
 	/**
 	 * {testTimes:1}
 	 */
-	public static final BasicDBObject prop_testTimes = new BasicDBObject("testTimes",1);
+	public static final BasicDBObject prop_testTimes = new BasicDBObject("testTimes",1).append("updateTimes", 1);
 
 	
 	public static final void initS(){

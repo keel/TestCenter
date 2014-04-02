@@ -3,15 +3,12 @@
 private String showPassedFiles(ArrayList<KObject> passfiles,int userType,KObject one){
 	if(passfiles != null && !passfiles.isEmpty()){
 		StringBuilder sb = new StringBuilder();
-			sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
+			sb.append("<div class='inBox' id='passedFiles'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
 			Iterator<KObject> it = passfiles.iterator();int i = 0;
 			while(it.hasNext()){
 				KObject f=it.next();
 				sb.append(" <div class='file_upload' style='background-color:#FFF;' id='cfu_").append(i);
 				sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-				if(userType>=3 && one.getState()==0){
-					sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
-				}
 				sb.append("<div class=\"groups\">");
 				
 				//显示已通过包
@@ -494,18 +491,23 @@ function showOrgParas(){
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
     <div class="inBoxLine">
+
 产品名称：<span class="blueBold"><%=one.getName() %></span> 
 公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>
 <%if(one.getType() == 0 || one.getType() == 1){ %>
 测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
-<%}
-if(user.getType() >1 ){%>
-[ <a href="../product/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步产品数据</a> |
- <a href="../user/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步公司数据</a> ]
-
-<%} %>
+ 更新：第<span class="blueBold">[<%= (one.getProp("updateTimes")==null)?"0":one.getProp("updateTimes") %>]</span>次
+<%}%>
 </div>
     	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> <!-- 接口调测情况: <span id="task_p_acc_v" class="blueBold"><- %=product.getProp("netPort") -%></span> --></div> 
+    	<div class="inBoxLine">
+   <%
+if(user.getType() >1 ){
+%>
+[ <a href="../product/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步产品数据</a> |
+ <a href="../user/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步公司数据</a> ]<br />
+<%} %> 	
+    	</div>
     	<div class="inBoxLine"> 计费点情况: <br /><span id="task_p_fee_v" class="hide"><%=product.getProp("feeInfo") %></span><div id="feeInfoTable"></div></div> 
     	<%if(Integer.parseInt(product.getProp("sys").toString())==2){%>
     	<div class="inBoxLine">测试入口URL: <span id="task_p_url_v" class="blueBold"><%=product.getUrl()%></span></div> 
@@ -649,10 +651,7 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <%	}else if(isOnline==1 && userType==99){ %>
 <form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
 <label for="tu_re">最终操作：</label><select name="tu_re" id="tu_re">
-		<%//由管理员操作上线
-		 if(isOnline!=2) { %>
-		<option value="2">通过并同步</option><option value="4">部分通过并同步</option>
-		<%} %>
+<option value="2">通过并同步</option><option value="4">部分通过并同步</option>
 <option value="-3">退回</option><option value="-2">放弃</option></select><br />
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
@@ -661,10 +660,21 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
 <%	}
 //由管理员操作最终结果--------------------
-}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){
+}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){%>
+<br /><div>
+<%
+	if(userType==99) { %>
+<form action="<%=prefix%>/tasks/a_online" method="post" id="o_form">
+<label for="tu_re">最终操作：</label><select name="tu_re" id="tu_re">
+<option value="-3">退回</option><option value="-2">放弃</option></select><br />
+<label for="task_info">附加说明：</label><br />
+<textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
+<input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
+</form>
+<a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
+	<%} 	
 	if(userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){
 	 %>
-<br /><div>
 <a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a>		
 	<%	}
 }

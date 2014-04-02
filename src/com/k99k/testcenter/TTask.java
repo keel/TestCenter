@@ -1073,7 +1073,8 @@ public class TTask extends Action {
 		String task_operator = req.getParameter("task_operator");
 		String task_p_json_h = req.getParameter("task_p_json_h");
 		String task_type_h = req.getParameter("task_type_h");
-		String isUpdate = req.getParameter("isUpdate");
+		String isUpdateStr = req.getParameter("isUpdate");
+		boolean isUpdate = (isUpdateStr.equals("true")) ? true: false;
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
 			!StringUtil.isDigits(task_type_h) ||
@@ -1112,6 +1113,7 @@ public class TTask extends Action {
 		long pid = Long.parseLong(String.valueOf(json.get("_id")));
 		//测试次数
 		int testTimes = 1;
+		int updateTimes = 0;
 		//测试类型
 		int tType = Integer.parseInt(task_type_h);
 		if (json.containsKey("newp")) {
@@ -1124,15 +1126,22 @@ public class TTask extends Action {
 			ArrayList<HashMap<String, Object>> product = Product.dao.query(q, StaticDao.prop_testTimes, StaticDao.prop_id_desc, 0, 1, null);
 			if (product == null || product.size() == 0) {
 				json.put("testTimes", 1);
+				json.put("updateTimes", 0);
 				int re = Product.add(json);
 				if(re!=0){
 					JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
 					return;    
 				}
 			}else{
-				Object ttso = product.get(0).get("testTimes");
-				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
-				testTimes = tts + 1;
+				if (isUpdate) {
+					Object utso = product.get(0).get("updateTimes");
+					int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
+					updateTimes = uts + 1;
+				}else{
+					Object ttso = product.get(0).get("testTimes");
+					int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+					testTimes = tts + 1;
+				}
 				if (tType == 0) {
 					tType = 1;
 				}
@@ -1155,6 +1164,7 @@ public class TTask extends Action {
 		task.setType(tType);
 		if (tType == 0 || tType == 1) {
 			task.setProp("testTimes", testTimes);
+			task.setProp("updateTimes", updateTimes);
 		}
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
@@ -1176,6 +1186,7 @@ public class TTask extends Action {
 		atask.addData("operatorId", operator.getId());
 		atask.addData("pid", pid);
 		atask.addData("testTimes", testTimes);
+		atask.addData("updateTimes", updateTimes);
 		atask.addData("creatorName", u.getName());
 		atask.addData("act", "add");
 		if (json.containsKey("files")) {

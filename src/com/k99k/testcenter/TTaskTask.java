@@ -575,11 +575,13 @@ public class TTaskTask extends Action {
 		}
 		//更新产品的测试次数
 		int testTimes = StringUtil.isDigits(msg.getData("testTimes"))?Integer.parseInt(msg.getData("testTimes").toString()):0;
+		int updateTimes = StringUtil.isDigits(msg.getData("updateTimes"))?Integer.parseInt(msg.getData("updateTimes").toString()):0;
 		query = new HashMap<String, Object>(2);
 		query.put("_id", pid);
 		set = new HashMap<String, Object>(4);
 		HashMap<String,Object> update = new HashMap<String, Object>(4);
 		update.put("testTimes", testTimes);
+		update.put("updateTimes", updateTimes);
 		update.put("updateTime", System.currentTimeMillis());
 		update.put("state", TTask.TASK_STATE_NEW);
 		set.put("$set", update);
