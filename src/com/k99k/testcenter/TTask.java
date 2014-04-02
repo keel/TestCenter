@@ -1137,6 +1137,7 @@ public class TTask extends Action {
 					Object utso = product.get(0).get("updateTimes");
 					int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
 					updateTimes = uts + 1;
+					testTimes = 1;
 				}else{
 					Object ttso = product.get(0).get("testTimes");
 					int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;

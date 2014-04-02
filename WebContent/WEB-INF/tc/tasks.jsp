@@ -108,7 +108,7 @@ if(usertype>1){
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
+<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">更新</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
 </tr>
 <%
 if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
@@ -132,6 +132,7 @@ else{
 		}else{sb.append("'>");}
 		sb.append(gg.getName()).append("</a></td><td style='font-size:12px;'><a href='").append(prefix).append("/user/one?c=").append(gg.getProp("company")).append("'>").append(gg.getProp("company"));
 		sb.append("</td><td>").append(gg.getProp("testTimes"));
+		sb.append("</td><td>").append((gg.getProp("updateTimes")==null)?"0":gg.getProp("updateTimes"));
 		sb.append("</td><td><a href='").append(prefix).append("/user/one?u=").append(gg.getProp("operator")).append("'>").append(gg.getProp("operator"));
 		sb.append("</a></td><td>").append(states[gg.getState()]).append("</td>");
 		if(canEdit){

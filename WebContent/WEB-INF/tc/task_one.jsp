@@ -25,9 +25,12 @@ private String showPassedFiles(ArrayList<KObject> passfiles,int userType,KObject
 		}
 	return "";
 }
-private static final String QUESTION_FEEDBACK_HTML = "<div class=\"inBox\" id=\"failCases\"> <div class=\"inBoxTitle\">测试问题汇总<a name=\"ffcc\"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> <div class=\"inBoxContent\" id=\"fCases\"> </div>";
-private static final String showFailedCases(KObject one,int state){
-	StringBuilder sb = new StringBuilder(QUESTION_FEEDBACK_HTML);
+private static final String showFailedCases(KObject one,int state,boolean isShow){
+	StringBuilder sb = new StringBuilder("<div class=\"inBox");
+	if(!isShow){
+		sb.append(" hide");
+	}
+	sb.append("\" id=\"failCases\"> <div class=\"inBoxTitle\">测试问题汇总<a name=\"ffcc\"></a> <span style='font-size:12px;font-weight:normal;'>(<span class='tu0'>未测</span><span class='tu2'>通过</span><span class='tu4'>部分通过</span><span class='tu3'>未通过</span>) </span></div> <div class=\"inBoxContent\" id=\"fCases\"> </div>");
 	if((state == TTask.TASK_STATE_PASS || state == TTask.TASK_STATE_PASS_PART)){ 
 		sb.append("<div> 评分：").append(one.getProp("rank")).append("</div>");
 	}
@@ -613,6 +616,7 @@ if(state==TTask.TASK_STATE_NEW ){
 }else if(state==TTask.TASK_STATE_TEST ){
 	if(userType > 1){
 		out.println(showTestUnit(tus, true));
+		out.println(showFailedCases(one, state,false));
 %>
 <div id="send">
 <form action="<%=prefix%>/tasks/a_send" method="post" id="s_form">
@@ -632,7 +636,7 @@ if(state==TTask.TASK_STATE_NEW ){
 else if(state==TTask.TASK_STATE_CONFIRM){
 	if(userType>1){
 		out.print(showTestUnit(tus, false));
-		out.println(showFailedCases(one, state));
+		out.println(showFailedCases(one, state,true));
 	}
 %>
 <div id="finish">
@@ -681,7 +685,7 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 //待反馈情况,厂家查看--------------------
 else if(state==TTask.TASK_STATE_NEED_MOD ){
 	if((userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){
-		out.print(showFailedCases(one, state));
+		out.print(showFailedCases(one, state,true));
 	%>
 <div id="feedback">
 	<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
