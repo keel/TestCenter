@@ -501,6 +501,10 @@ public class TTaskTask extends Action {
 		long operatorId = (Long)msg.getData("operatorId");
 		long pid = (Long)msg.getData("pid");
 		String creatorName = (String)msg.getData("creatorName");
+		//类型
+		int type = StringUtil.isDigits(msg.getData("tType"))?Integer.parseInt(msg.getData("tType").toString()):0;
+
+		
 		//operator的未读任务数+1
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
 		query.put("_id", operatorId);
@@ -532,8 +536,19 @@ public class TTaskTask extends Action {
 						FileUpload fu = (FileUpload)ActionManager.findAction("upload");
 						String savePath = fu.getSavePath();
 						String tmpPath = fu.getTempSavePath();
-						IO.moveFile(tmpPath+f.get("fileName"), savePath+pid+"/");
-						
+						String fName = f.get("fileName").toString();
+						IO.moveFile(tmpPath+fName, savePath+pid+"/",true,false);
+						if(type == 7 || type == 8){
+							//更新测试时删除之前对应的已通过包
+							query = new HashMap<String, Object>(4);
+							query.put("fileName", fName);
+							query.put("state", 1);
+							push = new HashMap<String, Object>(4);
+							push.put("state", 5);
+							set = new HashMap<String, Object>(2);
+							set.put("$set", push);
+							GameFile.dao.update(query, set, false, true);
+						}
 					}else{
 						log.error("GameFile add failed:"+JSON.write(f));
 					}
@@ -542,9 +557,8 @@ public class TTaskTask extends Action {
 				log.error("deal upload files failed. task ID:"+tid);
 			}
 		}
-		//如果非首次创建的产品(type==1)，更新待反馈状态
-		int type = StringUtil.isDigits(msg.getData("tType"))?Integer.parseInt(msg.getData("tType").toString()):0;
-		if (type == 1 && pid>0) {
+		//如果非首次创建的产品(type==1||8)，更新待反馈状态
+		if ((type == 1 || type == 8) && pid>0) {
 			//先找到之前待反馈任务
 			query = new HashMap<String, Object>(4);
 			set = new HashMap<String, Object>(4);
@@ -573,6 +587,7 @@ public class TTaskTask extends Action {
 				TUser.dao.update(q, set, false, true);
 			}
 		}
+		
 		//更新产品的测试次数
 		int testTimes = StringUtil.isDigits(msg.getData("testTimes"))?Integer.parseInt(msg.getData("testTimes").toString()):0;
 		int updateTimes = StringUtil.isDigits(msg.getData("updateTimes"))?Integer.parseInt(msg.getData("updateTimes").toString()):0;

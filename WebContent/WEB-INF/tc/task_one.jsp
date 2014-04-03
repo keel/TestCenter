@@ -207,7 +207,7 @@ function aSubmit(f){
 		if($("#files").length>0){
 			var b = true,tmp = [];
 			$("#files .file_upload").each(function(){
-				var v = $(this).find(".txtBox"),n = $(this).find(".filename").text(),rel=$(this).find(".filename").attr("rel").split("@"),j={"gFile":rel[0],"fileId":rel[1],"phone":[]};
+				var v = $(this).find(".txtBox"),rel=$(this).find(".filename").attr("rel").split("@"),j={"gFile":rel[0],"fileId":rel[1],"phone":[]};
 				if(v.length<=0){b=false;return false;}
 				else{
 					v.each(function(){
@@ -497,10 +497,8 @@ function showOrgParas(){
 
 产品名称：<span class="blueBold"><%=one.getName() %></span> 
 公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>
-<%if(one.getType() == 0 || one.getType() == 1){ %>
 测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
  更新：第<span class="blueBold">[<%= (one.getProp("updateTimes")==null)?"0":one.getProp("updateTimes") %>]</span>次
-<%}%>
 </div>
     	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 联网情况: <span id="task_p_net_v" class="blueBold"><%=product.getProp("netType") %></span> <!-- 接口调测情况: <span id="task_p_acc_v" class="blueBold"><- %=product.getProp("netPort") -%></span> --></div> 
     	<div class="inBoxLine">
@@ -664,7 +662,7 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
 <%	}
 //由管理员操作最终结果--------------------
-}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART){%>
+}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART || state==TTask.TASK_STATE_BACKED){%>
 <br /><div>
 <%
 	if(userType==99) { %>
@@ -677,13 +675,13 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 </form>
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
 	<%} 	
-	if(userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3){
+	if(state!=TTask.TASK_STATE_BACKED && (userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3)){
 	 %>
 <a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">发起更新测试</a>		
 	<%	}
 }
 //待反馈情况,厂家查看--------------------
-else if(state==TTask.TASK_STATE_NEED_MOD ){
+else if(state==TTask.TASK_STATE_NEED_MOD){
 	if((userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){
 		out.print(showFailedCases(one, state,true));
 	%>
@@ -694,14 +692,8 @@ else if(state==TTask.TASK_STATE_NEED_MOD ){
 	<% if(userType==99){ %>
 	<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton">退回到测试</a>
 <%	} 
+}
 }%>
-
-<%//厂家查看驳回状态
-}else if((state==TTask.TASK_STATE_REJECT && userType>0 && user.getProp("company").equals(one.getProp("company"))) || userType>=3){%>
-<div class="inBox">
-<div>请仔细参考流程中驳回的原因，根据实际情况从业务平台重新发起任务：</div>
-<a href='javascript:dropTask(<%= one.getId()%>);' class='aButton tx_center' id="bt_rejectAcc">确认驳回并放弃</a>
-<%}%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>
 </div>
 
@@ -709,5 +701,4 @@ else if(state==TTask.TASK_STATE_NEED_MOD ){
 <div id="hide" class="hide"></div>
 </div>
 		<div class="clear"></div>
-		</div>
 <% out.println(JSPOut.out("foot0")); %>

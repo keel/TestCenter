@@ -154,7 +154,7 @@
 					"col":"creatorName","def":"","len":0,"required":true,"type":0,"intro":"上传人"
 				},
 				{
-					"col":"state","def":0,"len":0,"required":true,"type":1,"intro":"0在测,1通过,2不通过,3放弃,4未测,-1已删除"
+					"col":"state","def":0,"len":0,"required":true,"type":1,"intro":"0在测,1通过,2不通过,3放弃,4未测,-1已删除,5被更新掉"
 				},
 				{
 					"col":"size","def":0,"len":0,"required":false,"type":1,"intro":"文件大小(B)"
@@ -220,7 +220,7 @@
 					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"产品名称或其他"
 				},
 				{
-					"col":"type","def":0,"len":0,"required":false,"type":1,"intro":"0新产品,1,回归测试;2:新机型适配,3:demo,4:复测,5拨测,6其他"
+					"col":"type","def":0,"len":0,"required":false,"type":1,"intro":"0新产品,1,回归测试;2:新机型适配,3:demo,4:复测,5拨测,6其他,7更新首次,8更新回归"
 				},
 				{
 					"col":"creatorName","def":"","len":0,"required":false,"type":0,"intro":"创建者name"

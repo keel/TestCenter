@@ -108,10 +108,10 @@ if(usertype>1){
 <div>
 <table width="100%" class="table_list" cellpadding="0" cellspacing="1">
 <tr>
-<th style="width:50px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">更新</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
+<th style="width:70px;">ID</th><th>任务名</th><th style="width:160px;">公司</th><th style="width:50px;">次数</th><th style="width:50px;">更新</th><th style="width:50px;">待办人</th><th style="width:70px;">状态</th><%if(canEdit){%><th style="width:50px;">操作</th><%} %>
 </tr>
 <%
-if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
+if(list==null){out.print("<tr><td></td><td>暂无</td><td> </td><td> </td><td> </td><td> </td><td> </td>");if(canEdit){out.print("<td></td>");};out.print("</tr>");}
 else{
 	StringBuilder sb = new StringBuilder();
 	String[] states = new String[]{"待测","测试中","通过","待反馈","部分通过","暂停","结果确认中","驳回","已反馈"};
@@ -121,7 +121,7 @@ else{
 		if(usertype<gg.getType()){
 			continue;
 		}
-		sb.append("<tr><td>").append(gg.getId()).append("</td><td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");
+		sb.append("<tr><td>").append(gg.getType()).append(" - ").append(gg.getId()).append("</td><td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");
 		sb.append(prefix).append("/tasks/").append(gg.getId());
 		if(sub.equals("my")){
 			sb.append("?my=true");

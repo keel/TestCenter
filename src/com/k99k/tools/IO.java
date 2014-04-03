@@ -99,12 +99,26 @@ public final class IO {
 	 * 移动文件
 	 * @param filePath
 	 * @param dir
+	 * @param backWhenDestExist 如果目标已存在,本参数为true时则备份,allowOverwrite参数失效
+	 * @param allowOverwrite 如果为false时则不覆盖文件
 	 * @return
 	 * @throws IOException
 	 */
-	public static final boolean moveFile(String filePath, String dir) throws IOException {  
+	public static final boolean moveFile(String filePath, String dir,boolean backWhenDestExist,boolean allowOverwrite) throws IOException {  
 		File f = new File(filePath);
 		File d = new File(dir);
+		File df = new File(d,f.getName());
+		if (df.exists()) {
+			if (backWhenDestExist) {
+				df.renameTo(new File(df.getAbsolutePath()+"."+StringUtil.getFormatDateString("yyyy-MM-dd_hh-mm-ss")));
+			}else{
+				if (allowOverwrite) {
+					df.delete();
+				}else{
+					return false;
+				}
+			}
+		}
 		if (!d.exists()) {
 			d.mkdirs();
 		}

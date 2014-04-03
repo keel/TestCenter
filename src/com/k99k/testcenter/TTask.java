@@ -1074,7 +1074,7 @@ public class TTask extends Action {
 		String task_p_json_h = req.getParameter("task_p_json_h");
 		String task_type_h = req.getParameter("task_type_h");
 		String isUpdateStr = req.getParameter("isUpdate");
-		boolean isUpdate = (isUpdateStr.equals("true")) ? true: false;
+		boolean isUpdate = (isUpdateStr==null || !isUpdateStr.equals("true")) ? false: true;
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
 			!StringUtil.isDigits(task_type_h) ||
@@ -1138,13 +1138,19 @@ public class TTask extends Action {
 					int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
 					updateTimes = uts + 1;
 					testTimes = 1;
+					//标记为更新测试
+					if (tType == 0) {
+						tType = 7;
+					}else{
+						tType = 8;
+					}
 				}else{
 					Object ttso = product.get(0).get("testTimes");
 					int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
 					testTimes = tts + 1;
-				}
-				if (tType == 0) {
-					tType = 1;
+					if (tType == 0) {
+						tType = 1;
+					}
 				}
 			}
 		}
@@ -1163,10 +1169,8 @@ public class TTask extends Action {
 		task.setProp("PID", pid);
 		task.setProp("company", json.get("company").toString());
 		task.setType(tType);
-		if (tType == 0 || tType == 1) {
-			task.setProp("testTimes", testTimes);
-			task.setProp("updateTimes", updateTimes);
-		}
+		task.setProp("testTimes", testTimes);
+		task.setProp("updateTimes", updateTimes);
 		HashMap<String,Object> log = new HashMap<String, Object>();
 		log.put("time", System.currentTimeMillis());
 		log.put("user", u.getName());

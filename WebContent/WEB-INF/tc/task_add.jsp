@@ -31,6 +31,7 @@ out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <script src="<%=sPrefix %>/js/jquery.autocomplete.js" type="text/javascript"></script>
 <script src="<%=sPrefix %>/js/tc.add_task.js" type="text/javascript"></script>
 <script type="text/javascript">
+<!--
 $.sPrefix = "<%=sPrefix %>";$.prefix="<%=prefix %>";
 $.isMy = <%=(ismy)?"true":"false" %>;
 $.userType = <%=userType %>;
@@ -176,8 +177,7 @@ function feeInfo(fee,to){
 feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 
 });
-//-------------------------------------
-
+-->
 </script>
 <%out.print(JSPOut.out("main0",new String[]{"0","1"},new String[]{user.getName(),user.getProp("company").toString()})); %>
 <jsp:include page="sidenav.jsp" flush="false" > 
@@ -194,7 +194,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <div class="inBox" id="productFS3">
     <div class="inBoxTitle">产品信息</div> 
     <div class="inBoxContent">
-   		<div class="inBoxLine">公司:<span id="task_name_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=String.valueOf(pmap.get("gameId")) %></span> 
+   		<div class="inBoxLine">公司:<span id="task_cp_v" class="blueBold"><%=pmap.get("cpName") %></span> 产品ID: <span id="task_p_id_v" class="blueBold"><%=String.valueOf(pmap.get("gameId")) %></span> 
    		产品名称: <span id="task_name_v" class="blueBold"><%=pmap.get("gameName") %></span> 操作系统: <span id="task_p_sys_v" class="blueBold"><%=pmap.get("gameOSName") %></span><span id="task_p_cpid_v" class="hide"><%=pmap.get("venderCode") %></span></div> 
     	<div class="inBoxLine">产品计费类型: <span id="task_p_type_v" class="blueBold"><%=pmap.get("payTypeName") %></span>  联网情况: <span id="task_p_net_v" class="blueBold"><%=pmap.get("gameClassName") %></span> 产品类型: <span id="task_p_gclass_v" class="blueBold"><%=pmap.get("gameTypeName") %></span></div> 
     	<div class="inBoxLine">同步地址:<span id="task_p_synurl_v" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("synUrl"), 1)?pmap.get("synUrl"):"" %></span><br />WAP入口地址:<span id="task_p_url" class="blueBold"><%=StringUtil.isStringWithLen(pmap.get("wapUrl"), 1)?pmap.get("wapUrl"):"" %></span></div>

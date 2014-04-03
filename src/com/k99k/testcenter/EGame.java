@@ -406,7 +406,7 @@ public class EGame extends Action {
 	 */
 	@SuppressWarnings("unchecked")
 	public static final ArrayList<HashMap<String,String>> getFee(long pid){
-		String url = feeUrl+"?app_id="+pid;
+		String url = feeUrl+"&app_id="+pid;
 		String re = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (re.equals("")) {
 			return null;

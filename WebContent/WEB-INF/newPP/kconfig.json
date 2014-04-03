@@ -4,8 +4,8 @@
 		"2011-8-8":"始建此文件"
 	},
 	"info":"注意数据库需要增加以下index: db.TCUser.ensureIndex({'unReadTasks':1});db.TCTopic.ensureIndex({'tags':1})",
-	"classPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/classes/",
-	"iniPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/",
+	"classPath": "/usr/tc/WEB-INF/classes/",
+	"iniPath": "/usr/tc/WEB-INF/",
 	"debug":true,
 	"dataSources":{
 		"mongodb_local":{
@@ -81,7 +81,7 @@
 		{
 			"_actName":"gamefile",
 			"_class":"com.k99k.testcenter.GameFile",
-			"path":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
+			"path":"/usr/tc/gamefiles/"
 		},
 		{
 			"_actName":"newsTask",
@@ -94,18 +94,18 @@
 		{
 			"_actName":"upload",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/",
-			"tempSavePath":"D:/works/workspace_keel/TestCenter/WebContent/temp/"
+			"savePath":"/usr/tc/gamefiles/",
+			"tempSavePath":"/usr/tc/temp/"
 		},
 		{
 			"_actName":"upload2",
 			"_class":"com.k99k.testcenter.FileUpload",
-			"savePath":"D:/works/workspace_keel/TestCenter/WebContent/file/"
+			"savePath":"/usr/tc/file/"
 		},
 		{
 			"_actName":"download",
 			"_class":"com.k99k.testcenter.Download",
-			"downPath":"D:/works/workspace_keel/TestCenter/WebContent/file/"
+			"downPath":"/usr/tc/file/"
 		},
 		{
 			"_actName":"phone",
@@ -171,7 +171,7 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
-			"localPath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
+			"localPath":"/usr/tc/gamefiles/"
 		},
 		{
 			"_actName":"ana",
