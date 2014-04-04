@@ -50,6 +50,16 @@ public class EGameFtpSynTask extends Action {
 	private String pwd;
 	
 	private String localPath;
+	
+	/**
+	 * 类似： "/new/"
+	 */
+	private String newProductRemotePrePath = "/";
+	
+	/**
+	 * 类似:  "/update/"
+	 */
+	private String updateProductRemotePrePath = "/";
 
 	/**
 	 * @param args
@@ -81,9 +91,14 @@ public class EGameFtpSynTask extends Action {
 		//从msg中获取tid,从TestUnit中找到测试通过的文件名,适配机型,fileId,
 		Object pid = msg.getData("pid");
 		Object tid = msg.getData("tid");
+		Object isUpdateS = msg.getData("isUpdate");
 		if (!StringUtil.isDigits(tid) || !StringUtil.isDigits(pid)) {
 			log.error("EGameFtpSynTask faild. tid or pid not exsit.");
 			return super.act(msg);
+		}
+		boolean isUpdate = false;
+		if (isUpdateS != null && isUpdateS.toString().equals("true")) {
+			isUpdate = true;
 		}
 		long tidL = Long.parseLong(String.valueOf(tid));
 		//从TestUnit中找到测试通过的文件名,适配机型,fileId
@@ -101,7 +116,9 @@ public class EGameFtpSynTask extends Action {
 		StringBuffer fsb = new StringBuffer();
 		//用于生成文件上传序列的HashMap
 		HashMap<String,String> f2f = new HashMap<String, String>();
-		String remotePath = "/"+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/";
+		String remotePath = (isUpdate)?
+				(this.updateProductRemotePrePath+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/")
+				:(this.newProductRemotePrePath+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/");
 		
 		//清空query条件
 		q = new HashMap<String, Object>(2);
@@ -400,6 +417,39 @@ public class EGameFtpSynTask extends Action {
 	 */
 	public final void setLocalPath(String localPath) {
 		this.localPath = localPath;
+	}
+
+
+	/**
+	 * @return the newProductRemotePrePath
+	 */
+	public final String getNewProductRemotePrePath() {
+		return newProductRemotePrePath;
+	}
+
+
+	/**
+	 * @param newProductRemotePrePath the newProductRemotePrePath to set
+	 */
+	public final void setNewProductRemotePrePath(String newProductRemotePrePath) {
+		this.newProductRemotePrePath = newProductRemotePrePath;
+	}
+
+
+	/**
+	 * @return the updateProductRemotePrePath
+	 */
+	public final String getUpdateProductRemotePrePath() {
+		return updateProductRemotePrePath;
+	}
+
+
+	/**
+	 * @param updateProductRemotePrePath the updateProductRemotePrePath to set
+	 */
+	public final void setUpdateProductRemotePrePath(
+			String updateProductRemotePrePath) {
+		this.updateProductRemotePrePath = updateProductRemotePrePath;
 	}
 
 	

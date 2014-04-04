@@ -118,9 +118,6 @@ else{
 	Iterator<KObject> it = list.iterator();
 	while(it.hasNext()){
 		KObject gg = it.next();
-		if(usertype<gg.getType()){
-			continue;
-		}
 		sb.append("<tr><td>").append(gg.getType()).append(" - ").append(gg.getId()).append("</td><td style='text-align: left;' id='task_").append(gg.getId()).append("'><a href='");
 		sb.append(prefix).append("/tasks/").append(gg.getId());
 		if(sub.equals("my")){

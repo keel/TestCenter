@@ -171,6 +171,8 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
+			"newProductRemotePrePath":"/",
+			"updateProductRemotePrePath":"/",
 			"localPath":"/usr/tc/gamefiles/"
 		},
 		{

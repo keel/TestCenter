@@ -658,6 +658,7 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <label for="task_info">附加说明：</label><br />
 <textarea id="task_info" name="task_info" rows="3" cols="3" style="height:60px;">无</textarea>
 <input type="hidden" id="tid" name="tid" value="<%=one.getId()%>" /><br />
+<input type="hidden" id="isUpdate" name="isUpdate" value="<%=((one.getType()>1)?"true":"false") %>" /><br />
 </form>
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
 <%	}
@@ -686,7 +687,7 @@ else if(state==TTask.TASK_STATE_NEED_MOD){
 		out.print(showFailedCases(one, state,true));
 	%>
 <div id="feedback">
-	<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")%>" class="aButton">修改完成再次提交</a>
+	<a href="<%=prefix+"/tasks/add?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp="+one.getType()%>" class="aButton">修改完成再次提交</a>
 	<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
 	<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
 	<% if(userType==99){ %>

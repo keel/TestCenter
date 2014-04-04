@@ -292,8 +292,15 @@ public class EGame extends Action {
 			msg.addData("files", re);
 		}
 		
-		//数据库中无此产品时使用pmap
 		msg.addData("pmap", pmap);
+		
+		HashMap<String,Object> fields = new HashMap<String, Object>(4);
+		fields.put("updateTimes", 1);
+		HashMap<String,Object> updateTimesMap = Product.dao.findOneMap(query, fields);
+		if (updateTimesMap!=null && !updateTimesMap.isEmpty()) {
+			int updateTimes = StringUtil.objToNonNegativeInt(updateTimesMap.get("updateTimes"));
+			msg.addData("updateTimes", updateTimes);
+		}
 		
 		/*先从数据库查找的方式
 		KObject p = Product.dao.findOne(pid);

@@ -6,7 +6,7 @@
 	"info":"注意数据库需要增加以下index: db.TCUser.ensureIndex({'unReadTasks':1});db.TCTopic.ensureIndex({'tags':1})",
 	"classPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/classes/",
 	"iniPath": "D:/works/workspace_keel/TestCenter/WebContent/WEB-INF/",
-	"debug":true,
+	"debug":false,
 	"dataSources":{
 		"mongodb_local":{
 			"_dbType":"mongodb",
@@ -171,6 +171,8 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
+			"newProductRemotePrePath":"/",
+			"updateProductRemotePrePath":"/",
 			"localPath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{

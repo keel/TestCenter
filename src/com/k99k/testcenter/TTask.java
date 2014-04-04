@@ -158,7 +158,7 @@ public class TTask extends Action {
 	}
 	
 	static final String TestPointer = "曹雨";
-	static final String TestOver = "结束";
+	static final String TestOver = "无";
 	
 	
 	/**
@@ -1074,7 +1074,14 @@ public class TTask extends Action {
 		String task_p_json_h = req.getParameter("task_p_json_h");
 		String task_type_h = req.getParameter("task_type_h");
 		String isUpdateStr = req.getParameter("isUpdate");
-		boolean isUpdate = (isUpdateStr==null || !isUpdateStr.equals("true")) ? false: true;
+		boolean isUpdate = false;
+		if (StringUtil.isDigits(isUpdateStr)) {
+			if (Integer.parseInt(isUpdateStr)>1) {
+				isUpdate = true;
+			}
+		}else{
+			isUpdate = (isUpdateStr==null || !isUpdateStr.equals("true")) ? false: true;
+		}
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
 			!StringUtil.isDigits(task_type_h) ||
