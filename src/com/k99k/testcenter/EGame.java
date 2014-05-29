@@ -271,7 +271,13 @@ public class EGame extends Action {
 			return;
 		}
 		//加入真正的公司名称
-		pmap.put("cpName", Company.egameIds.get(pmap.get("venderCode").toString()));
+		String cpid = pmap.get("venderCode").toString();
+		String cpName = Company.egameIds.get(cpid);
+		if (cpName == null) {
+			StaticDao.syncCompany(cpid);
+			cpName = Company.egameIds.get(cpid);
+		}
+		pmap.put("cpName", cpName);
 		//默认为此产品的首次测试,添加操作时会进行判断
 		//boolean isOld = Product.dao.checkId(pid);
 		pmap.put("task_type", "0");

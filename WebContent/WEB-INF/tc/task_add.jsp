@@ -19,7 +19,7 @@ if(feeobj!=null){
 	fee = (ArrayList<HashMap<String,String>>)feeobj;
 }
 int userType = user.getType();
-String tp = request.getParameter("tp");
+//String tp = request.getParameter("tp");
 Boolean ismy = request.getParameter("ismy")!=null && request.getParameter("ismy").equals("true");
 out.print(JSPOut.out("head0","0","创建新测试任务"));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
@@ -237,7 +237,7 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 <select name="task_operator"><option value="曹雨">曹雨</option></select>
 </p>
 <input type="hidden" id="task_type_h" name="task_type_h" value="<%=pmap.get("task_type") %>" />
-<input type="hidden" id="isUpdate" name="isUpdate" value="<%=(StringUtil.isDigits(tp)?tp:"0") %>" />
+<!-- input type="hidden" id="isUpdate" name="isUpdate" value="<  %=(StringUtil.isDigits(tp)?tp:"0") %>"  -->
 <textarea rows="1" cols="1" class="hide" name="task_p_json_h" id="task_p_json_h"></textarea>
 </form>
 <p><a href="javascript:aSubmit();" id="submitBT" class="aButton tx_center" style="width:60px;">创建任务</a> </p>

@@ -41,7 +41,7 @@ public class Company extends Action {
 	/**
 	 * {egameId(cpid):name}缓存
 	 */
-	static HashMap<String,String> egameIds;
+	public static HashMap<String,String> egameIds;
 	
 	/* (non-Javadoc)
 	 * @see com.k99k.khunter.Action#act(com.k99k.khunter.ActionMsg)

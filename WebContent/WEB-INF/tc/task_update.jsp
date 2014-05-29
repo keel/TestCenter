@@ -1,7 +1,92 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" import="com.k99k.khunter.*,com.k99k.tools.*,java.util.*" session="false" %>
+<%!
+private static final String sPrefix = KFilter.getStaticPrefix();
+private static final String prefix = KFilter.getPrefix();
+private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> files){
+	HashMap<Long,KObject> passFileMap = new HashMap<Long,KObject>();
+	boolean hasPassedFiles = false;
+	if(passfiles != null && !passfiles.isEmpty()){
+		hasPassedFiles = true;
+		Iterator<KObject> it = passfiles.iterator();
+		while(it.hasNext()){
+			KObject f=it.next();
+			passFileMap.put(f.getId(), f);
+		}
+	}
+	if((files != null && !files.isEmpty()) || hasPassedFiles){
+		StringBuilder sb = new StringBuilder();
+		sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>实体包</div><div class='inBoxContent'>");
+		int i = 0;
+		if(files != null && !files.isEmpty()){
+			Iterator<KObject> it1 = files.iterator();
+			while(it1.hasNext()){
+				KObject f=it1.next();
+				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'>");
+				boolean isPass = false;
+				if(passFileMap.containsKey(f.getId())){
+					isPass = true;
+					sb.append("<span class='tu2'>测试通过</span> ");
+					passFileMap.remove(f.getId());
+				}else{
+					sb.append("<span class='tu3'>测试驳回</span> ");
+				}
+				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				
+				sb.append(" - <a href='javascript:showUploadBT(")
+				.append(i).append(",\"")
+				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
+				
+				sb.append("<div class=\"groups\">");
+				if(isPass){
+					//显示已通过包
+					String[] passFs = f.getProp("passFileParas").toString().split("\\|");
+					for(int j=1;j<passFs.length;j++){
+						String g = passFs[j];
+						sb.append("<span class='txtBox2'>").append(g).append("</span>");
+					}
+				}else{
+					ArrayList<String> gps = (ArrayList<String>)f.getProp("groups");
+					Iterator<String> itr = gps.iterator();
+					while(itr.hasNext()){
+						String g = itr.next();
+						sb.append("<span class='txtBox2'>").append(g).append("</span>");
+					}
+				}
+				sb.append("</div><div id='fileUpload").append(i).append("' class='updateFileUpload hide'></div></div>");
+				i++;
+			}
+		}
+		//继续显示非本次提交的已通过包
+		if(!passFileMap.isEmpty()){
+			Iterator<Map.Entry<Long,KObject>> iter = passFileMap.entrySet().iterator();
+			while (iter.hasNext()) {
+				Map.Entry<Long,KObject> entry = iter.next();
+				KObject f = (KObject)entry.getValue();
+				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>测试已通过</span> ");
+				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+
+				sb.append(" - <a href='javascript:showUploadBT(")
+				.append(i).append(",\"")
+				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
+				
+				sb.append("<div class=\"groups\">");
+				//显示已通过包
+				String[] passFs = f.getProp("passFileParas").toString().split("\\|");
+				for(int j=1;j<passFs.length;j++){
+					String g = passFs[j];
+					sb.append("<span class='txtBox2'>").append(g).append("</span>");
+				}
+				sb.append("</div><div id='fileUpload").append(i).append("' class='updateFileUpload hide'></div></div>");
+				i++;
+			}
+		}
+		sb.append("</div></div>");
+		return sb.toString();
+	}
+	return "";
+}
+%>
 <%
-String sPrefix = KFilter.getStaticPrefix();
-String prefix = KFilter.getPrefix();
 Object o = request.getAttribute("[jspAttr]");
 HttpActionMsg data = null;
 if(o != null ){
@@ -13,7 +98,7 @@ if(o != null ){
 KObject user = (KObject)data.getData("u");
 HashMap<String,String> pmap = (HashMap<String,String>)data.getData("pmap");
 ArrayList<KObject> passfiles = (data.getData("passFileParas")==null)?null:(ArrayList<KObject>)data.getData("passFileParas");
-ArrayList<KObject> files = null;
+ArrayList<KObject> files = (data.getData("files")==null)?null:(ArrayList<KObject>)data.getData("files");
 
 ArrayList<HashMap<String,String>> fee = null;
 Object feeobj = data.getData("fee");
@@ -159,13 +244,7 @@ if(pJSON.sys==0){
 }else if(pJSON.sys==1){
 	upFileType = "*.apk";
 }
-<%
-int maxFileNum = 0;
-if(files != null){
-	String lastFileName = files.get(files.size()-1).getProp("fileName").toString();
-	maxFileNum = 1+Integer.parseInt(lastFileName.substring(lastFileName.lastIndexOf("_")+1,lastFileName.lastIndexOf("\\.")));
-}
-%>
+
 maxQueueNum = 1;
 addFileStartNum = 0;
 queueCheck = function (numFilesSelected, numFilesQueued) {
@@ -194,9 +273,9 @@ function feeInfo(fee,to){
 		var f = $.parseJSON(fee);
 		if(Object.prototype.toString.apply(f) === '[object Array]'){
 			var tb = "<table id='feeList' width='100%' class='table_list' cellpadding='0' cellspacing='1'>";
-			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th><th>短代</th></tr>";
+			tb = tb+"<tr><th>名称</th><th>单价</th><th>功能</th><th>购买路径</th><th>触发条件</th><th>软/硬</th></tr>";
 			$.each(f,function(){
-				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td><td><a href=\"javascript:abox('短代代码 - "+this.consumeName+"','"+this.smcode+"');\">查看</a></td></tr>";
+				var tr = "<tr><td>"+this.consumeName+"</td><td>"+this.price+"</td><td>"+this.description+"</td><td>"+this.buyGuide+"</td><td>"+this.trigerCondition+"</td><td>"+this.feeType+"</td></tr>";
 				tb = tb + tr;
 			});
 			tb=tb+"</table>";
@@ -270,7 +349,7 @@ function showUploadBT(cfuId,fileName){
 
     </div>
 </div>
-<%
+<%/*
 if(passfiles != null && !passfiles.isEmpty()){
 StringBuilder sb = new StringBuilder();
 	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
@@ -282,9 +361,6 @@ StringBuilder sb = new StringBuilder();
 		sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")
 				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
-/* 		if(userType>=3){
-			sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
-		} */
 		sb.append("<div class=\"groups\">");
 		
 		//显示已通过包
@@ -298,7 +374,8 @@ StringBuilder sb = new StringBuilder();
 	}
 	sb.append("</div></div>");
 	out.print(sb);
-}
+}*/
+out.println(showFiles(passfiles, files));
 %>
 <div class="inBox" id="uploadFS">
     <div class="inBoxTitle">补充新的适配包 <span class="red bold">注意！此处仅为补充新的适配使用，如果仅需要对已有包更新，请点击上方对应包后面的更新按钮</span></div> 

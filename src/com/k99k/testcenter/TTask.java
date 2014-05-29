@@ -174,9 +174,14 @@ public class TTask extends Action {
 			return;
 		}
 		String opid = req.getParameter("pid");
+		String type = req.getParameter("tp");
+		String tidStr = req.getParameter("tid");
 		if (!StringUtil.isDigits(opid)) {
 			JOut.err(403, msg);
 			return;
+		}
+		if (!StringUtil.isDigits(type)) {
+			type = "1";
 		}
 		long pid = Long.parseLong(opid);
 		HashMap<String,String> pmap = EGame.getProduct(pid);
@@ -186,10 +191,18 @@ public class TTask extends Action {
 			return;
 		}
 		//加入真正的公司名称
-		pmap.put("cpName", Company.egameIds.get(pmap.get("venderCode").toString()));
+		String cpid = pmap.get("venderCode").toString();
+		String cpName = Company.egameIds.get(cpid);
+		if (cpName == null) {
+			StaticDao.syncCompany(cpid);
+			cpName = Company.egameIds.get(cpid);
+		}
+		pmap.put("cpName", cpName);
 		//默认为此产品的首次测试,添加操作时会进行判断
 		//boolean isOld = Product.dao.checkId(pid);
-		pmap.put("task_type", "0");
+		//KObject product = Product.dao.findOne(pid);
+		
+		pmap.put("task_type", type);
 		if (String.valueOf(pmap.get("payType")).equals("2")) {
 			//获取短代信息
 			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
@@ -198,7 +211,13 @@ public class TTask extends Action {
 			}
 		}
 		msg.addData("pmap", pmap);
-		
+		if (StringUtil.isDigits(tidStr)) {
+			//回归测试时需要显示本次未通过的实体包
+			HashMap<String,Object> q = new HashMap<String, Object>();
+			q.put("TID", Long.parseLong(tidStr));
+			ArrayList<KObject> files = GameFile.dao.queryKObj(q, null, null, 0, 0, null);
+			msg.addData("files", files);
+		}
 	
 		//显示已通过包
 		HashMap<String,Object> q = new HashMap<String, Object>();
@@ -767,7 +786,46 @@ public class TTask extends Action {
 		}else if(tuRE==TASK_STATE_NEED_MOD){
 			//不通过,状态置为待反馈
 			update.put("state", TASK_STATE_NEED_MOD);
-			//long pid = (Long)(dao.findOne(tid).getProp("PID"));
+			
+			//FIXME 需要处理已经通过的实体包
+			if (StringUtil.isStringWithLen(fileParas, 2)) {
+				//存在参数配置生成
+				String[] sarr = fileParas.split(",");
+				StringBuilder sb = new StringBuilder();
+				for (int i = 0; i < sarr.length; i++) {
+					String[] sa = sarr[i].split("\\|");
+					sb.append(sa[0]).append(",");
+					int n=1;boolean endSkip = false;
+					for (int j = 1; j < sa.length; j++) {
+						String s = fileParaMap.get(sa[j]);
+						if(Integer.parseInt(String.valueOf(sa[j].charAt(0))) > n){
+							sb.deleteCharAt(sb.length()-1);
+							if (endSkip) {
+								sb.deleteCharAt(sb.length()-1);endSkip=false;
+							}
+							sb.append(",");
+							n++;
+							if (s!=null) {
+								sb.append(s);
+							}
+							sb.append("|");
+						}else{
+							if (s==null) {
+								endSkip = true;
+								sb.append("|");
+								continue;
+							}
+							sb.append(s).append("|");
+						}
+					}
+					sb.deleteCharAt(sb.length()-1).append("\r\n");
+				}
+				
+				String config2 = sb.toString();
+				gameFilePara = fileParas;
+				update.put("synFileParas", config2);
+			}
+			
 			
 			task_operator = Company.dao.findOne(task.getProp("company").toString()).getProp("mainUser").toString();
 			update.put("operator", task_operator);
@@ -1073,15 +1131,19 @@ public class TTask extends Action {
 		String task_operator = req.getParameter("task_operator");
 		String task_p_json_h = req.getParameter("task_p_json_h");
 		String task_type_h = req.getParameter("task_type_h");
-		String isUpdateStr = req.getParameter("isUpdate");
-		boolean isUpdate = false;
+//		String isUpdateStr = req.getParameter("isUpdate");
+//		boolean isUpdate = false;
+//		if (isUpdateStr!=null && isUpdateStr.equals("true")) {
+//			isUpdate = true;
+//		}
+		/*
 		if (StringUtil.isDigits(isUpdateStr)) {
 			if (Integer.parseInt(isUpdateStr)>1) {
 				isUpdate = true;
 			}
 		}else{
 			isUpdate = (isUpdateStr==null || !isUpdateStr.equals("true")) ? false: true;
-		}
+		}*/
 		//验证
 		if(!StringUtil.isStringWithLen(task_info, 1) || 
 			!StringUtil.isDigits(task_type_h) ||
@@ -1123,44 +1185,80 @@ public class TTask extends Action {
 		int updateTimes = 0;
 		//测试类型
 		int tType = Integer.parseInt(task_type_h);
-		if (json.containsKey("newp")) {
-			json.remove("newp");
-			HashMap<String,Object> q = new HashMap<String, Object>(2);
-			HashMap<String,Object> qn = new HashMap<String, Object>(2);
-			qn.put("$gte", 0);
-			q.put("_id", pid);
-			q.put("state", qn);
-			ArrayList<HashMap<String, Object>> product = Product.dao.query(q, StaticDao.prop_testTimes, StaticDao.prop_id_desc, 0, 1, null);
-			if (product == null || product.size() == 0) {
-				json.put("testTimes", 1);
-				json.put("updateTimes", 0);
-				int re = Product.add(json);
-				if(re!=0){
-					JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
-					return;    
+//		if (json.containsKey("newp")) {
+//			json.remove("newp");
+			
+			
+		HashMap<String,Object> q = new HashMap<String, Object>(2);
+		HashMap<String,Object> qn = new HashMap<String, Object>(2);
+		qn.put("$gte", 0);
+		q.put("_id", pid);
+		q.put("state", qn);
+		ArrayList<HashMap<String, Object>> product = Product.dao.query(q, StaticDao.prop_testTimes, StaticDao.prop_id_desc, 0, 1, null);
+		if (product == null || product.size() == 0) {
+			json.put("testTimes", 1);
+			json.put("updateTimes", 0);
+			int re = Product.add(json);
+			if(re!=0){
+				JOut.err(403,"E403"+ Err.ERR_ADD_PRODUCT_FAIL+pid, msg);
+				return;    
+			}
+		}else{
+			switch (tType) {
+			case 0:
+				//首次创建
+				tType = 1;
+				testTimes = 1;
+				updateTimes = 0;
+				break;
+			case 1:
+				//首次回归
+				Object ttso = product.get(0).get("testTimes");
+				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				testTimes = tts + 1;
+				updateTimes = 0;
+				break;
+			case 7:
+				//更新首测
+				tType = 8;
+				testTimes = 1;
+				Object utso = product.get(0).get("updateTimes");
+				int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
+				updateTimes = uts + 1;
+				break;
+			case 8:
+				//更新回归
+				ttso = product.get(0).get("testTimes");
+				tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				testTimes = tts + 1;
+				break;
+			default:
+				break;
+			}
+			/*	
+			if (isUpdate) {
+				Object utso = product.get(0).get("updateTimes");
+				int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
+				updateTimes = uts + 1;
+				testTimes = 1;
+				//标记为更新测试
+				if (tType == 0) {
+					tType = 7;
+				}else{
+					tType = 8;
 				}
 			}else{
-				if (isUpdate) {
-					Object utso = product.get(0).get("updateTimes");
-					int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
-					updateTimes = uts + 1;
-					testTimes = 1;
-					//标记为更新测试
-					if (tType == 0) {
-						tType = 7;
-					}else{
-						tType = 8;
-					}
-				}else{
-					Object ttso = product.get(0).get("testTimes");
-					int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
-					testTimes = tts + 1;
-					if (tType == 0) {
-						tType = 1;
-					}
+				Object ttso = product.get(0).get("testTimes");
+				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				testTimes = tts + 1;
+				if (tType == 0) {
+					tType = 1;
 				}
-			}
+			}*/
 		}
+		
+			
+//		}
 		//创建任务
 		KObject operator = TUser.dao.findOne(task_operator);
 		if (operator== null || operator.getType()<1) {

@@ -16,6 +16,7 @@ import com.k99k.khunter.DaoManager;
 import com.k99k.khunter.DataSourceInterface;
 import com.k99k.khunter.KObject;
 import com.k99k.khunter.MongoDao;
+import com.k99k.testcenter.Company;
 import com.k99k.testcenter.EGame;
 import com.k99k.testcenter.Product;
 import com.k99k.testcenter.TTask;
@@ -458,7 +459,7 @@ public class StaticDao extends MongoDao {
 				log.error("更新company相关的TCUser失败:"+cpid);
 				return false;
 			}
-			
+			Company.egameIds.put(cpid, name);
 			log.info("update company ok:"+cpid);
 		}else{
 			//确定数据库表中的最大id
@@ -512,6 +513,7 @@ public class StaticDao extends MongoDao {
 			co2.put("type", 0);
 			co2.put("version", 1);
 			coc.save(co2);
+			Company.egameIds.put(cpid, name);
 			log.info("add company ok:"+cpid+" _id-u:"+lastId+" _id-c:"+lastcId);
 		}
 		return true;

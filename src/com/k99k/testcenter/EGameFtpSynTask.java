@@ -91,15 +91,15 @@ public class EGameFtpSynTask extends Action {
 		//从msg中获取tid,从TestUnit中找到测试通过的文件名,适配机型,fileId,
 		Object pid = msg.getData("pid");
 		Object tid = msg.getData("tid");
-		Object isUpdateS = msg.getData("isUpdate");
+		//Object isUpdateS = msg.getData("isUpdate");
 		if (!StringUtil.isDigits(tid) || !StringUtil.isDigits(pid)) {
 			log.error("EGameFtpSynTask faild. tid or pid not exsit.");
 			return super.act(msg);
 		}
-		boolean isUpdate = false;
-		if (isUpdateS != null && isUpdateS.toString().equals("true")) {
-			isUpdate = true;
-		}
+//		boolean isUpdate = false;
+//		if (isUpdateS != null && isUpdateS.toString().equals("true")) {
+//			isUpdate = true;
+//		}
 		long tidL = Long.parseLong(String.valueOf(tid));
 		//从TestUnit中找到测试通过的文件名,适配机型,fileId
 		HashMap<String,Object> q = new HashMap<String, Object>();
@@ -116,6 +116,8 @@ public class EGameFtpSynTask extends Action {
 		StringBuffer fsb = new StringBuffer();
 		//用于生成文件上传序列的HashMap
 		HashMap<String,String> f2f = new HashMap<String, String>();
+		KObject task = TTask.dao.findOne(tidL);
+		boolean isUpdate = task.getType()>=7;
 		String remotePath = (isUpdate)?
 				(this.updateProductRemotePrePath+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/")
 				:(this.newProductRemotePrePath+StringUtil.getFormatDateString("yyyyMMdd")+"/"+pid+"/");
@@ -154,7 +156,7 @@ public class EGameFtpSynTask extends Action {
 		String csv2 = local+"config2_"+tid+"_"+System.currentTimeMillis()+".csv";
 		
 		//生成参数适配文件
-		KObject task = TTask.dao.findOne(tidL);
+		
 		try {
 			IO.makeDir(local);
 			IO.writeTxt(fsb.toString(), "utf-8", csv);

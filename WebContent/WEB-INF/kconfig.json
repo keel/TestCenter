@@ -160,9 +160,9 @@
 		{
 			"_actName":"egame",
 			"_class":"com.k99k.testcenter.EGame",
-			"companyUrl":"http://open.play.cn/dev/thirdpart/test_system/get_dev?a=1",
-			"productUrl":"http://open.play.cn/dev/thirdpart/test_system/get_app?a=1",
-			"feeUrl":"http://open.play.cn/dev/thirdpart/test_system/get_consume?a=1"
+			"companyUrl":"http://open.play.cn/dev/api/test_system/get_dev?a=1",
+			"productUrl":"http://open.play.cn/dev/api/test_system/get_app?a=1",
+			"feeUrl":"http://open.play.cn/dev/api/test_system/get_consume?a=1"
 		},
 		{
 			"_actName":"egameFtp",

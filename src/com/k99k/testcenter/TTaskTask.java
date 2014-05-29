@@ -280,12 +280,12 @@ public class TTaskTask extends Action {
 			for (int i = 0; i < gfss.length; i++) {
 				String aFile = gfss[i];
 				int po = aFile.indexOf('|');
-				if (po<0) {
+				if (po<0 || !StringUtil.isStringWithLen(aFile.substring(po),2)) {
 					continue;
 				}
 				q.put("fileName", aFile.substring(0,po));
-				set.put("passFileParas", aFile);
 				set.put("state", 1);
+				set.put("passFileParas", aFile);
 				update.put("$set", set);
 				GameFile.dao.updateOne(q, update);
 			}
