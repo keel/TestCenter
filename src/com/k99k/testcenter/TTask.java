@@ -1218,16 +1218,18 @@ public class TTask extends Action {
 				testTimes = tts + 1;
 				updateTimes = 0;
 				break;
-			case 7:
-				//更新首测
-				tType = 8;
+			case 17:
+				//更新首测,这里用17来区分首次更新的提交，实际没有17这个状态
+				tType = 7;
 				testTimes = 1;
 				Object utso = product.get(0).get("updateTimes");
 				int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
 				updateTimes = uts + 1;
 				break;
+			case 7:
 			case 8:
 				//更新回归
+				tType = 8;
 				ttso = product.get(0).get("testTimes");
 				tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
 				testTimes = tts + 1;

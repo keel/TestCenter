@@ -62,7 +62,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 			while (iter.hasNext()) {
 				Map.Entry<Long,KObject> entry = iter.next();
 				KObject f = (KObject)entry.getValue();
-				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>测试已通过</span> ");
+				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>测试通过</span> ");
 				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 
 				sb.append(" - <a href='javascript:showUploadBT(")
@@ -349,32 +349,7 @@ function showUploadBT(cfuId,fileName){
 
     </div>
 </div>
-<%/*
-if(passfiles != null && !passfiles.isEmpty()){
-StringBuilder sb = new StringBuilder();
-	sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>已通过实体包</div><div class='inBoxContent'>");
-	Iterator<KObject> it = passfiles.iterator();int i = 0;
-	while(it.hasNext()){
-		KObject f=it.next();
-		sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i);
-		sb.append("'><a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-		sb.append(" - <a href='javascript:showUploadBT(")
-				.append(i).append(",\"")
-				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
-		sb.append("<div class=\"groups\">");
-		
-		//显示已通过包
-		String[] passFs = f.getProp("passFileParas").toString().split("\\|");
-		for(int j=1;j<passFs.length;j++){
-			String g = passFs[j];
-			sb.append("<span class='txtBox2'>").append(g).append("</span>");
-		}
-		sb.append("</div><div id='fileUpload").append(i).append("' class='updateFileUpload hide'></div></div>");
-		i++;
-	}
-	sb.append("</div></div>");
-	out.print(sb);
-}*/
+<%
 out.println(showFiles(passfiles, files));
 %>
 <div class="inBox" id="uploadFS">

@@ -273,26 +273,43 @@ public class TTaskTask extends Action {
 			String gfp = (String) msg.getData("gameFilePara");
 			String[] gfss = gfp.split(",");
 			HashMap<String,Object> q = new HashMap<String, Object>();
-			q.put("TID", tid);
-			HashMap<String,Object> update = new HashMap<String, Object>();
-			HashMap<String,Object> set = new HashMap<String, Object>();
+			HashMap<String,Object> update = new HashMap<String, Object>(2);
+			HashMap<String,Object> set = new HashMap<String, Object>(2);
 			
 			for (int i = 0; i < gfss.length; i++) {
 				String aFile = gfss[i];
 				int po = aFile.indexOf('|');
-				if (po<0 || !StringUtil.isStringWithLen(aFile.substring(po),2)) {
+				if (po<0) {
 					continue;
 				}
 				q.put("fileName", aFile.substring(0,po));
-				set.put("state", 1);
-				set.put("passFileParas", aFile);
+				boolean isPass = StringUtil.isStringWithLen(aFile.substring(po),2);
+				if (isPass) {
+					//将原来被更新的实体包状态进行变更
+					q.put("state", 1);
+					set.put("state", 5);
+					update.put("$set", set);
+					GameFile.dao.updateOne(q, update);
+					//更新本次通过的实体包状态
+					q.remove("state");
+					q.put("TID", tid);
+					set.put("state", 1);
+					set.put("passFileParas", aFile);
+				}else{
+					//无适配实体包测试未通过
+					q.put("TID", tid);
+					set.put("state", 2);
+					set.put("passFileParas", 0);
+				}
 				update.put("$set", set);
+				//只更新本taskId下的gameFile，不影响之前的实体包
 				GameFile.dao.updateOne(q, update);
 			}
 		}
 		
 		//更新产品状态
 		Object po = msg.getData("pid");
+		
 		if (StringUtil.isDigits(po)) {
 			long pid = Long.parseLong(msg.getData("pid").toString());
 			HashMap<String, Object> query = new HashMap<String, Object>(2);
@@ -538,17 +555,18 @@ public class TTaskTask extends Action {
 						String tmpPath = fu.getTempSavePath();
 						String fName = f.get("fileName").toString();
 						IO.moveFile(tmpPath+fName, savePath+pid+"/",true,false);
-						if(type == 7 || type == 8){
-							//更新测试时删除之前对应的已通过包
-							query = new HashMap<String, Object>(4);
-							query.put("fileName", fName);
-							query.put("state", 1);
-							push = new HashMap<String, Object>(4);
-							push.put("state", 5);
-							set = new HashMap<String, Object>(2);
-							set.put("$set", push);
-							GameFile.dao.update(query, set, false, true);
-						}
+						
+//						if(type == 7 || type == 8){ //转移到finish中操作
+//							//更新测试时删除之前对应的已通过包
+//							query = new HashMap<String, Object>(4);
+//							query.put("fileName", fName);
+//							query.put("state", 1);
+//							push = new HashMap<String, Object>(4);
+//							push.put("state", 5);
+//							set = new HashMap<String, Object>(2);
+//							set.put("$set", push);
+//							GameFile.dao.update(query, set, false, true);
+//						}
 					}else{
 						log.error("GameFile add failed:"+JSON.write(f));
 					}

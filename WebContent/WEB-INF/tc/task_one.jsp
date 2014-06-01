@@ -26,7 +26,9 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 					sb.append("<span class='tu2'>测试通过</span> ");
 					passFileMap.remove(f.getId());
 				}else{
-					sb.append("<span class='tu3'>测试驳回</span> ");
+					if(f.getState() == 2){
+						sb.append("<span class='tu3'>测试驳回</span> ");
+					}
 				}
 				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				if(userType>=3 && one.getState()==0){
@@ -756,7 +758,7 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 	<%} 	
 	if(state!=TTask.TASK_STATE_BACKED && (userType>0 && user.getProp("company").equals(one.getProp("company")) || userType>=3)){
 	 %>
-<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp=7"%>" class="aButton">发起更新测试</a>		
+<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp=17"%>" class="aButton">发起更新测试</a>		
 	<%	}
 }
 //待反馈情况,厂家查看--------------------
@@ -765,7 +767,7 @@ else if(state==TTask.TASK_STATE_NEED_MOD){
 		out.print(showFailedCases(one, state,true));
 	%>
 <div id="feedback">
-	<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp="+one.getType()%>" class="aButton">修改完成再次提交</a>
+	<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp="+one.getType()+"&amp;tid="+one.getId()%>" class="aButton">修改完成再次提交</a>
 	<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
 	<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
 	<% if(userType==99){ %>
