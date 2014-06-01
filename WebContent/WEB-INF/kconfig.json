@@ -171,8 +171,8 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
-			"newProductRemotePrePath":"/",
-			"updateProductRemotePrePath":"/",
+			"newProductRemotePrePath":"add/",
+			"updateProductRemotePrePath":"update/",
 			"localPath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{
