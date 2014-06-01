@@ -1214,7 +1214,7 @@ public class TTask extends Action {
 			case 1:
 				//首次回归
 				Object ttso = product.get(0).get("testTimes");
-				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				int tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):1;
 				testTimes = tts + 1;
 				updateTimes = 0;
 				break;
@@ -1223,7 +1223,7 @@ public class TTask extends Action {
 				tType = 7;
 				testTimes = 1;
 				Object utso = product.get(0).get("updateTimes");
-				int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):0;
+				int uts = StringUtil.isDigits(utso)?Integer.parseInt(utso.toString()):1;
 				updateTimes = uts + 1;
 				break;
 			case 7:
@@ -1231,7 +1231,7 @@ public class TTask extends Action {
 				//更新回归
 				tType = 8;
 				ttso = product.get(0).get("testTimes");
-				tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):0;
+				tts = StringUtil.isDigits(ttso)?Integer.parseInt(ttso.toString()):1;
 				testTimes = tts + 1;
 				break;
 			default:
