@@ -282,6 +282,9 @@ public class TTaskTask extends Action {
 				if (po<0) {
 					continue;
 				}
+				q.clear();
+				set.clear();
+				update.clear();
 				q.put("fileName", aFile.substring(0,po));
 				boolean isPass = StringUtil.isStringWithLen(aFile.substring(po),2);
 				if (isPass) {
@@ -289,7 +292,7 @@ public class TTaskTask extends Action {
 					q.put("state", 1);
 					set.put("state", 5);
 					update.put("$set", set);
-					GameFile.dao.updateOne(q, update);
+					GameFile.dao.update(q, update,false,true);
 					//更新本次通过的实体包状态
 					q.remove("state");
 					q.put("TID", tid);
@@ -299,7 +302,7 @@ public class TTaskTask extends Action {
 					//无适配实体包测试未通过
 					q.put("TID", tid);
 					set.put("state", 2);
-					set.put("passFileParas", 0);
+					set.put("passFileParas","");
 				}
 				update.put("$set", set);
 				//只更新本taskId下的gameFile，不影响之前的实体包

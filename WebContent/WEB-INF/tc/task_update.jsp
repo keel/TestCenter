@@ -30,7 +30,10 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				}else{
 					sb.append("<span class='tu3'>测试驳回</span> ");
 				}
-				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				String fileName = f.getProp("fileName").toString();
+				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				sb.append(fileNum).append(". ");
+				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				
 				sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")
@@ -63,7 +66,10 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				Map.Entry<Long,KObject> entry = iter.next();
 				KObject f = (KObject)entry.getValue();
 				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>测试通过</span> ");
-				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				String fileName = f.getProp("fileName").toString();
+				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				sb.append(fileNum).append(". ");
+				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 
 				sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")

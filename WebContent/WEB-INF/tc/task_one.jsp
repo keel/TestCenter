@@ -30,8 +30,11 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 						sb.append("<span class='tu3'>测试驳回</span> ");
 					}
 				}
-				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
-				if(userType>=3 && one.getState()==0){
+				String fileName = f.getProp("fileName").toString();
+				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				sb.append(fileNum).append(". ");
+				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				if(userType>=3 && one.getState() == 0){
 					sb.append("<span class=\"u_ok\">[ <a href='javascript:selectPhone(").append(i).append(");'>适配机型</a> ]</span>");
 				}
 				sb.append("<div class=\"groups\">");
@@ -61,7 +64,10 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				Map.Entry<Long,KObject> entry = iter.next();
 				KObject f = (KObject)entry.getValue();
 				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>已经通过</span> ");
-				sb.append("<a rel='").append(f.getProp("fileName")).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
+				String fileName = f.getProp("fileName").toString();
+				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				sb.append(fileNum).append(". ");
+				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				sb.append("<div class=\"groups\">");
 				//显示已通过包
 				String[] passFs = f.getProp("passFileParas").toString().split("\\|");
