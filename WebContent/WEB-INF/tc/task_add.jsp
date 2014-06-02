@@ -148,7 +148,7 @@ if(pJSON.sys==0){
 initUpload("<%=user.getName() %>",sucFn,upFileType);
 
 <%
-int maxFileNum = 0;
+int maxFileNum = 1;
 if(files != null){
 	String lastFileName = files.get(files.size()-1).getProp("fileName").toString();
 	int s = lastFileName.lastIndexOf("_")+1;
