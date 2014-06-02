@@ -749,7 +749,8 @@ else if(state==TTask.TASK_STATE_CONFIRM){
 <a href='javascript:online();' class='aButton tx_center' id="bt_online">确认操作</a>	
 <%	}
 //由管理员操作最终结果--------------------
-}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART || state==TTask.TASK_STATE_BACKED){%>
+}else if(state==TTask.TASK_STATE_PASS || state==TTask.TASK_STATE_PASS_PART || state==TTask.TASK_STATE_BACKED){
+out.print(showFailedCases(one, state,true));%>
 <br /><div>
 <%
 	if(userType==99) { %>
