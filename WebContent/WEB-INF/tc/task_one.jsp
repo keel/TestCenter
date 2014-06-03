@@ -774,12 +774,12 @@ else if(state==TTask.TASK_STATE_NEED_MOD){
 		out.print(showFailedCases(one, state,true));
 	%>
 <div id="feedback">
-	<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp="+one.getType()+"&amp;tid="+one.getId()%>" class="aButton">修改完成再次提交</a>
+	<a href="<%=prefix+"/tasks/update?pid="+one.getProp("PID")+((ismy)?"&amp;ismy=true":"")+"&amp;tp="+one.getType()+"&amp;tid="+one.getId()%>" class="aButton">再次提交</a>
+	<% String backStr = (userType==99) ? "退回到测试": "放弃未通过机型，退回测试";%>
+	<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton"><%=backStr %></a>
 	<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
 	<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
-	<% if(userType==99){ %>
-	<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton">退回到测试</a>
-<%	} 
+<%
 }
 }%>
 <a href="<%=prefix+"/tasks"+myPara%>" class="aButton">返回任务列表</a></div>

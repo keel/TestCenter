@@ -231,8 +231,11 @@ public class TTask extends Action {
 	}
 	
 	private void backToTest(HttpServletRequest req,KObject u,HttpActionMsg msg){
+		String info = "退回测试";
 		//验证权限
-		if (u.getType() < 4) {
+		if(u.getType() == 1){
+			info = "放弃不通过机型退回测试";
+		}else if (u.getType() < 4) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -259,7 +262,7 @@ public class TTask extends Action {
 		HashMap<String,Object> logmsg = new HashMap<String, Object>();
 		logmsg.put("time", System.currentTimeMillis());
 		logmsg.put("user", u.getName());
-		logmsg.put("info", "退回测试");
+		logmsg.put("info", info);
 		HashMap<String,Object> push = new HashMap<String, Object>(2);
 		push.put("log", logmsg);
 		HashMap<String,Object> update = new HashMap<String, Object>();

@@ -37,7 +37,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				
 				sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")
-				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
+				.append(f.getProp("fileName")).append("\");' class='aButton updateBT'>更新此实体包</a>");
 				
 				sb.append("<div class=\"groups\">");
 				if(isPass){
@@ -73,7 +73,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 
 				sb.append(" - <a href='javascript:showUploadBT(")
 				.append(i).append(",\"")
-				.append(f.getProp("fileName")).append("\");' class='aButton'>更新此实体包</a>");
+				.append(f.getProp("fileName")).append("\");' class='aButton updateBT'>更新此实体包</a>");
 				
 				sb.append("<div class=\"groups\">");
 				//显示已通过包
@@ -361,12 +361,12 @@ out.println(showFiles(passfiles, files));
 <div class="inBox" id="uploadFS">
     <div class="inBoxTitle">补充新的适配包 <span class="red bold">注意！此处仅为补充新的适配使用，如果仅需要对已有包更新，请点击上方对应包后面的更新按钮</span></div> 
     <div class="inBoxContent" id="newPk">
-		<a href="javascript:showUploadBT(100);" id="addNewPk" class="aButton">增加新适配的实体包</a>
+		<a href="javascript:showUploadBT(100);" id="addNewPk" class="aButton updateBT">增加新适配的实体包</a>
 		<div id="cfu_AddNew"></div>
     </div>
 </div>
 <div class="u_ok">
-<br /><a href="javascript:filesSet('#task_new');" class="aButton">确定</a> 
+<br /><a href="javascript:filesSet('#task_new');" class="aButton">确认提交更新</a> 
 </div>
 </div>
 </div>
