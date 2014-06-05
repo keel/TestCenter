@@ -683,6 +683,7 @@ public class TTask extends Action {
 								old.add(TestCase.findCase(sys, Integer.parseInt(caseId)));
 							}
 							re.put("phone", tu.getProp("phone"));
+							re.put("gFile", tu.getProp("gFile"));
 							old.add(re);
 							res.put(caseId, old);
 						}

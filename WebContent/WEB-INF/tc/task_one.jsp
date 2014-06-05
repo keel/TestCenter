@@ -406,8 +406,8 @@ function showSummary(data){
 		var h=$("<div class='file_upload' style='background-color:#FFF;' id='qc_"+i+"'><div>"+i+". "+c.name
 				+"</div><div class='blue' style='font-size:12px;padding:5px;'>"+c.info+"</div></div>");
 		for ( var j = 1; j < data[i].length; j++) {
-			var q=data[i][j];
-			var h2=$("<div><span class='tu"+q.re+"'>"+q.phone+"</span> "+q.info+"</div>");
+			var q=data[i][j];var indx = q.gFile.indexOf('_');
+			var h2=$("<div><span class='tu"+q.re+"'>"+q.phone+"</span> [实体包"+q.gFile.substring(indx+1,indx+2)+"] - " +q.info+"</div>");
 			h2.appendTo(h);
 		}
 		h.appendTo("#fCases");
