@@ -7,6 +7,7 @@ import javax.crypto.Cipher;
 //import javax.crypto.KeyGenerator;
 //import javax.crypto.SecretKey;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
 
 
 /**
@@ -58,7 +59,22 @@ public class Encrypter {
 //		//_generator.init(new SecureRandom(strKey.getBytes()));
 //		_generator.init(128,sr);
 //		SecretKey key = _generator.generateKey();
-			SKey key2 = new SKey("AES","RAW",key);
+			SecretKey key2 = new SecretKey(){
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public String getAlgorithm() {
+					return "AES";
+				}
+				@Override
+				public byte[] getEncoded() {
+					return key;
+				}
+
+				@Override
+				public String getFormat() {
+					return "RAW";
+				}};
 			ecipher.init(Cipher.ENCRYPT_MODE, key2);
 			dcipher.init(Cipher.DECRYPT_MODE, key2);
 		} catch (InvalidKeyException e) {
