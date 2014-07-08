@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
+import com.k99k.testcenter.EGame;
+import com.k99k.testcenter.Err;
 import com.k99k.tools.CnToSpell;
 import com.k99k.tools.JSON;
 import com.k99k.tools.Net;
@@ -22,9 +24,9 @@ import com.mongodb.DB;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
 import com.mongodb.MongoException;
-import com.mongodb.MongoOptions;
 import com.mongodb.ServerAddress;
 import com.mongodb.WriteResult;
 
@@ -47,7 +49,8 @@ public final class MongoConn implements DataSourceInterface{
 	private int threadsAllowedToBlockForConnectionMultiplier = 50;
 	private int maxWaitTime = 5000;
 	
-	static Mongo mongo;
+	//static Mongo mongo;
+	static MongoClient mongo;
 	private DB db;
 	
 	private String name = "mongodb_local";
@@ -756,8 +759,115 @@ public final class MongoConn implements DataSourceInterface{
 		};
 		
 		ip = "180.96.63.70";
-		MongoConn.importNewCompany2(ip, cps);
+		//MongoConn.importNewCompany2(ip, cps);
 		
+		//----------------------------
+		String dbName = "tc";
+		try {
+			ServerAddress ip1 = new ServerAddress("180.96.63.70",27017);
+			ServerAddress ip2 = new ServerAddress("192.168.0.1",27017);
+			MongoCredential c1 = MongoCredential.createMongoCRCredential("keel", dbName, "jsGame_1810".toCharArray());
+			ArrayList<MongoCredential> cl = new ArrayList<MongoCredential>();
+			cl.add(c1);
+			MongoClient m1 = new MongoClient(ip1, cl);
+			MongoClient m2 = new MongoClient(ip2, cl);
+			
+			DB db1 = m1.getDB(dbName);
+			DB db2 = m2.getDB(dbName);
+			
+			DBCollection co_p0 = db1.getCollection("TCProduct");
+			DBCollection co_p1 = db2.getCollection("TCProduct");
+			DBCollection co_t0 = db1.getCollection("TCTask");
+			DBCollection co_t1 = db2.getCollection("TCTask");
+			DBCollection co_f0 = db1.getCollection("TCGameFile");
+			DBCollection co_f1 = db2.getCollection("TCGameFile");
+			//id生成器
+			IDManager idm_t = new IDManager(1);
+			IDManager idm_f = new IDManager(1);
+			
+			
+			
+			//product 转换
+			DBCursor cur = co_p0.find().sort(new BasicDBObject("_id",1));
+			while (cur.hasNext()) {
+				DBObject p0 = (DBObject) cur.next();
+				long pid = (Long) p0.get("_id");
+				HashMap<String, String> pmap = EGame.getProductByOldId(pid);
+				if (pmap == null || pmap.isEmpty()) {
+					//接口获取失败
+					System.out.println("product not found:"+pid);
+					continue;
+				}
+				long newPid = Long.parseLong(pmap.get("gameId"));
+				//产品信息更新
+				BasicDBObject newPidCond = new BasicDBObject("_id", newPid);
+				DBCursor cur_p1 = co_p1.find(newPidCond);
+				if (cur_p1.hasNext()) {
+					//更新新数据
+					DBObject p1 = cur.next();
+					p1.put("updateTimes", Integer.parseInt(String.valueOf(p0.get("updateTimes"))+1));
+					p1.put("oldId", pid);
+					co_p1.save(p1);
+//					BasicDBObject update_p1 = new BasicDBObject("updateTimes",Integer.parseInt(String.valueOf(p0.get("updateTimes")))+1);
+//					update_p1.put("oldId", pid);
+//					BasicDBObject update_p1_set = new BasicDBObject("$set",update_p1);
+//					co_p1.update(newPidCond, p1);
+					System.out.println("update product:"+pid);
+				}else{
+					//导入老数据
+					p0.put("oldId", pid);
+					p0.put("_id", newPid);
+					co_p1.save(p0);
+					System.out.println("add product:"+pid);
+				}
+				//------------------
+				//更新Task,找到最后的Task
+				long tid_new = idm_t.nextId();
+				long tid_old = 0;
+				DBCursor cur_t0 = co_t0.find(new BasicDBObject("PID", pid)).sort(new BasicDBObject("_id",-1));
+				if (cur_t0.hasNext()) {
+					DBObject t0 = cur_t0.next();
+					tid_old = (Long) t0.get("_id");
+					t0.put("_id", tid_new);
+					t0.put("PID", newPid);
+					co_t1.insert(t0);
+					System.out.println("add task:"+tid_new);
+				}else{
+					System.out.println("task not found by product:"+pid);
+					continue;
+				}
+				//更新GameFile
+				DBCursor cur_f0 = co_f0.find(new BasicDBObject("TID",tid_old));
+				while (cur_f0.hasNext()) {
+					long fid = idm_f.nextId();
+					DBObject f0 = cur_f0.next();
+					f0.put("TID", tid_new);
+					f0.put("PID", newPid);
+					f0.put("_id", fid);
+					co_f1.insert(f0);
+					System.out.println("add gamefile:"+fid);
+				}
+				System.out.println("------------------------");
+			}
+			
+			
+			
+			
+			/*
+			DBObject test1 = co1.findOne();
+			System.out.println(test1.toString());
+			DBObject test2 = co2.findOne();
+			System.out.println(test2.toString());
+			*/
+
+			
+			
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		//fixUser(ip,"曹雨");
 		/*
@@ -803,7 +913,10 @@ public final class MongoConn implements DataSourceInterface{
 		
 		mongo.close();*/
 //		MongoConn.updatePGroup(ip);
-		mongo.close();
+		
+		
+		
+		//mongo.close();
 		System.out.println("--------end------");
 		
 	/*	
@@ -993,14 +1106,15 @@ public final class MongoConn implements DataSourceInterface{
 	 */
 	public final boolean init(){
 		try {
-			if (mongo == null || !mongo.getConnector().isOpen() ) {
-				ServerAddress sadd = new ServerAddress(this.ip, this.port);
-				MongoOptions opt = new MongoOptions();
-				opt.autoConnectRetry = false;
-				opt.connectionsPerHost = this.connectionsPerHost;
-				opt.threadsAllowedToBlockForConnectionMultiplier = this.threadsAllowedToBlockForConnectionMultiplier;
-				opt.maxWaitTime = this.maxWaitTime;
-				mongo = new Mongo(sadd,opt);
+			if (mongo == null) {
+//				ServerAddress sadd = new ServerAddress(this.ip, this.port);
+//				MongoClientOptions opt = new MongoClientOptions();
+//				MongoClientOptions o = new MongoClientOptions(null);
+//				opt.autoConnectRetry = false;
+//				opt.connectionsPerHost = this.connectionsPerHost;
+//				opt.threadsAllowedToBlockForConnectionMultiplier = this.threadsAllowedToBlockForConnectionMultiplier;
+//				opt.maxWaitTime = this.maxWaitTime;
+				mongo = new MongoClient(this.ip, this.port);//new Mongo(sadd,opt);
 			}
 			db = mongo.getDB(this.dbName);
 			boolean auth = false;
@@ -1012,7 +1126,7 @@ public final class MongoConn implements DataSourceInterface{
 			if (!auth) {
 				log.error("auth error! user:"+this.user);
 			}else{
-				log.info("=========== mongoConn init OK!["+this.dbName+"] ============");
+				log.info("=========== mongoConn init OK!["+this.dbName+"]["+this.ip+"] ============");
 				return true;
 			}
 		} catch (UnknownHostException e) {

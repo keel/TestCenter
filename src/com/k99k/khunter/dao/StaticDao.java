@@ -577,6 +577,7 @@ public class StaticDao extends MongoDao {
 			type = 5;
 		}
 		one.setProp("type", type);
+		one.setProp("old_id", pmap.get("old_id"));
 		one.setProp("feeInfo",fee);
 		productDao.save(one);
 		log.info("product sync ok:"+pid);

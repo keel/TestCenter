@@ -44,6 +44,7 @@ $(function(){
 //处理产品信息
 pJSON.company = '<%=pmap.get("venderShortName")%>';
 pJSON.name = '<%=pmap.get("gameName")%>';
+pJSON.old_id = '<%=pmap.get("old_id")%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
 String netType = "3";Object gType = pmap.get("gameTypeName");
@@ -157,7 +158,7 @@ if(files != null){
 }
 %>
 swfu.newfile = function(file){
-	return pJSON._id+"_"+(file.index+<%=maxFileNum %>)+file.type;
+	return pJSON.old_id+"_"+(file.index+<%=maxFileNum %>)+file.type;
 };
 
 

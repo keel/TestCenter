@@ -402,6 +402,16 @@ public class EGame extends Action {
 		String url = productUrl+"&app_id="+pid;
 		return getUrlJson(url);
 	}
+	
+	/**
+	 * 根据老ID获取信息，用于数据迁移用
+	 * @param pid 老ID
+	 * @return
+	 */
+	public static final HashMap<String,String> getProductByOldId(long pid){
+		String url = productUrl+"&old_id="+pid;
+		return getUrlJson(url);
+	}
 //	/**
 //	 * 获取终端信息
 //	 * @param mode
