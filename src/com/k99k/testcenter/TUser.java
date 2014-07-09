@@ -83,8 +83,8 @@ public class TUser extends Action  {
 	private void sync(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		String pid = req.getParameter("pid");
 		if (u.getType()>1 && StringUtil.isDigits(pid)) {
-			HashMap<String,String> pmap = EGame.getProduct(Long.parseLong(pid));
-			String cpid = pmap.get("venderCode");
+			HashMap<String,Object> pmap = EGame.getProduct(Long.parseLong(pid));
+			String cpid = String.valueOf(pmap.get("venderCode"));
 			if (StringUtil.isStringWithLen(cpid, 3) && StaticDao.syncCompany(cpid)) {
 				msg.addData("[print]", "ok");
 				return;

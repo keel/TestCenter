@@ -1,5 +1,38 @@
 {
 	"kobjs":{
+		"TCTestCase":{
+			"dao":{
+				"tableName":"TCTestCase",
+				"newDaoName":"TCTestCaseDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":115,"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"type","unique":false,"asc":false,"type":"type","intro":"type"
+				}
+			],
+			"columns":[
+				{
+					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"测试项目名称"
+				},
+				{
+					"col":"level","def":0,"len":0,"required":true,"type":1,"intro":"测试项重要性,越高越重要,10及其以上为关键项目,5及其以上为次关键"
+				},
+				{
+					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"测试项描述"
+				},
+				{
+					"col":"type","def":0,"len":0,"required":true,"type":1,"intro":"0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other"
+				},
+				{
+					"col":"caseId","def":0,"len":0,"required":true,"type":1,"intro":"case id用于定位case,每个type的caseId唯一"
+				}
+			],
+			"intro":"测试项目"
+		},
 		"TCTopic":{
 			"dao":{
 				"tableName":"TCTopic",
@@ -11,28 +44,28 @@
 			},
 			"indexes":[
 				{
-					"col":"level","unique":false,"asc":false,"type":"type","intro":"置顶级别"
+					"col":"cate","unique":false,"asc":false,"type":"type","intro":"类别或版块标识"
 				},
 				{
 					"col":"creatorName","unique":false,"asc":false,"type":"type","intro":"creatorName"
 				},
 				{
-					"col":"cate","unique":false,"asc":false,"type":"type","intro":"类别或版块标识"
+					"col":"level","unique":false,"asc":false,"type":"type","intro":"置顶级别"
 				},
 				{
 					"col":"TID","unique":false,"asc":false,"type":"type","intro":"TID"
 				},
 				{
-					"col":"PID","unique":false,"asc":false,"type":"type","intro":"PID"
-				},
-				{
 					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
 				},
 				{
-					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
+					"col":"PID","unique":false,"asc":false,"type":"type","intro":"PID"
 				},
 				{
 					"col":"name","unique":false,"asc":false,"type":"type","intro":"name"
+				},
+				{
+					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
 				}
 			],
 			"columns":[
@@ -87,39 +120,6 @@
 			],
 			"intro":"讨论话题"
 		},
-		"TCTestCase":{
-			"dao":{
-				"tableName":"TCTestCase",
-				"newDaoName":"TCTestCaseDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":115,"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"type","unique":false,"asc":false,"type":"type","intro":"type"
-				}
-			],
-			"columns":[
-				{
-					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"测试项目名称"
-				},
-				{
-					"col":"level","def":0,"len":0,"required":true,"type":1,"intro":"测试项重要性,越高越重要,10及其以上为关键项目,5及其以上为次关键"
-				},
-				{
-					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"测试项描述"
-				},
-				{
-					"col":"type","def":0,"len":0,"required":true,"type":1,"intro":"0:java,1:android,2:WAP,3:brew,4:mobile,5:ce,6:other"
-				},
-				{
-					"col":"caseId","def":0,"len":0,"required":true,"type":1,"intro":"case id用于定位case,每个type的caseId唯一"
-				}
-			],
-			"intro":"测试项目"
-		},
 		"TCGameFile":{
 			"dao":{
 				"tableName":"TCGameFile",
@@ -140,10 +140,10 @@
 					"col":"PID","unique":false,"asc":false,"type":"type","intro":"PID"
 				},
 				{
-					"col":"fileName","unique":false,"asc":false,"type":"type","intro":"fileName"
+					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
 				},
 				{
-					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
+					"col":"fileName","unique":false,"asc":false,"type":"type","intro":"fileName"
 				}
 			],
 			"columns":[
@@ -180,93 +180,6 @@
 			],
 			"intro":"游戏实体包"
 		},
-		"TCUser":{
-			"dao":{
-				"tableName":"TCUser",
-				"newDaoName":"TCUserDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":101,"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"groupID","unique":false,"asc":false,"type":"type","intro":"groupID"
-				},
-				{
-					"col":"company","unique":false,"asc":false,"type":"type","intro":"公司名索引"
-				},
-				{
-					"col":"name","unique":true,"asc":false,"type":"type","intro":"用户名索引"
-				},
-				{
-					"col":"egameID","unique":false,"asc":false,"type":"type","intro":"egame平台的ID"
-				},
-				{
-					"col":"type","unique":false,"asc":false,"type":"type","intro":"用户类型"
-				}
-			],
-			"columns":[
-				{
-					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"name"
-				},
-				{
-					"col":"pwd","def":"","len":0,"required":true,"type":0,"intro":"pwd"
-				},
-				{
-					"col":"type","def":0,"len":0,"required":true,"type":1,"intro":"0访客;1:厂家;2测试员,3组长,4协调,11:管理员;12:高级管理员;99超级管理员"
-				},
-				{
-					"col":"level","def":0,"len":0,"required":false,"type":1,"intro":"0普通权限,1公告维护,2终端数据维护,3厂家维护"
-				},
-				{
-					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"说明"
-				},
-				{
-					"col":"email","def":"","len":0,"required":false,"type":0,"intro":"email"
-				},
-				{
-					"col":"phoneNumber","def":"","len":0,"required":true,"type":0,"intro":"手机号"
-				},
-				{
-					"col":"company","def":"","len":0,"required":true,"type":0,"intro":"公司名"
-				},
-				{
-					"col":"newNews","def":0,"len":0,"required":false,"type":1,"intro":"未读公告数"
-				},
-				{
-					"col":"newTasks","def":0,"len":0,"required":false,"type":1,"intro":"未处理任务数"
-				},
-				{
-					"col":"qq","def":"","len":0,"required":false,"type":0,"intro":"QQ号"
-				},
-				{
-					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"0正常,-1删除"
-				},
-				{
-					"col":"groupID","def":0,"len":0,"required":false,"type":1,"intro":"测试人员分组"
-				},
-				{
-					"col":"groupLeader","def":0,"len":0,"required":false,"type":1,"intro":"测试人员分组中是否组长,0为否,1为是"
-				},
-				{
-					"col":"unReadNews","def":[],"len":0,"required":false,"type":3,"intro":"未读公告的ID集"
-				},
-				{
-					"col":"unReadNews.*","def":0,"len":0,"required":false,"type":4,"intro":"未读公告的ID"
-				},
-				{
-					"col":"unReadTasks","def":[],"len":0,"required":false,"type":3,"intro":"未读任务的ID集"
-				},
-				{
-					"col":"unReadTasks.*","def":0,"len":0,"required":false,"type":4,"intro":"未读任务的ID"
-				},
-				{
-					"col":"egameID","def":0,"len":0,"required":false,"type":4,"intro":"egame平台的ID"
-				}
-			],
-			"intro":"登录平台的帐号"
-		},
 		"TCTask":{
 			"dao":{
 				"tableName":"TCTask",
@@ -281,22 +194,22 @@
 					"col":"createTime","unique":false,"asc":false,"type":"type","intro":"createTime"
 				},
 				{
-					"col":"creatorName","unique":false,"asc":false,"type":"type","intro":"creatorName"
-				},
-				{
 					"col":"level","unique":false,"asc":false,"type":"type","intro":"level"
 				},
 				{
-					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
+					"col":"creatorName","unique":false,"asc":false,"type":"type","intro":"creatorName"
 				},
 				{
 					"col":"PID","unique":false,"asc":false,"type":"type","intro":"product id"
 				},
 				{
-					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
+					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
 				},
 				{
 					"col":"name","unique":false,"asc":false,"type":"type","intro":"task name"
+				},
+				{
+					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
 				},
 				{
 					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
@@ -369,6 +282,93 @@
 			],
 			"intro":"测试任务"
 		},
+		"TCUser":{
+			"dao":{
+				"tableName":"TCUser",
+				"newDaoName":"TCUserDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":101,"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"groupID","unique":false,"asc":false,"type":"type","intro":"groupID"
+				},
+				{
+					"col":"name","unique":true,"asc":false,"type":"type","intro":"用户名索引"
+				},
+				{
+					"col":"company","unique":false,"asc":false,"type":"type","intro":"公司名索引"
+				},
+				{
+					"col":"egameID","unique":false,"asc":false,"type":"type","intro":"egame平台的ID"
+				},
+				{
+					"col":"type","unique":false,"asc":false,"type":"type","intro":"用户类型"
+				}
+			],
+			"columns":[
+				{
+					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"name"
+				},
+				{
+					"col":"pwd","def":"","len":0,"required":true,"type":0,"intro":"pwd"
+				},
+				{
+					"col":"type","def":0,"len":0,"required":true,"type":1,"intro":"0访客;1:厂家;2测试员,3组长,4协调,11:管理员;12:高级管理员;99超级管理员"
+				},
+				{
+					"col":"level","def":0,"len":0,"required":false,"type":1,"intro":"0普通权限,1公告维护,2终端数据维护,3厂家维护"
+				},
+				{
+					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"说明"
+				},
+				{
+					"col":"email","def":"","len":0,"required":false,"type":0,"intro":"email"
+				},
+				{
+					"col":"phoneNumber","def":"","len":0,"required":true,"type":0,"intro":"手机号"
+				},
+				{
+					"col":"company","def":"","len":0,"required":true,"type":0,"intro":"公司名"
+				},
+				{
+					"col":"newNews","def":0,"len":0,"required":false,"type":1,"intro":"未读公告数"
+				},
+				{
+					"col":"newTasks","def":0,"len":0,"required":false,"type":1,"intro":"未处理任务数"
+				},
+				{
+					"col":"qq","def":"","len":0,"required":false,"type":0,"intro":"QQ号"
+				},
+				{
+					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"0正常,-1删除"
+				},
+				{
+					"col":"groupID","def":0,"len":0,"required":false,"type":1,"intro":"测试人员分组"
+				},
+				{
+					"col":"groupLeader","def":0,"len":0,"required":false,"type":1,"intro":"测试人员分组中是否组长,0为否,1为是"
+				},
+				{
+					"col":"unReadNews","def":[],"len":0,"required":false,"type":3,"intro":"未读公告的ID集"
+				},
+				{
+					"col":"unReadNews.*","def":0,"len":0,"required":false,"type":4,"intro":"未读公告的ID"
+				},
+				{
+					"col":"unReadTasks","def":[],"len":0,"required":false,"type":3,"intro":"未读任务的ID集"
+				},
+				{
+					"col":"unReadTasks.*","def":0,"len":0,"required":false,"type":4,"intro":"未读任务的ID"
+				},
+				{
+					"col":"egameID","def":0,"len":0,"required":false,"type":4,"intro":"egame平台的ID"
+				}
+			],
+			"intro":"登录平台的帐号"
+		},
 		"TCProduct":{
 			"dao":{
 				"tableName":"TCProduct",
@@ -386,16 +386,16 @@
 					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
 				},
 				{
-					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
-				},
-				{
 					"col":"name","unique":true,"asc":false,"type":"type","intro":"产品名称"
 				},
 				{
-					"col":"testTimes","unique":false,"asc":false,"type":"type","intro":"testTimes"
+					"col":"company","unique":false,"asc":false,"type":"type","intro":"company"
 				},
 				{
 					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
+				},
+				{
+					"col":"testTimes","unique":false,"asc":false,"type":"type","intro":"testTimes"
 				},
 				{
 					"col":"shortName","unique":false,"asc":false,"type":"type","intro":"shortName"
@@ -451,46 +451,10 @@
 					"col":"updateTimes","def":0,"len":0,"required":false,"type":1,"intro":"更新次数"
 				},
 				{
-					"col":"old_id","def":0,"len":0,"required":false,"type":1,"intro":"老平台产品ID"
+					"col":"oldId","def":0,"len":0,"required":false,"type":1,"intro":"老平台产品ID"
 				}
 			],
 			"intro":"产品"
-		},
-		"TCComm":{
-			"dao":{
-				"tableName":"TCComm",
-				"newDaoName":"TCCommDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":116,"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"TPID","unique":false,"asc":false,"type":"type","intro":"TCTopic id"
-				},
-				{
-					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
-				}
-			],
-			"columns":[
-				{
-					"col":"TPID","def":0,"len":0,"required":true,"type":4,"intro":"TCTopic id"
-				},
-				{
-					"col":"name","def":"","len":0,"required":false,"type":0,"intro":"回复的标题,可选"
-				},
-				{
-					"col":"text","def":"","len":0,"required":true,"type":0,"intro":"回复内容"
-				},
-				{
-					"col":"creatorName","def":"","len":0,"required":true,"type":0,"intro":"发表人"
-				},
-				{
-					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"状态"
-				}
-			],
-			"intro":"TCTopic的评论"
 		},
 		"TCPhone":{
 			"dao":{
@@ -515,13 +479,13 @@
 					"col":"resolution","unique":false,"asc":false,"type":"type","intro":"resolution"
 				},
 				{
-					"col":"group","unique":false,"asc":false,"type":"type","intro":"group"
+					"col":"shortName","unique":false,"asc":false,"type":"type","intro":"shortName"
 				},
 				{
 					"col":"type","unique":false,"asc":false,"type":"type","intro":"类型"
 				},
 				{
-					"col":"shortName","unique":false,"asc":false,"type":"type","intro":"shortName"
+					"col":"group","unique":false,"asc":false,"type":"type","intro":"group"
 				},
 				{
 					"col":"egameId","unique":false,"asc":false,"type":"type","intro":"egameId"
@@ -593,6 +557,42 @@
 				}
 			],
 			"intro":"终端"
+		},
+		"TCComm":{
+			"dao":{
+				"tableName":"TCComm",
+				"newDaoName":"TCCommDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":116,"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"TPID","unique":false,"asc":false,"type":"type","intro":"TCTopic id"
+				},
+				{
+					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
+				}
+			],
+			"columns":[
+				{
+					"col":"TPID","def":0,"len":0,"required":true,"type":4,"intro":"TCTopic id"
+				},
+				{
+					"col":"name","def":"","len":0,"required":false,"type":0,"intro":"回复的标题,可选"
+				},
+				{
+					"col":"text","def":"","len":0,"required":true,"type":0,"intro":"回复内容"
+				},
+				{
+					"col":"creatorName","def":"","len":0,"required":true,"type":0,"intro":"发表人"
+				},
+				{
+					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"状态"
+				}
+			],
+			"intro":"TCTopic的评论"
 		},
 		"TCLog":{
 			"dao":{
@@ -740,10 +740,10 @@
 					"col":"createTime","unique":false,"asc":false,"type":"type","intro":"createTime"
 				},
 				{
-					"col":"creatorName","unique":false,"asc":false,"type":"type","intro":"creatorName"
+					"col":"level","unique":false,"asc":false,"type":"type","intro":"置顶级别"
 				},
 				{
-					"col":"level","unique":false,"asc":false,"type":"type","intro":"置顶级别"
+					"col":"creatorName","unique":false,"asc":false,"type":"type","intro":"creatorName"
 				},
 				{
 					"col":"name","unique":false,"asc":false,"type":"type","intro":"标题"
@@ -854,10 +854,10 @@
 					"col":"TID","unique":false,"asc":false,"type":"type","intro":"taskID"
 				},
 				{
-					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
+					"col":"PID","unique":false,"asc":false,"type":"type","intro":"product ID"
 				},
 				{
-					"col":"PID","unique":false,"asc":false,"type":"type","intro":"product ID"
+					"col":"updateTime","unique":false,"asc":false,"type":"type","intro":"updateTime"
 				},
 				{
 					"col":"state","unique":false,"asc":false,"type":"type","intro":"state"
@@ -966,48 +966,6 @@
 			],
 			"intro":"公司"
 		},
-		"TCFile":{
-			"dao":{
-				"tableName":"TCFile",
-				"newDaoName":"TCFileDao",
-				"daoName":"mongoDao",
-				"props":{
-					"id":114,"type":"single"
-				}
-			},
-			"indexes":[
-				{
-					"col":"name","unique":false,"asc":false,"type":"type","intro":"文件名称"
-				},
-				{
-					"col":"fileName","unique":true,"asc":false,"type":"type","intro":"文件名(带扩展名)"
-				}
-			],
-			"columns":[
-				{
-					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"文件名称(非文件名,可带中文)"
-				},
-				{
-					"col":"fileName","def":"","len":0,"required":true,"type":0,"intro":"文件名(带扩展名)"
-				},
-				{
-					"col":"type","def":"","len":0,"required":false,"type":0,"intro":"文件类型(扩展名)"
-				},
-				{
-					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"文件说明"
-				},
-				{
-					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"0正常,-1已删除"
-				},
-				{
-					"col":"creatorName","def":"","len":0,"required":false,"type":0,"intro":"上传人"
-				},
-				{
-					"col":"size","def":0,"len":0,"required":false,"type":1,"intro":"文件大小(KB)"
-				}
-			],
-			"intro":"非游戏的文件"
-		},
 		"TCSmsTask":{
 			"dao":{
 				"tableName":"TCSmsTask",
@@ -1055,6 +1013,48 @@
 				}
 			],
 			"intro":"短信任务"
+		},
+		"TCFile":{
+			"dao":{
+				"tableName":"TCFile",
+				"newDaoName":"TCFileDao",
+				"daoName":"mongoDao",
+				"props":{
+					"id":114,"type":"single"
+				}
+			},
+			"indexes":[
+				{
+					"col":"name","unique":false,"asc":false,"type":"type","intro":"文件名称"
+				},
+				{
+					"col":"fileName","unique":true,"asc":false,"type":"type","intro":"文件名(带扩展名)"
+				}
+			],
+			"columns":[
+				{
+					"col":"name","def":"","len":0,"required":true,"type":0,"intro":"文件名称(非文件名,可带中文)"
+				},
+				{
+					"col":"fileName","def":"","len":0,"required":true,"type":0,"intro":"文件名(带扩展名)"
+				},
+				{
+					"col":"type","def":"","len":0,"required":false,"type":0,"intro":"文件类型(扩展名)"
+				},
+				{
+					"col":"info","def":"","len":0,"required":false,"type":0,"intro":"文件说明"
+				},
+				{
+					"col":"state","def":0,"len":0,"required":false,"type":1,"intro":"0正常,-1已删除"
+				},
+				{
+					"col":"creatorName","def":"","len":0,"required":false,"type":0,"intro":"上传人"
+				},
+				{
+					"col":"size","def":0,"len":0,"required":false,"type":1,"intro":"文件大小(KB)"
+				}
+			],
+			"intro":"非游戏的文件"
 		}
 	}
 }

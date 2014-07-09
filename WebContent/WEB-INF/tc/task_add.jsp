@@ -44,7 +44,7 @@ $(function(){
 //处理产品信息
 pJSON.company = '<%=pmap.get("venderShortName")%>';
 pJSON.name = '<%=pmap.get("gameName")%>';
-pJSON.old_id = '<%=pmap.get("old_id")%>';
+pJSON.oldId = '<%=String.valueOf(pmap.get("oldId"))%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
 String netType = "3";Object gType = pmap.get("gameTypeName");
@@ -158,7 +158,8 @@ if(files != null){
 }
 %>
 swfu.newfile = function(file){
-	return pJSON.old_id+"_"+(file.index+<%=maxFileNum %>)+file.type;
+	var t = (file.type && file.type.length>2) ? file.type : ".apk";
+	return pJSON.oldId+"_"+(file.index+<%=maxFileNum %>)+t;
 };
 
 

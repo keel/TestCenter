@@ -765,7 +765,7 @@ public final class MongoConn implements DataSourceInterface{
 		String dbName = "tc";
 		try {
 			ServerAddress ip1 = new ServerAddress("180.96.63.70",27017);
-			ServerAddress ip2 = new ServerAddress("192.168.0.1",27017);
+			ServerAddress ip2 = new ServerAddress("180.96.63.71",27017);
 			MongoCredential c1 = MongoCredential.createMongoCRCredential("keel", dbName, "jsGame_1810".toCharArray());
 			ArrayList<MongoCredential> cl = new ArrayList<MongoCredential>();
 			cl.add(c1);
@@ -781,6 +781,29 @@ public final class MongoConn implements DataSourceInterface{
 			DBCollection co_t1 = db2.getCollection("TCTask");
 			DBCollection co_f0 = db1.getCollection("TCGameFile");
 			DBCollection co_f1 = db2.getCollection("TCGameFile");
+			
+			
+			DBObject test1 = co_p0.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+			test1 = co_p1.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+			test1 = co_t0.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+			test1 = co_t1.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+			test1 = co_f0.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+			test1 = co_f1.findOne();
+			System.out.println(test1.toString());
+			System.out.println("-----------");
+
+			
+			Thread.sleep(5000);
 			//id生成器
 			IDManager idm_t = new IDManager(1);
 			IDManager idm_f = new IDManager(1);
@@ -792,20 +815,25 @@ public final class MongoConn implements DataSourceInterface{
 			while (cur.hasNext()) {
 				DBObject p0 = (DBObject) cur.next();
 				long pid = (Long) p0.get("_id");
-				HashMap<String, String> pmap = EGame.getProductByOldId(pid);
+				HashMap<String, Object> pmap = EGame.getProductByOldId(pid);
 				if (pmap == null || pmap.isEmpty()) {
 					//接口获取失败
 					System.out.println("product not found:"+pid);
 					continue;
 				}
-				long newPid = Long.parseLong(pmap.get("gameId"));
+				long newPid = (Long)pmap.get("gameId");
 				//产品信息更新
 				BasicDBObject newPidCond = new BasicDBObject("_id", newPid);
 				DBCursor cur_p1 = co_p1.find(newPidCond);
 				if (cur_p1.hasNext()) {
 					//更新新数据
 					DBObject p1 = cur.next();
-					p1.put("updateTimes", Integer.parseInt(String.valueOf(p0.get("updateTimes"))+1));
+					Object updateTimesObj = p0.get("updateTimes");
+					if (StringUtil.isDigits(updateTimesObj)) {
+						p1.put("updateTimes", Integer.parseInt(String.valueOf(p0.get("updateTimes"))+1));
+					}else{
+						p1.put("updateTimes", 0);
+					}
 					p1.put("oldId", pid);
 					co_p1.save(p1);
 //					BasicDBObject update_p1 = new BasicDBObject("updateTimes",Integer.parseInt(String.valueOf(p0.get("updateTimes")))+1);

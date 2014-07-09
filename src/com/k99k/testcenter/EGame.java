@@ -264,7 +264,7 @@ public class EGame extends Action {
 		//--------------------------------
 		
 		//直接从接口获取产品
-		HashMap<String,String> pmap = getProduct(pid);
+		HashMap<String,Object> pmap = getProduct(pid);
 		if (pmap == null) {
 			//接口获取失败
 			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
@@ -388,7 +388,7 @@ public class EGame extends Action {
 	 * @param cpid
 	 * @return HashMap形式的company json
 	 */
-	public static final HashMap<String,String> getCompany(String cpid){
+	public static final HashMap<String,Object> getCompany(String cpid){
 		String url = companyUrl+"&cp_id="+cpid;
 		return getUrlJson(url);
 	}
@@ -398,7 +398,7 @@ public class EGame extends Action {
 	 * @param id
 	 * @return HashMap形式的json
 	 */
-	public static final HashMap<String,String> getProduct(long pid){
+	public static final HashMap<String,Object> getProduct(long pid){
 		String url = productUrl+"&app_id="+pid;
 		return getUrlJson(url);
 	}
@@ -408,8 +408,8 @@ public class EGame extends Action {
 	 * @param pid 老ID
 	 * @return
 	 */
-	public static final HashMap<String,String> getProductByOldId(long pid){
-		String url = productUrl+"&old_id="+pid;
+	public static final HashMap<String,Object> getProductByOldId(long pid){
+		String url = "http://open.play.cn/dev/api/test_system/get_app?a=1"+"&old_id="+pid;
 		return getUrlJson(url);
 	}
 //	/**
@@ -460,7 +460,7 @@ public class EGame extends Action {
 	 * @return HashMap<String,String> 目的json,失败返回null
 	 */
 	@SuppressWarnings("unchecked")
-	private final static HashMap<String,String> getUrlJson(String url){
+	private final static HashMap<String,Object> getUrlJson(String url){
 //		System.out.println("egameURL:"+url);
 		String re = Net.getUrlContent(url, 3000, false, "utf-8");
 		if (re.equals("")) {
@@ -473,7 +473,7 @@ public class EGame extends Action {
 				if (json.containsKey("data")) {
 					ArrayList<Object> list = (ArrayList<Object>) json.get("data");
 					if (list!=null && list.size()>=1) {
-						HashMap<String,String> comJson = (HashMap<String, String>) list.get(0);
+						HashMap<String,Object> comJson = (HashMap<String, Object>) list.get(0);
 						if (comJson != null) {
 							return comJson;
 						}

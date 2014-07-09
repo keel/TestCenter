@@ -184,7 +184,7 @@ public class TTask extends Action {
 			type = "1";
 		}
 		long pid = Long.parseLong(opid);
-		HashMap<String,String> pmap = EGame.getProduct(pid);
+		HashMap<String,Object> pmap = EGame.getProduct(pid);
 		if (pmap == null) {
 			//接口获取失败
 			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);

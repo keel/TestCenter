@@ -522,7 +522,7 @@ public class StaticDao extends MongoDao {
 	public static final boolean syncProduct(long pid){
 		
 		//产品信息
-		HashMap<String,String> pmap = EGame.getProduct(pid);
+		HashMap<String,Object> pmap = EGame.getProduct(pid);
 		
 		//计费信息
 		ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
@@ -530,7 +530,7 @@ public class StaticDao extends MongoDao {
 		
 		KObject one = new KObject();//productDao.findOne(pid);
 		one.setId(pid);
-		String name = pmap.get("gameName");
+		String name = String.valueOf(pmap.get("gameName"));
 		one.setName(name);
 		one.setProp("company", pmap.get("venderShortName"));
 		int netType = 3;
@@ -577,7 +577,7 @@ public class StaticDao extends MongoDao {
 			type = 5;
 		}
 		one.setProp("type", type);
-		one.setProp("old_id", pmap.get("old_id"));
+		one.setProp("oldId", pmap.get("oldId"));
 		one.setProp("feeInfo",fee);
 		productDao.save(one);
 		log.info("product sync ok:"+pid);

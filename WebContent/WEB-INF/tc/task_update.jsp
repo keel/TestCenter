@@ -31,7 +31,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 					sb.append("<span class='tu3'>测试驳回</span> ");
 				}
 				String fileName = f.getProp("fileName").toString();
-				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				String fileNum = fileName.substring(fileName.lastIndexOf('_')+1,fileName.lastIndexOf('.'));
 				sb.append(fileNum).append(". ");
 				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				
@@ -67,7 +67,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				KObject f = (KObject)entry.getValue();
 				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>测试通过</span> ");
 				String fileName = f.getProp("fileName").toString();
-				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				String fileNum = fileName.substring(fileName.lastIndexOf('_')+1,fileName.lastIndexOf('.'));
 				sb.append(fileNum).append(". ");
 				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 
@@ -299,7 +299,7 @@ function showFileParas(){
 	});
 }
 function getApkNum(apkName){
-	var s=	apkName.indexOf('_')+1,e=apkName.indexOf('.');
+	var s=	apkName.lastIndexOf('_')+1,e=apkName.lastIndexOf('.');
 	return parseInt(apkName.substring(s,e));
 }
 function maxFileNum(){

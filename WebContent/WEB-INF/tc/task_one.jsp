@@ -31,7 +31,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 					}
 				}
 				String fileName = f.getProp("fileName").toString();
-				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				String fileNum = (fileName.lastIndexOf('_') <=0 ) ? "0" : fileName.substring(fileName.lastIndexOf('_')+1,fileName.lastIndexOf('.'));
 				sb.append(fileNum).append(". ");
 				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				if(userType>=3 && one.getState() == 0){
@@ -65,7 +65,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 				KObject f = (KObject)entry.getValue();
 				sb.append(" <div style='background-color:#FFF;padding:10px;border-top: 1px solid #ccc;' id='cfu_").append(i).append("'><span class='tu2'>已经通过</span> ");
 				String fileName = f.getProp("fileName").toString();
-				String fileNum = fileName.substring(fileName.indexOf('_')+1,fileName.indexOf('.'));
+				String fileNum = (fileName.lastIndexOf('_') <=0 ) ? "0" : fileName.substring(fileName.lastIndexOf('_')+1,fileName.lastIndexOf('.'));
 				sb.append(fileNum).append(". ");
 				sb.append("<a rel='").append(fileName).append("@").append(f.getId()).append("' href='").append(prefix).append("/gamefile/").append(f.getId()).append("' class=\"filename bold\">").append(f.getName()).append("</a>");
 				sb.append("<div class=\"groups\">");
@@ -406,8 +406,9 @@ function showSummary(data){
 		var h=$("<div class='file_upload' style='background-color:#FFF;' id='qc_"+i+"'><div>"+i+". "+c.name
 				+"</div><div class='blue' style='font-size:12px;padding:5px;'>"+c.info+"</div></div>");
 		for ( var j = 1; j < data[i].length; j++) {
-			var q=data[i][j];var indx = q.gFile.indexOf('_');
-			var h2=$("<div><span class='tu"+q.re+"'>"+q.phone+"</span> [实体包"+q.gFile.substring(indx+1,indx+2)+"] - " +q.info+"</div>");
+			var q=data[i][j];var indx = q.gFile.lastIndexOf('_');
+			var n = (indx<=0) ? 0 : q.gFile.substring(indx+1,indx+2);
+			var h2=$("<div><span class='tu"+q.re+"'>"+q.phone+"</span> [实体包"+n+"] - " +q.info+"</div>");
 			h2.appendTo(h);
 		}
 		h.appendTo("#fCases");
