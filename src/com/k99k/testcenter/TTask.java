@@ -1211,7 +1211,7 @@ public class TTask extends Action {
 			//测试中状态的产品无法添加新任务
 			Object stateObj = product.get(0).get("state");
 			if (StringUtil.isDigits(stateObj)) {
-				if ((Integer)stateObj == 1) {
+				if (Integer.parseInt(stateObj+"") == 1) {
 					JOut.err(403,"E403"+ Err.ERR_ADD_TASK_FAIL+pid, msg);
 					return;  
 				}

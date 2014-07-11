@@ -135,7 +135,7 @@ $(function(){
 //处理产品信息
 pJSON.company = '<%=pmap.get("venderShortName")%>';
 pJSON.name = '<%=pmap.get("gameName")%>';
-pJSON.old_id = '<%=pmap.get("old_id")%>';
+pJSON.oldId = '<%=String.valueOf(pmap.get("oldId"))%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
 String netType = "3";Object gType = pmap.get("gameTypeName");
@@ -267,7 +267,7 @@ initUpload("<%=user.getName() %>",sucFn,upFileType,null,null,null,queueCheck);
 
 swfu.newfile = function(file){
 	if(swfu.currentFile == "newAdd"){
-		return 	pJSON.old_id+"_"+(addFileStartNum+file.index)+".apk";
+		return 	pJSON.oldId+"_"+(addFileStartNum+file.index)+".apk";
 	}
 	return swfu.currentFile;
 };
