@@ -432,6 +432,7 @@ public class StaticDao extends MongoDao {
 		
 		DBCollection coc = companyDao.getColl(); //mongo.getColl("TCCompany");
 		DBCollection cuc = tcUserDao.getColl(); //mongo.getColl("TCUser");
+		DBCollection tc = taskDao.getColl(); //mongo.getColl("TCUser");
 		
 		//确定cpid是否已存在
 		DBCursor cur = coc.find(new BasicDBObject("mainUser",cpid));
@@ -440,6 +441,7 @@ public class StaticDao extends MongoDao {
 			String name = comMap.get("shortName").toString();
 			
 			DBObject co = cur.next();
+			String oldName = (String) co.get("name");
 			co.put("shortName", CnToSpell.getLetter(name));
 			co.put("name",name);
 			co.put("version", Integer.parseInt(co.get("version").toString())+1);
@@ -460,7 +462,11 @@ public class StaticDao extends MongoDao {
 				return false;
 			}
 			Company.egameIds.put(cpid, name);
+
+			//变更已存在的Task的company字段
+			tc.update(new BasicDBObject("name",oldName),new BasicDBObject("$set",new BasicDBObject("name",name)),false,true);
 			log.info("update company ok:"+cpid);
+			
 		}else{
 			//确定数据库表中的最大id
 			cur.close();

@@ -189,6 +189,12 @@ public class TTask extends Action {
 			//接口获取失败
 			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
 			return;
+		}else{
+			//强制同步产品
+			if(!StaticDao.syncProduct(pid)){
+				JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
+				return;
+			}
 		}
 		//加入真正的公司名称
 		String cpid = pmap.get("venderCode").toString();

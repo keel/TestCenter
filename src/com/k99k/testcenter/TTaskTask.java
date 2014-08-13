@@ -141,7 +141,7 @@ public class TTaskTask extends Action {
 	
 	private final void changeOperator(long tid,String oldOperator,String newOperator){
 		HashMap<String,Object> query = new HashMap<String, Object>(4);
-		query.put("name", oldOperator);
+//		query.put("name", oldOperator);
 		query.put("unReadTasks", tid);
 		HashMap<String,Object> set = new HashMap<String, Object>(4);
 		HashMap<String,Object> pull = new HashMap<String, Object>(2);
