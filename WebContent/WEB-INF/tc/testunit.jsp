@@ -20,7 +20,7 @@ Boolean ismy = request.getParameter("my")!=null && request.getParameter("my").eq
 String myPara = (ismy)?"/my":"";
 int userType = user.getType();
 int sys = Integer.parseInt(product.getProp("sys").toString());
-boolean canSave = (task.getState() == 1 && userType>1 && userType<=4 && user.getName().equals(one.getProp("tester"))) || (userType==99);
+boolean canSave = (task.getState() == 1 && userType>1 && user.getName().equals(one.getProp("tester"))) || (userType>=3);
 out.print(JSPOut.out("head0","0",product.getName()));%>
 <link rel="stylesheet" href="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.css" type="text/css" media="screen" />
 <script src="<%=sPrefix %>/fancybox/jquery.fancybox-1.3.4.pack.js" type="text/javascript"></script>

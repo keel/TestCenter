@@ -779,7 +779,7 @@ else if(state==TTask.TASK_STATE_NEED_MOD){
 	<% String backStr = (userType==99) ? "退回到测试": "放弃未通过机型，退回测试";%>
 	<a href="javascript:backToTest(<%= one.getId()%>);" class="aButton"><%=backStr %></a>
 	<a href="<%=prefix+"/topic/add/company?pid="+one.getProp("PID")+"&amp;tid="+one.getId()%>" class="aButton">对此任务发起讨论</a>
-	<a href="javascript:dropTask(<%= one.getId()%>);" class="aButton">放弃此产品,不再测试</a>
+	<% //  href="javascript:dropTask(<\%= one.getId()%\>);" class="aButton">放弃此产品,不再测试</a> %>
 <%
 }
 }%>

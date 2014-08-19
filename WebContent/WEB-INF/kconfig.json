@@ -171,8 +171,9 @@
 			"port":21,
 			"user":"shitibao",
 			"pwd":"shitibao123",
-			"newProductRemotePrePath":"add/",
-			"updateProductRemotePrePath":"update/",
+			"newProductRemotePrePath":"/",
+			"updateProductRemotePrePath":"/",
+			"syncUrl":"http://open.play.cn/dev/api/test_system/sync_app_entity?app_id=",
 			"localPath":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
 		},
 		{

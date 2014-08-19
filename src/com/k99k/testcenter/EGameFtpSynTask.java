@@ -6,10 +6,14 @@ package com.k99k.testcenter;
 import it.sauronsoftware.ftp4j.FTPClient;
 import it.sauronsoftware.ftp4j.FTPDataTransferListener;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -60,6 +64,11 @@ public class EGameFtpSynTask extends Action {
 	 * 类似:  "/update/"
 	 */
 	private String updateProductRemotePrePath = "/";
+	
+	/**
+	 * 触发同步的地址
+	 */
+	private String syncUrl = "http://open.play.cn/dev/api/test_system/sync_app_entity?app_id=";
 
 	/**
 	 * @param args
@@ -189,6 +198,22 @@ public class EGameFtpSynTask extends Action {
 			fc.login(this.user, this.pwd);
 			uploadFiles(fc,f2f);
 			fc.disconnect(true);
+			
+			
+			//触发实时同步
+			URL url = new URL(this.syncUrl+pid);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			conn.connect();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					conn.getInputStream()));
+//			String lines;
+			while (reader.readLine() != null) {
+				//System.out.println(lines);
+			}
+			reader.close();
+			// 断开连接
+			conn.disconnect();
+
 		} catch (Exception e) {
 			Object o = msg.getData("tryTimes");
 			int tTimes = 0;
@@ -452,6 +477,16 @@ public class EGameFtpSynTask extends Action {
 	public final void setUpdateProductRemotePrePath(
 			String updateProductRemotePrePath) {
 		this.updateProductRemotePrePath = updateProductRemotePrePath;
+	}
+
+
+	public final String getSyncUrl() {
+		return syncUrl;
+	}
+
+
+	public final void setSyncUrl(String syncUrl) {
+		this.syncUrl = syncUrl;
 	}
 
 	
