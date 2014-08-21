@@ -189,13 +189,18 @@ public class TTask extends Action {
 			//接口获取失败
 			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
 			return;
-		}else{
-			//强制同步产品
-			if(!StaticDao.syncProduct(pid)){
-				JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
-				return;
-			}
 		}
+		//计费信息
+		ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+		if (fee != null) {
+			msg.addData("fee", fee);
+		}
+		//强制同步产品
+		if(!StaticDao.syncProduct(pid,pmap,fee)){
+			JOut.err(500,"E500"+Err.ERR_EGAME_PRODUCT,msg);
+			return;
+		}
+		
 		//加入真正的公司名称
 		String cpid = pmap.get("venderCode").toString();
 		String cpName = Company.egameIds.get(cpid);
@@ -209,13 +214,13 @@ public class TTask extends Action {
 		//KObject product = Product.dao.findOne(pid);
 		
 		pmap.put("task_type", type);
-		if (String.valueOf(pmap.get("payType")).equals("2")) {
-			//获取短代信息
-			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
-			if (fee != null) {
-				msg.addData("fee", fee);
-			}
-		}
+//		if (String.valueOf(pmap.get("payType")).equals("2")) {
+//			//获取短代信息
+//			ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
+//			if (fee != null) {
+//				msg.addData("fee", fee);
+//			}
+//		}
 		msg.addData("pmap", pmap);
 		if (StringUtil.isDigits(tidStr)) {
 			//回归测试时需要显示本次未通过的实体包

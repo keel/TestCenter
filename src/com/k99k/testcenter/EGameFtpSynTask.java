@@ -206,15 +206,18 @@ public class EGameFtpSynTask extends Action {
 			conn.connect();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					conn.getInputStream()));
-//			String lines;
-			while (reader.readLine() != null) {
+			StringBuilder urlBack = new StringBuilder();
+			String lines;
+			while ((lines=reader.readLine()) != null) {
 				//System.out.println(lines);
+				urlBack.append(lines);
 			}
 			reader.close();
 			// 断开连接
 			conn.disconnect();
-
+			log.info("syncUrl:"+url.toString()+" re:"+urlBack);
 		} catch (Exception e) {
+			e.printStackTrace();
 			Object o = msg.getData("tryTimes");
 			int tTimes = 0;
 			if (o != null) {

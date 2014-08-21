@@ -484,8 +484,25 @@ public class StaticDao extends MongoDao {
 				lastcId = Long.parseLong(cc.get("_id").toString())+1;
 			}
 			cur.close();
-			
+			//更新TCCompany
 			DBObject co = new BasicDBObject();
+			DBObject co2 = new BasicDBObject();
+			String mainUser = co.get("name").toString();
+			String name = co.get("company").toString();
+			co2.put("_id", lastcId);
+			co2.put("shortName", CnToSpell.getLetter(name));
+			co2.put("mainUser", mainUser);
+			co2.put("name", name);
+			co2.put("state", 0);
+			co2.put("level", 0);
+			co2.put("type", 0);
+			co2.put("version", 1);
+			coc.save(co2);
+			Company.egameIds.put(cpid, name);
+			
+			
+			//更新TCUser
+			co = new BasicDBObject();
 			co.put("name", cpid);
 			co.put("pwd", "egame");
 			co.put("type", 1);
@@ -500,28 +517,84 @@ public class StaticDao extends MongoDao {
 			co.put("state", 0);
 			co.put("groupID", 0);
 			co.put("groupLeader", 0);
-			
-			//更新TCUser
-
 			co.put("_id", lastId);
 			cuc.save(co);
-			//更新TCCompany
 			
-			DBObject co2 = new BasicDBObject();
-			String mainUser = co.get("name").toString();
-			String name = co.get("company").toString();
-			co2.put("_id", lastcId);
-			co2.put("shortName", CnToSpell.getLetter(name));
-			co2.put("mainUser", mainUser);
-			co2.put("name", name);
-			co2.put("state", 0);
-			co2.put("level", 0);
-			co2.put("type", 0);
-			co2.put("version", 1);
-			coc.save(co2);
-			Company.egameIds.put(cpid, name);
 			log.info("add company ok:"+cpid+" _id-u:"+lastId+" _id-c:"+lastcId);
 		}
+		return true;
+	}
+	
+	
+	public static final boolean syncProduct(long pid,HashMap<String,Object> pmap,ArrayList<HashMap<String,String>> fee){
+		
+		KObject one = new KObject();//productDao.findOne(pid);
+		one.setId(pid);
+		String name = String.valueOf(pmap.get("gameName"));
+		one.setName(name);
+		one.setProp("company", pmap.get("venderShortName"));
+		int netType = 3;
+		Object gType = pmap.get("gameClass");
+		int gameType = StringUtil.isDigits(gType) ? Integer.parseInt(String.valueOf(gType)) : 12;
+		if(gameType == 11){
+			//单机游戏
+			netType = 0;
+		}else if(gameType == 12){
+			//联网游戏
+			netType = 1;
+//		}else if(gType.equals("WAP游戏")){
+//			netType = 2;
+		}else{
+			netType = 3;
+		}
+		one.setProp("netType", netType);
+		one.setProp("shortName", CnToSpell.getLetter(name));
+		int sys = 6;
+		Object os = pmap.get("gameOS");
+		int osType = StringUtil.isDigits(os) ? Integer.parseInt(String.valueOf(os)) : 3;
+		if(osType == 10){
+			//JAVA
+			sys = 0;
+		}else if(osType == 3){
+			//android
+			sys = 1;
+		}else if(osType == 2){ //接口没有2这个值,按wap处理
+			sys = 2;
+		}else if(osType == 11){
+			//brew
+			sys = 3;
+		}else if(osType == 4){
+			//mobile
+			sys = 4;
+		}else if(osType == 9){
+			//ce 实际为windowns phone
+			sys = 5;
+		}else{
+			sys = 6;
+		}
+		one.setProp("sys", sys);
+		int type = 0;String pTypeStr = pmap.get("payType").toString();
+		Object isPack = pmap.get("isPackage");
+		int pType = StringUtil.isDigits(pTypeStr) ? Integer.parseInt(pTypeStr) : 0;
+		int isPackage = StringUtil.isDigits(isPack) ? Integer.parseInt(String.valueOf(isPack)) : 0;
+		if(isPackage == 1){
+			type = 4;//进包
+		}else if(pType ==2){
+			type = 1; //单机道具
+//		}else if(pType.indexOf("下载")>=0){ //下载时按次计费
+//			type = 3;
+		}else if(pType==0){
+			type = 0; //单机免费
+		}else if(pType==3){
+			type = 1; //网游道具按次
+		}else if(pType ==5){
+			type = 0; //网游免费
+		}
+		one.setProp("type", type);
+		one.setProp("oldId", pmap.get("oldId"));
+		one.setProp("feeInfo",fee);
+		productDao.save(one);
+		log.info("product sync ok:"+pid);
 		return true;
 	}
 	
@@ -533,61 +606,7 @@ public class StaticDao extends MongoDao {
 		//计费信息
 		ArrayList<HashMap<String,String>> fee = EGame.getFee(pid);
 		
-		
-		KObject one = new KObject();//productDao.findOne(pid);
-		one.setId(pid);
-		String name = String.valueOf(pmap.get("gameName"));
-		one.setName(name);
-		one.setProp("company", pmap.get("venderShortName"));
-		int netType = 3;
-		Object gType = pmap.get("gameTypeName");
-		if(gType.equals("单机游戏")){
-			netType = 0;
-		}else if(gType.equals("联网游戏")){
-			netType = 1;
-		}else if(gType.equals("WAP游戏")){
-			netType = 2;
-		}else{
-			netType = 3;
-		}
-		one.setProp("netType", netType);
-		one.setProp("shortName", CnToSpell.getLetter(name));
-		int sys = 6;
-		Object os = pmap.get("gameOSName");
-		if(os.equals("JAVA")){
-			sys = 0;
-		}else if(os.equals("Android")){
-			sys = 1;
-		}else if(netType == 2){
-			sys = 2;
-		}else if(os.equals("BREW")){
-			sys = 3;
-		}else if(os.equals("Windows Mobile")){
-			sys = 4;
-		}else if(os.equals("Windows CE")){
-			sys = 5;
-		}else{
-			sys = 6;
-		}
-		one.setProp("sys", sys);
-		int type = 0;String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("isPackage");
-		if(!StringUtil.toStrNotNull(isPack, "1").equals("0")){
-			type = 4;
-		}else if(pType.indexOf("关卡或道具")>=0){
-			type = 1;
-		}else if(pType.indexOf("下载")>=0){ //下载时按次计费
-			type = 3;
-		}else if(pType.indexOf("免费")>=0){
-			type = 0;
-		}else if(pType.indexOf("包月")>=0){
-			type = 5;
-		}
-		one.setProp("type", type);
-		one.setProp("oldId", pmap.get("oldId"));
-		one.setProp("feeInfo",fee);
-		productDao.save(one);
-		log.info("product sync ok:"+pid);
-		return true;
+		return syncProduct(pid,pmap,fee);
 	}
 	
 	

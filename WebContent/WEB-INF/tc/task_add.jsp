@@ -47,51 +47,64 @@ pJSON.name = '<%=pmap.get("gameName")%>';
 pJSON.oldId = '<%=String.valueOf(pmap.get("oldId"))%>';
 pJSON.netPort = 0;
 pJSON.netType = <% 
-String netType = "3";Object gType = pmap.get("gameTypeName");
-if(gType.equals("单机游戏")){
-	netType = "0";
-}else if(gType.equals("联网游戏")){
-	netType = "1";
-}else if(gType.equals("WAP游戏")){
-	netType = "2";
+int netType = 3;Object gType = pmap.get("gameClass");
+int gameType = StringUtil.isDigits(gType) ? Integer.parseInt(String.valueOf(gType)) : 12;
+if(gameType == 11){
+	//单机游戏
+	netType = 0;
+}else if(gameType == 12){
+	//联网游戏
+	netType = 1;
 }else{
-	netType = "3";
+	netType = 3;
 }
 out.print(netType+";");
 %>
 pJSON._id = <%=String.valueOf(pmap.get("gameId"))%>;
 pJSON.newp = 2;
 pJSON.sys = <% 
-String sys = "6";Object os = pmap.get("gameOSName");
-if(os.equals("JAVA")){
-	sys = "0";
-}else if(os.equals("Android")){
-	sys = "1";
-}else if(netType.equals("2")){
-	sys = "2";
-}else if(os.equals("BREW")){
-	sys = "3";
-}else if(os.equals("Windows Mobile")){
-	sys = "4";
-}else if(os.equals("Windows CE")){
-	sys = "5";
+int sys = 6;//Object os = pmap.get("gameOSName");
+Object os = pmap.get("gameOS");
+int osType = StringUtil.isDigits(os) ? Integer.parseInt(String.valueOf(os)) : 3;
+if(osType == 10){
+	//JAVA
+	sys = 0;
+}else if(osType == 3){
+	//android
+	sys = 1;
+}else if(osType == 2){ //接口没有2这个值,按wap处理
+	sys = 2;
+}else if(osType == 11){
+	//brew
+	sys = 3;
+}else if(osType == 4){
+	//mobile
+	sys = 4;
+}else if(osType == 9){
+	//ce 实际为windowns phone
+	sys = 5;
 }else{
-	sys = "6";
+	sys = 6;
 }
 out.print(sys+";");
 %>
 pJSON.type = <% 
-String type = "0";String pType = pmap.get("payTypeName").toString();Object isPack = pmap.get("isPackage");
-if(!String.valueOf(isPack).equals("1")){
-	type = "4";
-}else if(pType.indexOf("关卡或道具")>=0){
-	type = "1";
-}else if(pType.indexOf("下载")>=0){ //下载时按次计费
-	type = "3";
-}else if(pType.indexOf("免费")>=0){
-	type = "0";
-}else if(pType.indexOf("包月")>=0){
-	type = "5";
+int type = 0;Object pTypeStr = pmap.get("payType");
+Object isPack = pmap.get("isPackage");
+int pType = StringUtil.isDigits(pTypeStr) ? Integer.parseInt(String.valueOf(pTypeStr)) : 0;
+int isPackage = StringUtil.isDigits(isPack) ? Integer.parseInt(String.valueOf(isPack)) : 0;
+if(isPackage == 1){
+	type = 4;//进包
+}else if(pType ==2){
+	type = 1; //单机道具
+//}else if(pType.indexOf("下载")>=0){ //下载时按次计费
+//	type = 3;
+}else if(pType==0){
+	type = 0; //单机免费
+}else if(pType==3){
+	type = 1; //网游道具按次
+}else if(pType ==5){
+	type = 0; //网游免费
 }
 out.print(type+";");
 %>
