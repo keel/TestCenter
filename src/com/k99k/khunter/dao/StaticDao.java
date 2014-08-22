@@ -486,22 +486,7 @@ public class StaticDao extends MongoDao {
 			cur.close();
 			//更新TCCompany
 			DBObject co = new BasicDBObject();
-			DBObject co2 = new BasicDBObject();
-			String mainUser = co.get("name").toString();
-			String name = co.get("company").toString();
-			co2.put("_id", lastcId);
-			co2.put("shortName", CnToSpell.getLetter(name));
-			co2.put("mainUser", mainUser);
-			co2.put("name", name);
-			co2.put("state", 0);
-			co2.put("level", 0);
-			co2.put("type", 0);
-			co2.put("version", 1);
-			coc.save(co2);
-			Company.egameIds.put(cpid, name);
-			
-			
-			//更新TCUser
+		
 			co = new BasicDBObject();
 			co.put("name", cpid);
 			co.put("pwd", "egame");
@@ -518,6 +503,23 @@ public class StaticDao extends MongoDao {
 			co.put("groupID", 0);
 			co.put("groupLeader", 0);
 			co.put("_id", lastId);
+			
+			DBObject co2 = new BasicDBObject();
+			String mainUser = co.get("name").toString();
+			String name = co.get("company").toString();
+			co2.put("_id", lastcId);
+			co2.put("shortName", CnToSpell.getLetter(name));
+			co2.put("mainUser", mainUser);
+			co2.put("name", name);
+			co2.put("state", 0);
+			co2.put("level", 0);
+			co2.put("type", 0);
+			co2.put("version", 1);
+			coc.save(co2);
+			Company.egameIds.put(cpid, name);
+			
+			
+			//更新TCUser
 			cuc.save(co);
 			
 			log.info("add company ok:"+cpid+" _id-u:"+lastId+" _id-c:"+lastcId);
