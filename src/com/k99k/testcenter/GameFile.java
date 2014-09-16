@@ -46,6 +46,7 @@ public class GameFile extends Action {
 	 * 真实文件存放路径,必须是绝对路径
 	 */
 	private String path = "";
+	private String staticPath = "";
 	private final static String contentType = "application/x-msdownload";
 
 	/* (non-Javadoc)
@@ -102,8 +103,10 @@ public class GameFile extends Action {
 			resp.setContentLength(len);
 			if (len > 0) {
 				//不让KFilter处理
-				msg.addData("[none]", "true");
+//				msg.addData("[none]", "true");
 				msg.removeData("[print]");
+				msg.addData("[goto]",this.staticPath+g.getProp("PID")+"/"+g.getProp("fileName"));
+				/*
 				try {
 					InputStream inStream = new FileInputStream(f);
 					byte[] buf = new byte[4096];
@@ -123,6 +126,7 @@ public class GameFile extends Action {
 //					JOut.err(404, "文件下载失败", httpmsg);
 					return super.act(msg);
 				}
+				*/
 			}
 		}else{
 			log.error("Gamefile not exist:"+f);
@@ -153,6 +157,14 @@ public class GameFile extends Action {
 	 */
 	public final void setPath(String path) {
 		this.path = path;
+	}
+
+	public final String getStaticPath() {
+		return staticPath;
+	}
+
+	public final void setStaticPath(String staticPath) {
+		this.staticPath = staticPath;
 	}
 	
 }

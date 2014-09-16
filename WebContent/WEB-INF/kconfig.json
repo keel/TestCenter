@@ -81,7 +81,8 @@
 		{
 			"_actName":"gamefile",
 			"_class":"com.k99k.testcenter.GameFile",
-			"path":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/"
+			"path":"D:/works/workspace_keel/TestCenter/WebContent/gamefiles/",
+			"staticPath":"http://180.96.63.71/tc/gamefiles/"
 		},
 		{
 			"_actName":"newsTask",
