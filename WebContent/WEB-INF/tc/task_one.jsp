@@ -579,9 +579,10 @@ function showOrgParas(){
     <div class="inBoxLine">
 
 产品名称：<span class="blueBold"><%=one.getName() %></span> 
-公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>
-测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次
- 更新：第<span class="blueBold">[<%= (one.getProp("updateTimes")==null)?"0":one.getProp("updateTimes") %>]</span>次
+公司：<a href="<%=prefix+"/user/one?c="+product.getProp("company")%>"><%=product.getProp("company") %></a>,
+测试次数：第<span class="blueBold">[<%= (one.getProp("testTimes")==null)?"1":one.getProp("testTimes") %>]</span>次 ,
+更新：第<span class="blueBold">[<%= (one.getProp("updateTimes")==null)?"0":one.getProp("updateTimes") %>]</span>次  ,
+三网：<span class="blueBold">[<%= (product.getProp("sdkPayType")==null)?"0":product.getProp("sdkPayType") %>]</span>
 </div>
     	<div class="inBoxLine">产品业务平台ID: <span id="task_p_id_v" class="blueBold"><%=product.getProp("_id") %>|<%=product.getProp("oldId") %></span> 手机系统: <span id="task_p_sys_v" class="blueBold"><%=product.getProp("sys") %></span> 产品计费类型: <span id="task_p_type_v" class="blueBold"><%=product.getProp("type") %></span> 
     	联网情况: <span id="task_p_net_v" class="blueBold"><%=StringUtil.isDigits(product.getProp("netType")) ? ((Integer.parseInt(String.valueOf(product.getProp("netType")))==1)?"联网":"单机"): "未知" %></span> 是否蚂蚁屋: <span id="task_p_isSns_v" class="blueBold"><%=product.getProp("communityGame") %></span> </div> 

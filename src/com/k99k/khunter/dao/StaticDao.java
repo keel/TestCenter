@@ -595,6 +595,9 @@ public class StaticDao extends MongoDao {
 		one.setProp("type", type);
 		one.setProp("oldId", pmap.get("oldId"));
 		one.setProp("feeInfo",fee);
+		String sdkPayTypeStr = String.valueOf(pmap.get("sdkPayType"));
+		int sdkPayType = StringUtil.isDigits(sdkPayTypeStr) ? Integer.parseInt(sdkPayTypeStr) : 0;
+		one.setProp("sdkPayType", sdkPayType);
 		productDao.save(one);
 		log.info("product sync ok:"+pid);
 		return true;
