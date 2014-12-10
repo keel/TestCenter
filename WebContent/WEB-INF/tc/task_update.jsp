@@ -15,7 +15,7 @@ private static String showFiles(ArrayList<KObject> passfiles,ArrayList<KObject> 
 	}
 	if((files != null && !files.isEmpty()) || hasPassedFiles){
 		StringBuilder sb = new StringBuilder();
-		sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>实体包</div><div class='inBoxContent'>");
+		sb.append("<div class='inBox' id='files'><div class='inBoxTitle'>实体包</div><div class='red'> 注意提交测试前请确认游戏第一帧为最新版爱游戏LOGO[<a href='http://180.96.63.69/Documents/SDK_DownloadGuid.html' target='_blank'>下载</a>],如下图：<br /><img alt='logo' src='/tc/images/egame_logo.jpg'></div><div class='inBoxContent'>");
 		int i = 0;
 		if(files != null && !files.isEmpty()){
 			Iterator<KObject> it1 = files.iterator();

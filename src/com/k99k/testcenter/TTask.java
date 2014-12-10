@@ -72,12 +72,12 @@ public class TTask extends Action {
 		fileParaMap.put("1_480x800", "1003");
 		fileParaMap.put("1_480x854", "1004");
 		fileParaMap.put("1_960x540", "1005|1006|1007");
-		fileParaMap.put("2_Androd2.1", "2001|2002|2003");
-		fileParaMap.put("2_Androd2.2", "2004");
-		fileParaMap.put("2_Androd2.3", "2005|2006");
-		fileParaMap.put("2_Androd3.0", "2007|2008|2009");
-		fileParaMap.put("2_Androd4.0", "2010|2011|2012");
-		fileParaMap.put("2_Androd4.2", "2013|2014");
+		fileParaMap.put("2_Android2.1", "2001|2002|2003");
+		fileParaMap.put("2_Android2.2", "2004");
+		fileParaMap.put("2_Android2.3", "2005|2006");
+		fileParaMap.put("2_Android3.0", "2007|2008|2009");
+		fileParaMap.put("2_Android4.0", "2010|2011|2012");
+		fileParaMap.put("2_Android4.2", "2013|2014");
 		fileParaMap.put("3_128M", "3001");
 		fileParaMap.put("3_256M", "3002");
 		fileParaMap.put("3_512M", "3003");

@@ -107,7 +107,7 @@ function task_company(){
 	$("#task_company_h").val($("#task_company").val());
 }
 var phTypes2 = [["1_240x320","1_320x480","1_480x800","1_480x854","1_960x540"],
-               ["2_Androd2.1","2_Androd2.2","2_Androd2.3","2_Androd4.0","2_Androd4.2"],
+               ["2_Android2.1","2_Android2.2","2_Android2.3","2_Android4.0","2_Android4.2"],
                ["3_128M","3_256M","3_512M","3_1G"],
                ["华为C5900","天语E329","三星W239","三星F839","三星F339","天语E379","华为C7500","华为C7600","中兴R516","其他"]];
 var apkPara=["分辨率","系统版本","最小内存"];

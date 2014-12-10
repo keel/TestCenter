@@ -223,6 +223,9 @@ feeInfo($("#task_p_fee_v").text(),"#feeInfoTable");
 
 <div class="inBox" id="uploadFS">
     <div class="inBoxTitle">游戏实体包上传</div> 
+    <div class="red">
+    注意提交测试前请确认游戏第一帧为最新版爱游戏LOGO[<a href='http://180.96.63.69/Documents/SDK_DownloadGuid.html' target='_blank'>下载</a>],如下图：<br /><img alt="logo" src="/tc/images/egame_logo.jpg">
+    </div>
     <div class="inBoxContent">
 	<form name="fileupload" id="fileupload" action="<%=prefix %>/upload" method="post" enctype="multipart/form-data">
 		<div id="swfBT" class="inBoxLine">
