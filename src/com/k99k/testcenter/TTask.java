@@ -1370,6 +1370,11 @@ public class TTask extends Action {
 				Pattern p = Pattern.compile(com.trim());
 				query.put("company", p);
 			}
+			if (u.getType() <= 1) {
+				// 权限
+				Pattern p = Pattern.compile(u.getProp("company").toString());
+				query.put("company", p);
+			}
 			boolean stateNormal = true;
 			if (hasKey % 3 == 0) {
 				int st = Integer.parseInt(state);
