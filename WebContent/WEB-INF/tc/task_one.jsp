@@ -591,7 +591,14 @@ function showOrgParas(){
 if(user.getType() >1 ){
 %>
 [ <a href="../product/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步产品数据</a> |
- <a href="../user/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步公司数据</a> ]<br />
+ <a href="../user/sync?pid=<%=product.getProp("_id")%>" target="_blank">同步公司数据</a> ] 
+[
+免安装支持：
+<a href="http://open.play.cn/dev/api/test_system/set_install?app_id=<%=product.getProp("_id")%>&flag=1" target="_blank">是</a> |  
+<a href="http://open.play.cn/dev/api/test_system/set_install?app_id=<%=product.getProp("_id")%>&flag=0" target="_blank">否</a>   
+] 
+ 
+ <br />
 <%} %> 	
     	</div>
     	<div class="inBoxLine"> 计费点情况: <br /><span id="task_p_fee_v" class="hide"><%=product.getProp("feeInfo") %></span><div id="feeInfoTable"></div></div> 

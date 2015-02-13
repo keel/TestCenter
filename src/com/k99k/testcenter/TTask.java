@@ -555,7 +555,7 @@ public class TTask extends Action {
 	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
 		int userType = u.getType();
-		if (userType < 2 || (userType >4 && userType !=99)) {
+		if (userType < 4) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
@@ -575,7 +575,7 @@ public class TTask extends Action {
 		int sys = Integer.parseInt(u_sys);
 		KObject tu = TestUnit.dao.findOne(tuid);
 		KObject task = dao.findOne((Long)tu.getProp("TID"));
-		if (task.getState() != 1 || (userType==2 && !tu.getProp("tester").equals(u.getName()))) {
+		if ((task.getState() != 1 && task.getState() != 6) || (userType==2 && !tu.getProp("tester").equals(u.getName()))) {
 			//非测试人员自己的任务或非测试中的任务
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
