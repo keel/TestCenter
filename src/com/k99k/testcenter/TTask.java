@@ -555,7 +555,7 @@ public class TTask extends Action {
 	private void exec(HttpServletRequest req,KObject u,HttpActionMsg msg){
 		//验证权限
 		int userType = u.getType();
-		if (userType < 4) {
+		if (userType < 2) {
 			//权限不够
 			JOut.err(401,"E401"+Err.ERR_AUTH_FAIL, msg);
 			return;
